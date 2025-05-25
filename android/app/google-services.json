@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "331143083816",
+    "project_id": "ishtopchi-216b8",
+    "storage_bucket": "ishtopchi-216b8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331143083816:android:210c551e524b5db339021d",
+        "android_client_info": {
+          "package_name": "torex.top.ishtopchi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "331143083816-hu0k8p4p6mjds4rh0d7r0hb6tm67bloj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "torex.top.ishtopchi",
+            "certificate_hash": "2ca2678633818ab2808f44975f64786c68c6b751"
+          }
+        },
+        {
+          "client_id": "331143083816-4rh26gtkt9d5f10t05i75udvnbhus85e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF_y_cMVLK6CpvYPcSgmCwGzrmyfC-myY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "331143083816-4rh26gtkt9d5f10t05i75udvnbhus85e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "331143083816-7tus0l0ekvvhjok5omabgmo9uejkb1aa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "torex.top.ishtopchi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
