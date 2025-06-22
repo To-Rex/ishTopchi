@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../config/routes/app_routes.dart';
+import '../core/models/user_me.dart';
 import 'funcController.dart';
 
 class ApiController extends GetxController {
@@ -37,6 +38,30 @@ class ApiController extends GetxController {
     } catch (error) {
       print('API so‘rovi xatosi: $error');
       throw Exception('API so‘rovi xatosi: $error');
+    }
+  }
+
+
+  Future<UserMe?> getMe() async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) {
+        throw Exception('Token mavjud emas');
+      }
+
+      final response = await _dio.get('$_baseUrl/user/me', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token'}));
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        print('User ME: $data');
+        return UserMe.fromJson(data);
+      } else {
+        print('Xatolik: ${response.statusCode} - ${response.data}');
+        return null;
+      }
+    } catch (e) {
+      print('getMe xatosi: $e');
+      return null;
     }
   }
 }

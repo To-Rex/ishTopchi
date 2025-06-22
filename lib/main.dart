@@ -7,11 +7,13 @@ import 'config/routes/app_pages.dart';
 import 'config/routes/app_routes.dart';
 import 'controllers/funcController.dart';
 import 'firebase_options.dart';
+import 'modules/profile/controllers/profile_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
   Get.put(FuncController());
+  Get.lazyPut(() => ProfileController());
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
