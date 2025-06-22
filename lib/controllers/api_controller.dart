@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../config/routes/app_routes.dart';
+import 'funcController.dart';
 
 class ApiController extends GetxController {
   static const String _baseUrl = 'https://ishtopchi.uz/api';
@@ -10,6 +11,9 @@ class ApiController extends GetxController {
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
   ));
+
+  final FuncController funcController = Get.put(FuncController()); // ✅ DI orqali chaqiramiz
+
 
   Future<void> sendGoogleIdToken(String idToken, String platform) async {
     print('ID Token: $idToken');
@@ -20,6 +24,10 @@ class ApiController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('API javobi: ${response.data}');
+        final accessToken = response.data['data']['token']['access_token'];
+        await funcController.saveToken(accessToken);
+
+        print('Access token saqlandi: $accessToken');
         Get.offNamed(AppRoutes.main);
         Get.snackbar('Muvaffaqiyat', 'Google bilan kirish muvaffaqiyatli!', backgroundColor: Colors.green);
       } else {

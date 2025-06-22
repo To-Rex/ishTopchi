@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -47,9 +45,36 @@ class LoginController extends GetxController {
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       print('User email address: ${googleUser.email}');
       print('User name: ${googleUser.displayName}');
-      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'MOBILE');
+      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'WEB');
     } catch (e) {
       print('Google Sign-In error: $e');
+    }
+  }
+
+  Future<UserCredential?> signInWithGoogle2() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        Get.snackbar('Xato', 'Foydalanuvchi kirishni bekor qildi'.tr);
+        return null;
+      }
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      print('ID: ${googleUser.id}');
+      print('Email: ${googleUser.email}');
+      print('Display Name: ${googleUser.displayName}');
+      print('Photo URL: ${googleUser.photoUrl}');
+      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'MOBILE');
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      print('Google Sign-In Error: $e');
+      if (e.toString().contains('com.google.android.gms.common.api')) {
+        Get.snackbar('Xato', 'Google Play Services o‘rnatilmagan yoki yangilanmagan. Iltimos, yangilang.'.tr);
+      } else {
+        Get.snackbar('Xato', 'Google Sign-In xatosi: $e'.tr);
+      }
+      return null;
     }
   }
 
@@ -85,6 +110,7 @@ class LoginController extends GetxController {
       isLoading.value = false;
     }
   }
+
   Future<void> signInWithTelegram() async {
     isLoading.value = true;
     try {
@@ -97,4 +123,5 @@ class LoginController extends GetxController {
       isLoading.value = false;
     }
   }
+
 }

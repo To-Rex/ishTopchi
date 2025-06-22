@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:sign_in_button/sign_in_button.dart';
 import '../../../common/widgets/custom_button.dart';
+import '../../../config/routes/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../core/utils/responsive.dart';
@@ -27,9 +27,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 600),
     );
-    _scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
@@ -44,80 +44,116 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.darkNavy,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [AppColors.darkBlue, AppColors.darkNavy],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(AppDimensions.paddingLarge, context)),
-            child: ScaleTransition(
-              scale: _scaleAnimation,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Responsive.scaleWidth(AppDimensions.paddingLarge, context),
+                vertical: 24,
+              ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Ishtopchi',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      fontSize: Responsive.scaleFont(56, context),
-                      letterSpacing: 2,
+                  const SizedBox(), // yuqorisini bo‘sh qoldiramiz
+
+                  // MARKAZDAGI BLOK
+                  Expanded(
+                    child: ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 100),
+                          Text(
+                            'Ishtopchi',
+                            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                              fontSize: Responsive.scaleFont(48, context),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Ish e’lonlari platformasi',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Colors.white70,
+                              fontSize: Responsive.scaleFont(16, context),
+                            ),
+                          ),
+                          const SizedBox(height: 48),
+
+                          Obx(() => CustomButton(
+                            text: 'Google bilan kirish',
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : Platform.isIOS
+                                ? controller.signInWithGoogle
+                                : controller.signInWithGoogle1,
+                            icon: Bootstrap.google,
+                            isLoading: controller.isLoading.value,
+                            backgroundColor: AppColors.white,
+                            textColor: AppColors.midBlue,
+                          )),
+                          const SizedBox(height: 16),
+
+                          Obx(() => CustomButton(
+                            text: 'Telegram bilan kirish',
+                            onPressed: controller.isLoading.value ? null : controller.signInWithTelegram,
+                            icon: Icons.telegram,
+                            isLoading: controller.isLoading.value,
+                            textColor: Colors.white,
+                          )),
+                          const SizedBox(height: 32),
+
+                          Text(
+                            'Yangi foydalanuvchi? Ro‘yxatdan o‘ting',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white60,
+                              fontSize: Responsive.scaleFont(14, context),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+
+                          Obx(() => controller.isLoading.value
+                              ? const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.lightGray),
+                          )
+                              : const SizedBox.shrink()),
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(height: Responsive.scaleHeight(AppDimensions.paddingMedium, context)),
-                  Text(
-                    'Ish e’lonlari platformasi',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontSize: Responsive.scaleFont(18, context),
+
+                  // PASTKI "DAVOM ETISH" TUGMASI
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: TextButton(
+                      onPressed: () => Get.offNamed(AppRoutes.main),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      child: const Text('Davom etish'),
                     ),
-                  ),
-                  SizedBox(height: Responsive.scaleHeight(60, context)),
-                  Obx(() => CustomButton(
-                      text: 'Telegram bilan kirish',
-                      onPressed: controller.isLoading.value ? null : Platform.isIOS ? controller.signInWithGoogle : controller.signInWithGoogle1,
-                      //onPressed: (){},
-                      //icon: Icons.telegram,
-                      icon: Bootstrap.google,
-                      isLoading: controller.isLoading.value,
-                      backgroundColor: AppColors.white,
-                      textColor: AppColors.midBlue,
-                      iconSize: Responsive.scaleWidth(AppDimensions.iconSizeMedium, context), // Ikon o‘lchami
-                    ),
-                  ),
-                  SizedBox(height: Responsive.scaleHeight(AppDimensions.paddingMedium, context)),
-                  Obx(() => CustomButton(
-                      text: 'Telegram bilan kirish',
-                      onPressed: controller.isLoading.value ? null : controller.signInWithTelegram,
-                      icon: Icons.telegram,
-                      isLoading: controller.isLoading.value,
-                      textColor: AppColors.white,
-                      iconSize: Responsive.scaleWidth(AppDimensions.iconSizeMedium, context), // Ikon o‘lchami
-                    ),
-                  ),
-                  SizedBox(height: Responsive.scaleHeight(AppDimensions.paddingLarge, context)),
-                  Text(
-                    'Yangi foydalanuvchi? Google yoki Telegram orqali ro\'yhatdan o\'ting',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: Responsive.scaleFont(14, context),
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: Responsive.scaleHeight(AppDimensions.paddingMedium, context)),
-                  Obx(
-                        () => controller.isLoading.value
-                        ? CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.lightGray),
-                    )
-                        : SizedBox.shrink(),
                   ),
                 ],
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

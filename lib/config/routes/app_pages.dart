@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:ishtopchi/modules/splash/bindings/splash_binding.dart';
+import 'package:ishtopchi/modules/splash/splash_screen.dart';
 import '../../modules/ad_posting/bindings/ad_posting_binding.dart';
 import '../../modules/ad_posting/views/ad_posting_screen.dart';
 import '../../modules/favorites/bindings/favorites_binding.dart';
@@ -17,6 +19,11 @@ import 'app_routes.dart';
 
 class AppPages {
   static final pages = [
+    GetPage(
+      name: AppRoutes.splash,
+      page: () => SplashScreen(),
+      binding: SplashBinding(),
+    ),
     GetPage(
       name: AppRoutes.onboarding,
       page: () => OnboardingScreen(),

@@ -8,6 +8,7 @@ import '../../favorites/views/favorites_screen.dart';
 import '../../ad_posting/views/ad_posting_screen.dart';
 import '../../messages/views/messages_screen.dart';
 import '../../profile/views/profile_screen.dart';
+import 'main_content.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -64,23 +65,6 @@ class _MainScreenState extends State<MainScreen> {
             _currentIndex = index;
           });
         },
-      ),
-    );
-  }
-}
-
-// Asosiy sahifa uchun placeholder widget
-class MainContent extends GetView<MainController> {
-  const MainContent({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Asosiy sahifa (Placeholder)',
-        style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-          fontSize: Responsive.scaleFont(24, context),
-        ),
       ),
     );
   }
