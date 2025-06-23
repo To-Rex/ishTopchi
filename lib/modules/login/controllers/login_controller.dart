@@ -7,22 +7,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_telegram_login/flutter_telegram_login.dart';
 import '../../../config/routes/app_routes.dart';
 import '../../../controllers/api_controller.dart';
+import '../views/phone_screen.dart';
 
 class LoginController extends GetxController {
   final isLoading = false.obs;
-  /*final GoogleSignIn _googleSignInIos = GoogleSignIn(
-    scopes: ['email', 'profile'],
-    clientId: '331143083816-7tus0l0ekvvhjok5omabgmo9uejkb1aa.apps.googleusercontent.com', // iOS Client ID
-    serverClientId: '331143083816-hu0k8p4p6mjds4rh0d7r0hb6tm67bloj.apps.googleusercontent.com', // Android Client ID
-  );
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final googleUser = GoogleSignIn().signIn();*/
 
-  final TelegramLogin _telegramLogin = TelegramLogin(
-    '<your_phone_number>',
-    '<your_bot_id>',
-    '<your_bot_domain>',
-  );
   final ApiController _apiController = ApiController();
 
   Future<void> signInWithGoogle1() async {
@@ -112,16 +101,6 @@ class LoginController extends GetxController {
   }
 
   Future<void> signInWithTelegram() async {
-    isLoading.value = true;
-    try {
-      await _telegramLogin.loginTelegram();
-      Get.offNamed(AppRoutes.main);
-      Get.snackbar('Muvaffaqiyat', 'Telegram bilan kirish muvaffaqiyatli!', backgroundColor: Colors.green);
-    } catch (error) {
-      Get.snackbar('Xato', 'Telegram kirish xatosi: $error', backgroundColor: Colors.red);
-    } finally {
-      isLoading.value = false;
-    }
+    Get.to(PhoneScreen());
   }
-
 }

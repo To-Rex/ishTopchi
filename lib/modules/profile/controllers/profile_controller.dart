@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../controllers/api_controller.dart';
+import '../../../controllers/funcController.dart';
 import '../../../core/models/user_me.dart';
 
 class ProfileController extends GetxController {
   final userMe = Rxn<UserMe>();
-  var userName = 'Dilshodjon Haydarov'.obs;
-  var email = 'dilshodhaydarov@gmail.com'.obs;
-  var avatarUrl = 'https://i.pravatar.cc/150?img=10'.obs;
 
   @override
   void onInit() {
@@ -49,6 +47,7 @@ class ProfileController extends GetxController {
   void onHelpTap() => Get.snackbar('Yordam', 'Yordam markazi');
 
   void onLogoutTap() {
+    FuncController().deleteToken();
     Get.dialog(AlertDialog(
       title: const Text('Chiqish'),
       content: const Text('Rostdan ham chiqmoqchimisiz?'),
