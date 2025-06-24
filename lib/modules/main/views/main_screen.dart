@@ -24,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
     const FavoritesScreen(),
     const AdPostingScreen(),
     const MessagesScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
   ];
 
   @override

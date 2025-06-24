@@ -8,14 +8,26 @@ import '../../../core/models/user_me.dart';
 
 class ProfileController extends GetxController {
   final userMe = Rxn<UserMe>();
+  final hasToken = false.obs;
+
+  final FuncController funcController = Get.find<FuncController>();
 
   @override
   void onInit() {
     super.onInit();
-    loadUser();
+    _checkTokenAndLoadUser();
   }
 
-  void loadUser() async {
+  Future<void> _checkTokenAndLoadUser() async {
+    final token = await funcController.getToken();
+    hasToken.value = token != null && token.isNotEmpty;
+
+    if (hasToken.value) {
+      await loadUser();
+    }
+  }
+
+  Future<void> loadUser() async {
     final api = ApiController();
     final result = await api.getMe();
     if (result != null) {
@@ -26,15 +38,17 @@ class ProfileController extends GetxController {
   void launchUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
-      //await launchUrl(uri, mode: LaunchMode.externalApplication);
-
+      // launchUrl(uri, mode: LaunchMode.externalApplication); // hozircha o‘chirib qo‘yilgan
     } else {
       Get.snackbar('Xatolik', 'Havola ochilmadi');
     }
   }
 
+  void onLoginTap() {
+    Get.toNamed('/login');
+  }
+
   void onEditProfile() {
-    // Profilni tahrirlash sahifasiga yo‘naltirish
     Get.snackbar('Tahrirlash', 'Tahrirlash tugmasi bosildi');
   }
 
@@ -47,16 +61,17 @@ class ProfileController extends GetxController {
   void onHelpTap() => Get.snackbar('Yordam', 'Yordam markazi');
 
   void onLogoutTap() {
-    FuncController().deleteToken();
     Get.dialog(AlertDialog(
       title: const Text('Chiqish'),
       content: const Text('Rostdan ham chiqmoqchimisiz?'),
       actions: [
         TextButton(onPressed: () => Get.back(), child: const Text('Yo‘q')),
         TextButton(
-          onPressed: () {
-            Get.back(); // Dialog yopiladi
-            // Logout funksiyasi shu yerda yoziladi
+          onPressed: () async {
+            await funcController.deleteToken();
+            hasToken.value = false;
+            userMe.value = null;
+            Get.back();
             Get.offAllNamed('/login');
           },
           child: const Text('Ha'),

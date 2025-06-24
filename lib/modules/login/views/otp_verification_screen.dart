@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ishtopchi/controllers/api_controller.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../config/theme/app_colors.dart';
 import '../controllers/otp_controller.dart';
@@ -20,7 +21,7 @@ class OtpVerificationScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Tasdiqlash kodi', style: TextStyle(color: AppColors.white)),
         backgroundColor: AppColors.darkNavy,
-        foregroundColor: AppColors.white,
+        foregroundColor: AppColors.white
       ),
       body: SafeArea(
         child: Center(
@@ -60,11 +61,7 @@ class OtpVerificationScreen extends StatelessWidget {
                      length: 6,
                      keyboardType: TextInputType.number,
                      animationType: AnimationType.fade,
-                     textStyle: const TextStyle(
-                       fontSize: 20,
-                       color: AppColors.white,
-                       fontWeight: FontWeight.bold,
-                     ),
+                     textStyle: const TextStyle(fontSize: 20, color: AppColors.white, fontWeight: FontWeight.bold),
                      pinTheme: PinTheme(
                        shape: PinCodeFieldShape.box,
                        borderRadius: BorderRadius.circular(10),
@@ -83,14 +80,14 @@ class OtpVerificationScreen extends StatelessWidget {
                      onChanged: (value) {
                        otpCode = value;
                        if (value.length == 6) {
-                         debugPrint('Tasdiqlash kodi: $value');
+                         ApiController().loginWithOtp(otp: value);
+                        // debugPrint('Tasdiqlash kodi: $value');
                        }
                      },
                      appContext: context
                  )
                 ),
-                Obx(() => controller.resendAvailable.value
-                    ? TextButton(
+                Obx(() => controller.resendAvailable.value ? TextButton(
                   onPressed: controller.resendAvailable.value ? controller.resendCode : null,
                   child: Text(
                     controller.resendAvailable.value ? 'Kodni qayta yuborish' : '',

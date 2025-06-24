@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:ishtopchi/controllers/funcController.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../../config/theme/app_colors.dart';
+import '../../../controllers/api_controller.dart';
 import 'otp_verification_screen.dart';
 
 class PhoneScreen extends StatefulWidget {
@@ -16,10 +18,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
 
-  final phoneFormatter = MaskTextInputFormatter(
-    mask: '## ### ## ##',
-    filter: { "#": RegExp(r'[0-9]') },
-  );
+  final phoneFormatter = MaskTextInputFormatter(mask: '## ### ## ##', filter: { "#": RegExp(r'[0-9]') });
 
   String? _validatePhone(String? value) {
     if (value == null || value.isEmpty) {
@@ -33,9 +32,9 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      final cleanPhone = '+998${phoneFormatter.getUnmaskedText()}';
+      final cleanPhone = '${phoneFormatter.getUnmaskedText()}';
       debugPrint('Telefon raqam: $cleanPhone');
-      Get.to(() => OtpVerificationScreen(phone: cleanPhone), transition: Transition.fadeIn);
+      ApiController().generateOtp(cleanPhone);
     }
   }
 
@@ -52,13 +51,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
-      appBar: AppBar(
-        title: Text(
-            'Telefon raqam',
-            style: TextStyle(color: AppColors.white)),
-        backgroundColor: AppColors.darkNavy,
-        foregroundColor: AppColors.white,
-      ),
+      appBar: AppBar(title: Text('Telefon raqam', style: TextStyle(color: AppColors.white)), backgroundColor: AppColors.darkNavy, foregroundColor: AppColors.white),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
