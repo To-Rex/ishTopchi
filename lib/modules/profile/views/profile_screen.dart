@@ -33,21 +33,14 @@ class ProfileScreen extends GetView<ProfileController> {
                     titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     title: hasToken && isCollapsed
                         ? Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundImage: NetworkImage(
-                            user?.profilePicture ?? 'https://help.tithe.ly/hc/article_attachments/18804144460951',
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          user?.firstName ?? 'no name',
-                          style: const TextStyle(fontSize: 14, color: Colors.white),
-                        ),
-                      ],
-                    )
-                        : null,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(radius: 16, backgroundImage: NetworkImage(user?.profilePicture ?? 'https://help.tithe.ly/hc/article_attachments/18804144460951')),
+                          const SizedBox(width: 10),
+                          Text(user?.firstName ?? 'no name', style: const TextStyle(fontSize: 14, color: Colors.white))
+                        ]
+                    ) : null,
                     background: Stack(
                       alignment: Alignment.topRight,
                       children: [
@@ -59,23 +52,15 @@ class ProfileScreen extends GetView<ProfileController> {
                             children: [
                               CircleAvatar(
                                 radius: avatarSize / 2,
-                                backgroundImage: NetworkImage(
-                                  hasToken && user?.profilePicture != null
-                                      ? user!.profilePicture!
-                                      : 'https://help.tithe.ly/hc/article_attachments/18804144460951',
-                                ),
+                                backgroundImage: NetworkImage(hasToken && user?.profilePicture != null ? user!.profilePicture! : 'https://help.tithe.ly/hc/article_attachments/18804144460951')
                               ),
                               const SizedBox(height: 12),
                               if (hasToken)
                                 Column(
                                   children: [
-                                    Text(user?.firstName ?? 'no name',
-                                        style: const TextStyle(color: Colors.white)),
-                                    Text(
-                                      user?.authProviders?.first.email ?? 'no email',
-                                      style: const TextStyle(color: Colors.white70),
-                                    ),
-                                  ],
+                                    Text(user?.firstName ?? 'no name', style: const TextStyle(color: Colors.white)),
+                                    Text(user?.authProviders?.first.email ?? 'no email', style: const TextStyle(color: Colors.white70))
+                                  ]
                                 )
                               else
                                 ElevatedButton(
@@ -87,9 +72,9 @@ class ProfileScreen extends GetView<ProfileController> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                   ),
                                   child: const Text('Kirish', style: TextStyle(color: Colors.white)),
-                                ),
-                            ],
-                          ),
+                                )
+                            ]
+                          )
                         ),
                         if (hasToken)
                           Positioned(

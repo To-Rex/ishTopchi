@@ -5,8 +5,12 @@ import 'package:get_storage/get_storage.dart';
 import 'config/theme/app_theme.dart';
 import 'config/routes/app_pages.dart';
 import 'config/routes/app_routes.dart';
+import 'controllers/api_controller.dart';
 import 'controllers/funcController.dart';
 import 'firebase_options.dart';
+import 'modules/favorites/controllers/favorites_controller.dart';
+import 'modules/favorites/views/favorites_screen.dart';
+import 'modules/main/controllers/main_controller.dart';
 import 'modules/profile/controllers/profile_controller.dart';
 
 Future<void> main() async {
@@ -14,6 +18,11 @@ Future<void> main() async {
   runApp(MyApp());
   Get.put(FuncController());
   Get.lazyPut(() => ProfileController());
+  Get.put(ApiController());
+  Get.put(MainController());
+
+
+  Get.put(FavoritesController());
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 

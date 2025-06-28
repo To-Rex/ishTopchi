@@ -1,16 +1,28 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../core/models/post_model.dart';
+import '../core/models/wish_list.dart';
+
 class FuncController {
   final GetStorage storage = GetStorage();
 
   RxString otpToken = ''.obs;
   RxString otpPhone = ''.obs;
 
+  final RxList<Post> posts = <Post>[].obs;
+  final RxList<WishList> wishList = <WishList>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxString searchQuery = ''.obs;
+  final RxInt currentPage = 1.obs;
+  final RxBool hasMore = true.obs;
+
+
   setOtpToken(String token, String phone) {
     otpToken.value = token;
     otpPhone.value = phone;
   }
+
 
   setOtpPhone(String phone) {
     otpPhone.value = phone;
@@ -44,4 +56,5 @@ class FuncController {
   }
 
   get tokenBearer => storage.read('token') ?? '';
+
 }

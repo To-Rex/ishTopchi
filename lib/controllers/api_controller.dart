@@ -1,11 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../config/routes/app_routes.dart';
+import '../core/models/post_model.dart';
 import '../core/models/user_me.dart';
+import '../core/models/wish_list.dart';
+import '../modules/favorites/controllers/favorites_controller.dart';
 import '../modules/login/views/otp_verification_screen.dart';
 import 'funcController.dart';
+
 
 class ApiController extends GetxController {
   static const String _baseUrl = 'https://ishtopchi.uz/api';
@@ -15,6 +18,9 @@ class ApiController extends GetxController {
   ));
 
   final FuncController funcController = Get.put(FuncController()); // ✅ DI orqali chaqiramiz
+
+
+
 
   Future<void> sendGoogleIdToken(String idToken, String platform) async {
     print('ID Token: $idToken');
@@ -44,6 +50,7 @@ class ApiController extends GetxController {
   Future<UserMe?> getMe() async {
     try {
       final token = funcController.getToken();
+      print(token);
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
@@ -53,6 +60,8 @@ class ApiController extends GetxController {
       if (response.statusCode == 200) {
         final data = response.data;
         print('User ME: $data');
+        await fetchWishlist();
+        await fetchPosts();
         return UserMe.fromJson(data);
       } else {
         print('Xatolik: ${response.statusCode} - ${response.data}');
@@ -155,4 +164,152 @@ class ApiController extends GetxController {
       return false;
     }
   }
+
+
+
+  //final FuncController funcController = Get.find<FuncController>();
+
+  Future<void> fetchPosts({int page = 1, int limit = 10, String? search}) async {
+    try {
+      funcController.isLoading.value = true;
+
+      final token = funcController.getToken();
+      if (token == null) {
+        throw Exception('Token mavjud emas');
+      }
+
+      if (page == 1) {
+        funcController.hasMore.value = true;
+      }
+
+      String url = '$_baseUrl/posts?page=$page&limit=$limit';
+      if (search != null && search.isNotEmpty) {
+        url += '&search=$search';
+      }
+
+      final response = await _dio.get(
+        url,
+        options: Options(headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      print('API javobi posts (page $page): ${response.data}');
+      print('Status code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data['data'];
+
+        if (data.isEmpty) {
+          print('Ma’lumotlar tugadi');
+          funcController.hasMore.value = false;
+          return;
+        }
+
+        final newPosts = data.map((json) => Post.fromJson(json)).toList();
+
+        if (page == 1) {
+          funcController.posts.value = newPosts;
+        } else {
+          funcController.posts.addAll(newPosts);
+        }
+      } else {
+        throw Exception('Postlarni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchPosts xatolik (page $page): $e');
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
+
+  // Yoqtirish (wishlist'ga qo'shish)
+  Future<void> addToWishlist(int postId) async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) {
+        throw Exception('Token mavjud emas');
+      }
+
+      final response = await _dio.post(
+        '$_baseUrl/wishlist',
+        data: {'post_id': postId},
+        options: Options(headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Post wishlistga qo‘shildi: $postId');
+        await fetchWishlist(); // Wishlistni yangilash
+      } else {
+        throw Exception('Wishlistga qo‘shishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('addToWishlist xatolik: $e');
+    }
+  }
+
+
+  // Wishlistdan o'chirish
+  Future<void> removeFromWishlist(int wishlistId) async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) {
+        throw Exception('Token mavjud emas');
+      }
+
+      final response = await _dio.delete(
+        '$_baseUrl/wishlist/$wishlistId',
+        options: Options(headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        print('Post wishlistdan o‘chirildi: $wishlistId');
+        await fetchWishlist(); // Wishlistni yangilash
+      } else {
+        throw Exception('Wishlistdan o‘chirishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('removeFromWishlist xatolik: $e');
+    }
+  }
+
+
+  // Wishlistni olish
+  Future<void> fetchWishlist() async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) {
+        throw Exception('Token mavjud emas');
+      }
+
+      final response = await _dio.get(
+        '$_baseUrl/wishlist',
+        options: Options(headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      print('API javobi wishlist: ${response.data}');
+      print('Status code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        funcController.wishList.value = data.map((json) => WishList.fromJson(json)).toList();
+      } else {
+        throw Exception('Wishlistni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchWishlist xatolik: $e');
+    }
+  }
+
+
 }
