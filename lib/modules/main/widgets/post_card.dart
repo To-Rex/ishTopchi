@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../../../core/models/post_model.dart';
+import '../../../core/utils/responsive.dart';
+import '../../../config/theme/app_colors.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
@@ -13,51 +15,54 @@ class PostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ApiController apiController = Get.find<ApiController>();
     final FuncController funcController = Get.find<FuncController>();
+    final screenWidth = Responsive.screenWidth(context);
+    final isSmallScreen = screenWidth < 300;
 
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: Responsive.scaleWidth(4, context),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context))),
+      color: AppColors.darkBlue,
+      margin: EdgeInsets.symmetric(vertical: Responsive.scaleHeight(8, context)),
       child: InkWell(
         onTap: () {
           // Postni ochish uchun qo‘shimcha logika qo‘shish mumkin
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context)),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: EdgeInsets.all(Responsive.scaleWidth(8, context)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Sarlavha va yurakcha bir qatorda
-              SizedBox(
-                height: 40, // Maksimal balandlikni cheklamoq
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: screenWidth * 0.8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Sarlavha uchun moslashuvchan kenglik
                     Flexible(
+                      fit: FlexFit.tight,
                       child: Text(
                         post.title,
-                        maxLines: 1,
+                        maxLines: isSmallScreen ? 1 : 2,
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
-                        style: const TextStyle(
-                          fontSize: 18,
+                        style: TextStyle(
+                          fontSize: Responsive.scaleFont(isSmallScreen ? 14 : 18, context),
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: AppColors.white,
                         ),
                       ),
                     ),
-                    // Yurakcha tugmasi
                     Obx(() {
-                      final isFavorite = funcController.wishList.any((w) => w.postId == post.id);
+                      final isFavorite = funcController.wishList.any((w) => w.id == post.id);
                       return IconButton(
                         icon: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite ? Colors.red : Colors.grey,
-                          size: 20, // Hajmini yanada kamaytirdik
+                          color: isFavorite
+                              ? AppColors.red
+                              : AppColors.lightGray,
+                          size: Responsive.scaleFont(isSmallScreen ? 16 : 20, context),
                         ),
                         onPressed: () async {
                           if (isFavorite) {
@@ -65,62 +70,87 @@ class PostCard extends StatelessWidget {
                           } else {
                             await apiController.addToWishlist(post.id);
                           }
-                          // Wishlistni darhol yangilash
                           await apiController.fetchWishlist();
                         },
-                        padding: const EdgeInsets.all(2), // Minimal padding
-                        constraints: const BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
+                        padding: EdgeInsets.all(Responsive.scaleWidth(2, context)),
+                        constraints: BoxConstraints(
+                          minWidth: Responsive.scaleWidth(24, context),
+                          minHeight: Responsive.scaleHeight(24, context),
                         ),
                       );
                     }),
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
-              // Kontent
-              Text(
-                post.content,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
+              SizedBox(height: Responsive.scaleHeight(12, context)),
+              Flexible(
+                flex: 2,
+                fit: FlexFit.loose,
+                child: Text(
+                  post.content,
+                  maxLines: isSmallScreen ? 2 : 5,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: Responsive.scaleFont(isSmallScreen ? 12 : 14, context),
+                    color: AppColors.lightGray,
+                  ),
                 ),
               ),
-              const Spacer(),
-              // Qo‘shimcha ma’lumotlar
+              SizedBox(height: Responsive.scaleHeight(12, context)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Maosh va tuman ma’lumotlari
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Maosh: ${post.salaryFrom} - ${post.salaryTo} UZS',
+                          '${post.salaryFrom} - ${post.salaryTo} UZS',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 14, context),
                             fontWeight: FontWeight.w600,
-                            color: Colors.green[700],
+                            color: AppColors.lightBlue,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: Responsive.scaleHeight(4, context)),
                         Text(
                           post.district?.name ?? 'Noma’lum tuman',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[500],
+                            fontSize: Responsive.scaleFont(isSmallScreen ? 8 : 12, context),
+                            color: AppColors.lightBlue,
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                ],
+              ),
+              Spacer(),
+              if (post.user != null)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: Responsive.scaleWidth(isSmallScreen ? 9 : 12, context), // Yumaloq rasm
+                    backgroundImage: NetworkImage(post.user?.profilePicture ?? ''),
+                    backgroundColor: AppColors.lightGray.withOpacity(0.3), // Agar rasm yuklanmasa
+                  ),
+                  SizedBox(width: Responsive.scaleWidth(8, context)),
+                  Expanded(
+                    child: Text(
+                      '${post.user?.firstName ?? ''} ${post.user?.lastName ?? ''}'.trim(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: Responsive.scaleFont(isSmallScreen ? 7 : 11, context),
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],

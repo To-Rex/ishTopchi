@@ -7,4 +7,8 @@ class AppColors {
   static const Color lightBlue = Color(0xFF778DA9);
   static const Color lightGray = Color(0xFFE0E1DD);
   static const Color white = Color(0xFFFFFFFF);
+
+  //red
+  static const Color red = Color(0xFFE74C3C);
+  static const Color selectedItem = Color(0xFFE74C3C); // Tanlangan uchun
 }

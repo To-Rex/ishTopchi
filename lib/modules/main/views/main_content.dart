@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
+import '../../../core/utils/responsive.dart';
 import '../widgets/post_card.dart';
 
 class MainContent extends StatelessWidget {
@@ -36,18 +38,20 @@ class MainContent extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
           child: TextField(
             decoration: InputDecoration(
               hintText: 'Qidirish...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              hintStyle: TextStyle(color: AppColors.lightGray),
+              prefixIcon: Icon(Icons.search, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: Colors.grey[200],
+              fillColor: AppColors.darkBlue,
             ),
+            style: TextStyle(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray),
             onChanged: (value) {
               funcController.searchQuery.value = value;
               funcController.currentPage.value = 1;
@@ -68,19 +72,21 @@ class MainContent extends StatelessWidget {
 
             return GridView.builder(
               controller: scrollController,
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.75,
+              padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: Responsive.screenWidth(context) < 300 ? 1 : 2,
+                crossAxisSpacing: Responsive.scaleWidth(16, context),
+                mainAxisSpacing: Responsive.scaleHeight(16, context),
+                childAspectRatio: Responsive.screenWidth(context) < 300
+                    ? 0.9 // Kichik ekranlarda balandlikni oshirish
+                    : 0.6, // Katta ekranlarda balandlikni yanada ko‘p oshirish
               ),
               itemCount: funcController.posts.length + (funcController.hasMore.value ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index == funcController.posts.length) {
                   return Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
                     alignment: Alignment.center,
                     child: const Center(child: CircularProgressIndicator()),
                   );

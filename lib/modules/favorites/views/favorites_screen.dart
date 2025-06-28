@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ishtopchi/controllers/funcController.dart';
 import '../../../config/theme/app_colors.dart';
+import '../../../core/utils/responsive.dart';
 import '../../main/views/main_content.dart';
 import '../../main/widgets/post_card.dart';
 
@@ -31,14 +32,15 @@ class FavoritesScreen extends StatelessWidget {
               'Saqlangan postlar yo‘q',
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
-          )
-              : GridView.builder(
+          ) : GridView.builder(
             padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.75,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: Responsive.screenWidth(context) < 300 ? 1 : 2,
+              crossAxisSpacing: Responsive.scaleWidth(16, context),
+              mainAxisSpacing: Responsive.scaleHeight(16, context),
+              childAspectRatio: Responsive.screenWidth(context) < 300
+                  ? 0.9 // Kichik ekranlarda balandlikni oshirish
+                  : 0.6, // Katta ekranlarda balandlikni yanada ko‘p oshirish
             ),
             itemCount: funcController.wishList.length,
             itemBuilder: (context, index) {

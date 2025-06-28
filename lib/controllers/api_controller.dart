@@ -1,11 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../config/routes/app_routes.dart';
 import '../core/models/post_model.dart';
 import '../core/models/user_me.dart';
 import '../core/models/wish_list.dart';
-import '../modules/favorites/controllers/favorites_controller.dart';
 import '../modules/login/views/otp_verification_screen.dart';
 import 'funcController.dart';
 

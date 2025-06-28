@@ -11,7 +11,7 @@ import '../../profile/views/profile_screen.dart';
 import 'main_content.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -54,8 +54,14 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(LucideIcons.messageCircle), label: 'Xabarlar'),
           BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profil'),
         ],
+
+        selectedFontSize: Responsive.scaleFont(11, context),
+        unselectedFontSize: Responsive.scaleFont(11, context),
+        selectedIconTheme: IconThemeData(size: Responsive.scaleWidth(24, context)),
+        unselectedIconTheme: IconThemeData(size: Responsive.scaleWidth(24, context)),
+
         currentIndex: _currentIndex,
-        selectedItemColor: AppColors.white,
+        selectedItemColor: AppColors.selectedItem,
         unselectedItemColor: AppColors.lightGray,
         backgroundColor: AppColors.darkNavy,
         type: BottomNavigationBarType.fixed,

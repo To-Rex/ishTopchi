@@ -39,8 +39,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       final token = funcController.getToken();
       if (token != null && token.isNotEmpty) {
         Get.offNamed(AppRoutes.main);
-        Get.off(
-              () => const MainScreen(),
+        Get.off(() => const MainScreen(),
           transition: Transition.fadeIn,
           duration: const Duration(seconds: 1),
         );
