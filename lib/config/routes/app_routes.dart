@@ -7,4 +7,6 @@ class AppRoutes {
   static const adPosting = '/ad_posting';
   static const messages = '/messages';
   static const profile = '/profile';
+  static const notifications = '/notifications';
+
 }

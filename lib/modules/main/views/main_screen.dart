@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           IconButton(
             icon: Icon(LucideIcons.bell, color: AppColors.lightGray),
-            onPressed: () {},
+            onPressed: () => Get.toNamed('/notifications'),
           ),
         ],
       ),
