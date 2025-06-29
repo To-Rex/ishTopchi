@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
+import '../views/about_app_screen.dart';
+import '../views/edit_profile_screen.dart';
+import '../views/help_center_screen.dart';
+import '../views/my_resumes_screen.dart';
+import '../views/notifications_screen.dart';
+import '../views/privacy_screen.dart';
+import '../views/support_screen.dart';
 
 class ProfileController extends GetxController {
   final hasToken = false.obs;
@@ -28,14 +35,10 @@ class ProfileController extends GetxController {
   Future<void> loadUser() async {
     if (_isLoadingUser.value) return; // Agar yuklanayotgan bo‘lsa, to‘xtatish
     _isLoadingUser.value = true;
-
     try {
-      final result = await ApiController().getMe();
-      if (result != null) {
-        funcController.userMe.value = result; // Foydalanuvchi ma’lumotlarini yangilash
-      }
+      ApiController().getMe();
     } catch (e) {
-      print('loadUser xatosi: $e');
+      _isLoadingUser.value = false;
     } finally {
       _isLoadingUser.value = false;
     }
@@ -54,17 +57,19 @@ class ProfileController extends GetxController {
     Get.toNamed('/login');
   }
 
-  void onEditProfile() {
-    Get.snackbar('Tahrirlash', 'Tahrirlash tugmasi bosildi');
-  }
 
-  void onMyPostsTap() => Get.snackbar('E’lonlarim', 'Mening e’lonlarim sahifasi');
+  void onEditProfile() {
+    Get.to(() => EditProfileScreen()); // Yangi ekran ochish
+  }
+  //MyResumesScreen
+  void onMyResumesTap() => Get.to(() => MyResumesScreen());
+  void onMyPostsTap() => Get.snackbar('Mening e’lonlarim', 'Mening e’lonlarim sozlamalari ochildi');
   void onLanguagesTap() => Get.snackbar('Tillar', 'Tillar sozlamalari ochildi');
-  void onSupportTap() => Get.snackbar('Qo‘llab-quvvatlash', 'Yordamga murojaat qilindi');
-  void onAboutAppTap() => Get.snackbar('Ilova haqida', 'Bu ilova haqida ma’lumot');
-  void onPrivacyTap() => Get.snackbar('Maxfiylik', 'Maxfiylik siyosati');
-  void onNotificationsTap() => Get.snackbar('Bildirishnomalar', 'Bildirishnoma sozlamalari');
-  void onHelpTap() => Get.snackbar('Yordam', 'Yordam markazi');
+  void onSupportTap() => Get.to(() => SupportScreen());
+  void onAboutAppTap() => Get.to(() => AboutAppScreen());
+  void onPrivacyTap() => Get.to(() => PrivacyScreen());
+  void onNotificationsTap() => Get.to(() => NotificationsScreen());
+  void onHelpTap() => Get.to(() => HelpCenterScreen());
 
   void onLogoutTap() {
     Get.dialog(AlertDialog(

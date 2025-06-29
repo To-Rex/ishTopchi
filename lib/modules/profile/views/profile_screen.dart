@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -12,13 +11,15 @@ class ProfileScreen extends GetView<ProfileController> {
 
   final FuncController funcController = Get.put(FuncController());
 
+
   @override
   Widget build(BuildContext context) {
     final double avatarSize = Responsive.scaleWidth(100, context);
-
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
       body: Obx(() {
+        final hasToken = controller.hasToken.value;
+        final user = funcController.userMe.value;
         return CustomScrollView(
           slivers: [
             SliverAppBar(
@@ -29,8 +30,7 @@ class ProfileScreen extends GetView<ProfileController> {
               flexibleSpace: LayoutBuilder(
                 builder: (context, constraints) {
                   final isCollapsed = constraints.maxHeight <= 80;
-                  final hasToken = controller.hasToken.value;
-                  final user = funcController.userMe.value;
+
                   return FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     title: hasToken && isCollapsed
@@ -140,9 +140,8 @@ class ProfileScreen extends GetView<ProfileController> {
                     if (controller.hasToken.value)
                       _buildMenuItem(LucideIcons.userRound, 'Mening Profilim', controller.onMyPostsTap),
                     if (controller.hasToken.value)
-                      _buildMenuItem(LucideIcons.squareLibrary, 'Mening Rezumelarim', controller.onMyPostsTap),
+                      _buildMenuItem(LucideIcons.squareLibrary, 'Mening Rezumelarim', controller.onMyResumesTap),
                     if (controller.hasToken.value)
-                     // _buildMenuItem(LucideIcons.listCheck, 'Mening e’lonlarim', controller.onMyPostsTap),
                       _buildMenuItem(LucideIcons.megaphone, 'Mening e’lonlarim', controller.onMyPostsTap),
                     _buildMenuItem(LucideIcons.globe, 'Tillar', controller.onLanguagesTap, lang: true),
                     _buildMenuItem(LucideIcons.headset, 'Qo‘llab-quvvatlash', controller.onSupportTap),
@@ -211,7 +210,8 @@ class ProfileScreen extends GetView<ProfileController> {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: Colors.white.withOpacity(0.05),
+              //color: Colors.white.withOpacity(0.05),
+              color: AppColors.darkBlue
             ),
             child: Row(
               children: [

@@ -61,7 +61,8 @@ class ApiController extends GetxController {
         await fetchWishlist();
         await fetchPosts();
         //funcController
-        funcController.userMe.value = UserMe.fromJson(data);
+        //setUserMe
+        funcController.setUserMe(UserMe.fromJson(data));
         return UserMe.fromJson(data);
       } else {
         print('Xatolik: ${response.statusCode} - ${response.data}');

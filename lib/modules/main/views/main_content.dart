@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
@@ -32,9 +33,7 @@ class MainContent extends StatelessWidget {
       children: [
         Container(
           height: Responsive.scaleHeight(50, context),
-          //padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context)),
           margin: EdgeInsets.only(
-            //top: Responsive.scaleHeight(16, context),
             left: Responsive.scaleWidth(16, context),
             right: Responsive.scaleWidth(16, context),
             bottom: Responsive.scaleHeight(10, context)
@@ -43,13 +42,10 @@ class MainContent extends StatelessWidget {
             decoration: InputDecoration(
               hintText: 'Qidirish...',
               hintStyle: TextStyle(color: AppColors.lightGray),
-              prefixIcon: Icon(Icons.search, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
-                borderSide: BorderSide.none,
-              ),
+              prefixIcon: Icon(LucideIcons.search, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)), borderSide: BorderSide.none),
               filled: true,
-              fillColor: AppColors.darkBlue,
+              fillColor: AppColors.darkBlue
             ),
             style: TextStyle(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray),
             onChanged: (value) {
@@ -58,8 +54,8 @@ class MainContent extends StatelessWidget {
               funcController.hasMore.value = true;
               funcController.posts.clear();
               apiController.fetchPosts(search: value, page: 1);
-            },
-          ),
+            }
+          )
         ),
         Expanded(
           child: Obx(() {

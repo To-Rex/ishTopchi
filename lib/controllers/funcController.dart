@@ -19,6 +19,10 @@ class FuncController {
   final RxBool hasMore = true.obs;
   final userMe = Rxn<UserMe>();
 
+  void setUserMe(UserMe userModel) {
+    userMe.value = userModel;
+  }
+
   setOtpToken(String token, String phone) {
     otpToken.value = token;
     otpPhone.value = phone;
