@@ -67,7 +67,7 @@ class LoginController extends GetxController {
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       print('User email address: ${googleUser.email}');
       print('User name: ${googleUser.displayName}');
-      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'WEB');
+      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'IOS');
 
     } catch (e) {
       isLoading.value = false;
