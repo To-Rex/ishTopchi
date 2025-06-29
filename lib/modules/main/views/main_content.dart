@@ -19,26 +19,26 @@ class MainContent extends StatelessWidget {
     ever(funcController.currentPage, (page) {
       if (page > 1 && funcController.hasMore.value) {
         debugPrint('Yangi sahifa yuklanmoqda: $page, joriy uzunlik: ${funcController.posts.length}');
-        apiController.fetchPosts(
-          page: page,
-          search: funcController.searchQuery.value,
-        );
+        apiController.fetchPosts(page: page, search: funcController.searchQuery.value);
       }
     });
 
     // Skroll hodisasini qo‘shish
     scrollController.addListener(() {
-      if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200 &&
-          !funcController.isLoading.value &&
-          funcController.hasMore.value) {
-        funcController.currentPage.value++;
-      }
+      if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200 && !funcController.isLoading.value && funcController.hasMore.value) {funcController.currentPage.value++;}
     });
 
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
+        Container(
+          height: Responsive.scaleHeight(50, context),
+          //padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context)),
+          margin: EdgeInsets.only(
+            //top: Responsive.scaleHeight(16, context),
+            left: Responsive.scaleWidth(16, context),
+            right: Responsive.scaleWidth(16, context),
+            bottom: Responsive.scaleHeight(10, context)
+          ),
           child: TextField(
             decoration: InputDecoration(
               hintText: 'Qidirish...',
@@ -72,14 +72,12 @@ class MainContent extends StatelessWidget {
 
             return GridView.builder(
               controller: scrollController,
-              padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
+              padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context)),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: Responsive.screenWidth(context) < 300 ? 1 : 2,
                 crossAxisSpacing: Responsive.scaleWidth(16, context),
                 mainAxisSpacing: Responsive.scaleHeight(16, context),
-                childAspectRatio: Responsive.screenWidth(context) < 300
-                    ? 0.9 // Kichik ekranlarda balandlikni oshirish
-                    : 0.6, // Katta ekranlarda balandlikni yanada ko‘p oshirish
+                childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.6
               ),
               itemCount: funcController.posts.length + (funcController.hasMore.value ? 1 : 0),
               itemBuilder: (context, index) {
@@ -88,16 +86,16 @@ class MainContent extends StatelessWidget {
                     width: double.infinity,
                     padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
                     alignment: Alignment.center,
-                    child: const Center(child: CircularProgressIndicator()),
+                    child: const Center(child: CircularProgressIndicator())
                   );
                 }
                 final post = funcController.posts[index];
                 return PostCard(post: post);
-              },
+              }
             );
-          }),
-        ),
-      ],
+          })
+        )
+      ]
     );
   }
 }

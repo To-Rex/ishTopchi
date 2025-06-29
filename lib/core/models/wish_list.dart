@@ -16,7 +16,7 @@ class WishList {
     required this.createdAt,
     required this.updatedAt,
     required this.post,
-    this.user,
+    required this.user,
   });
 
   factory WishList.fromJson(Map<String, dynamic> json) {

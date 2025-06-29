@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import '../config/routes/app_routes.dart';
@@ -16,8 +18,6 @@ class ApiController extends GetxController {
   ));
 
   final FuncController funcController = Get.put(FuncController()); // ✅ DI orqali chaqiramiz
-
-
 
 
   Future<void> sendGoogleIdToken(String idToken, String platform) async {
@@ -48,7 +48,7 @@ class ApiController extends GetxController {
   Future<UserMe?> getMe() async {
     try {
       final token = funcController.getToken();
-      print(token);
+      print('Token: $token');
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
@@ -72,15 +72,19 @@ class ApiController extends GetxController {
   }
 
   Future generateOtp(String phoneNumber) async {
+    print('Phone number: $phoneNumber');
     try {
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/generate-otp',
-        data: {'phoneNumber': phoneNumber},
-        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'})
+        data: {'phoneNumber': '+998$phoneNumber'},
+        options: Options(headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json'})
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final encryptedOtp = response.data;
+        print('API javobi: ${response.data}');
+        final encryptedOtp = response.data['data'];
         print('OTP yuborildi. Encrypted OTP: $encryptedOtp');
         //funcController.setOtpToken(encryptedOtp, phoneNumber);
         funcController.setOtpTokenOnly(encryptedOtp);
@@ -98,25 +102,10 @@ class ApiController extends GetxController {
     final fingerprint = await funcController.getOtpToken(); // JWT fingerprint
     final phone = await funcController.getOtpPhone();
 
-    print('Fingerprint: $fingerprint');
-    print('Phone: $phone');
-    print('OTP: $otp');
-
     try {
-      final response = await _dio.post(
-        '$_baseUrl/otp-based-auth/login',
-        data: {
-          'phone_number': '+998995340313',
-          'otp': '851909',
-          'fingerprint': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbmNyeXB0ZWRPdHAiOiIxODBiNGQ3YThiYjM5NjQ2ZjJlZGQyMzU5ZTA1OWVkNWNlODQ0ZDBlM2Y5ZTQxOGVjYjk2ODQ5MzgyODc0OWMxNGU0NjNlNzQxZmJiIiwicGhvbmVOdW1iZXIiOiI5OTUzNDAzMTMiLCJ1c2VyQWdlbnQiOiJEYXJ0LzMuOCAoZGFydDppbykiLCJpcEFkZHJlc3MiOiI6OmZmZmY6MTI3LjAuMC4xIiwiZXhwIjoxNzUwNzM5MTUxLCJpYXQiOjE3NTA3Mzg4NTF9.lXEn-uy4e_gYiQjfQYdffj5NNKdbbZ2SRsUpLpplRFEuxleescngmIZbwH-eJqBCf_zT8wOtXkRlddcOcmmS7GdHbaA2h2lb4IxQwGS2keIlBfDjf_lOuWvqR1mvSxS_q9HZbia-2NONGic87FZPSDDqTw6jYyB6Zv9YZQtY73gjiCWbGmcYVKOAYHgRRrS9WaAXNWNmeg-4kvuAbZ5ev1Oy-d0YtEDe8-YbJRwjeIgd0pclCb08VCrls_L3zt5Kz0_sIJdr74mOfYhD-YtWPlcPRFvFX2NoBPMGrsXysBMm8BgmRcZ0ta6sQUtXINMD24iNYcOP3c90RU6QJh7plQ'
-        },
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Content-Type': 'application/json',
-            // ❌ 'Authorization' kerak emas bu yerda!
-          },
-        ),
+      final response = await _dio.post('$_baseUrl/otp-based-auth/login',
+        data: json.encode({"phone_number": "$phone", "otp": otp, "fingerprint": "$fingerprint"}),
+        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json', 'Authorization': 'Bearer $fingerprint'})
       );
 
       print('✅ Javob: ${response.data}');
@@ -124,6 +113,8 @@ class ApiController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final accessToken = response.data['data']['token']['access_token'];
         await funcController.saveToken(accessToken);
+        Get.offNamed(AppRoutes.main);
+        getMe();
         print('✅ Login muvaffaqiyatli. Access Token: $accessToken');
       } else {
         print('❌ Status: ${response.statusCode}');
@@ -269,7 +260,7 @@ class ApiController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        print('Post wishlistdan o‘chirildi: $wishlistId');
+        //print('Post wishlistdan o‘chirildi: $wishlistId');
         await fetchWishlist(); // Wishlistni yangilash
       } else {
         throw Exception('Wishlistdan o‘chirishda xatolik: ${response.statusCode}');
@@ -298,9 +289,11 @@ class ApiController extends GetxController {
 
       print('API javobi wishlist: ${response.data}');
       print('Status code: ${response.statusCode}');
+
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
+        final List<dynamic> data = response.data['data'];
         funcController.wishList.value = data.map((json) => WishList.fromJson(json)).toList();
+        print('Wishlist yangilandi. ${funcController.wishList.length} ta item.');
       } else {
         throw Exception('Wishlistni olishda xatolik: ${response.statusCode}');
       }
@@ -308,6 +301,5 @@ class ApiController extends GetxController {
       print('fetchWishlist xatolik: $e');
     }
   }
-
 
 }

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_telegram_login/flutter_telegram_login.dart';
+import 'package:ishtopchi/modules/login/views/register_screen.dart';
 import '../../../config/routes/app_routes.dart';
 import '../../../controllers/api_controller.dart';
 import '../views/phone_screen.dart';
@@ -102,5 +103,6 @@ class LoginController extends GetxController {
 
   Future<void> signInWithTelegram() async {
     Get.to(PhoneScreen());
+    //Get.to(RegisterScreen());
   }
 }

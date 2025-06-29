@@ -54,14 +54,13 @@ class PostCard extends StatelessWidget {
                         ),
                       ),
                     ),
+
                     Obx(() {
-                      final isFavorite = funcController.wishList.any((w) => w.id == post.id);
+                      final isFavorite = funcController.wishList.any((w) => w.postId == post.id);
                       return IconButton(
                         icon: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite
-                              ? AppColors.red
-                              : AppColors.lightGray,
+                          color: isFavorite ? AppColors.red : AppColors.lightGray,
                           size: Responsive.scaleFont(isSmallScreen ? 16 : 20, context),
                         ),
                         onPressed: () async {
@@ -70,6 +69,7 @@ class PostCard extends StatelessWidget {
                           } else {
                             await apiController.addToWishlist(post.id);
                           }
+
                           await apiController.fetchWishlist();
                         },
                         padding: EdgeInsets.all(Responsive.scaleWidth(2, context)),
@@ -78,9 +78,9 @@ class PostCard extends StatelessWidget {
                           minHeight: Responsive.scaleHeight(24, context),
                         ),
                       );
-                    }),
-                  ],
-                ),
+                    })
+                  ]
+                )
               ),
               SizedBox(height: Responsive.scaleHeight(12, context)),
               Flexible(
