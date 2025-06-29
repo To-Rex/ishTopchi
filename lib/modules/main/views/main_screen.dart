@@ -33,10 +33,9 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray)),
         backgroundColor: AppColors.darkNavy,
-        leading: Icon(Icons.work, color: AppColors.lightGray),
+        leading: Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray),
         actions: [
           IconButton(
-            //icon: Icon(Icons.notifications, color: AppColors.lightGray),
             icon: Icon(LucideIcons.bell, color: AppColors.lightGray),
             onPressed: () {},
           ),
@@ -50,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Asosiy'),
           BottomNavigationBarItem(icon: Icon(LucideIcons.heart), label: 'Saqlanganlar'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.circlePlus), label: 'E\'lon qo\'shish'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.circlePlus), label: 'E’lon qo‘shish'),
           BottomNavigationBarItem(icon: Icon(LucideIcons.messageCircle), label: 'Xabarlar'),
           BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profil'),
         ],

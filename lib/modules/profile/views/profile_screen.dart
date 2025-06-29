@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/funcController.dart';
 import '../../../core/utils/responsive.dart';
@@ -76,9 +77,7 @@ class ProfileScreen extends GetView<ProfileController> {
                                     Text(
                                       user?.data?.firstName != null
                                           ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}'
-                                          : user?.data!.lastName != null || user?.data!.lastName != 'null'
-                                          ? user!.data!.lastName.toString()
-                                          : 'no name',
+                                          : user?.data!.lastName != null ? user!.data!.lastName.toString() : 'no name',
                                       style: const TextStyle(color: Colors.white)
                                     ),
                                     if (user?.data?.authProviders?.first.email != null)
@@ -117,7 +116,7 @@ class ProfileScreen extends GetView<ProfileController> {
                             right: 16,
                             child: TextButton.icon(
                               onPressed: controller.onEditProfile,
-                              icon: const Icon(Icons.edit, color: Colors.white, size: 16),
+                              icon: const Icon(LucideIcons.userRoundPen, color: Colors.white, size: 16),
                               label: const Text('Tahrirlash',
                                   style: TextStyle(color: Colors.white, fontSize: 13)),
                               style: TextButton.styleFrom(
@@ -139,19 +138,18 @@ class ProfileScreen extends GetView<ProfileController> {
                   children: [
                     const SizedBox(height: 10),
                     if (controller.hasToken.value)
-                      _buildMenuItem(Icons.work, 'Mening Rezumelarim', controller.onMyPostsTap),
+                      _buildMenuItem(LucideIcons.userRound, 'Mening Profilim', controller.onMyPostsTap),
                     if (controller.hasToken.value)
-                      _buildMenuItem(Icons.list_alt, 'Mening e’lonlarim', controller.onMyPostsTap),
-                    _buildMenuItem(Icons.language, 'Tillar', controller.onLanguagesTap,
-                        lang: true),
-                    _buildMenuItem(
-                        Icons.support_agent, 'Qo‘llab-quvvatlash', controller.onSupportTap),
-                    _buildMenuItem(Icons.info_outline, 'Ilova haqida', controller.onAboutAppTap),
-                    _buildMenuItem(
-                        Icons.privacy_tip, 'Xavfsizlik va Maxfiylik', controller.onPrivacyTap),
-                    _buildMenuItem(
-                        Icons.notifications_none, 'Bildirishnomalar', controller.onNotificationsTap),
-                    _buildMenuItem(Icons.help_outline, 'Yordam markazi', controller.onHelpTap),
+                      _buildMenuItem(LucideIcons.squareLibrary, 'Mening Rezumelarim', controller.onMyPostsTap),
+                    if (controller.hasToken.value)
+                     // _buildMenuItem(LucideIcons.listCheck, 'Mening e’lonlarim', controller.onMyPostsTap),
+                      _buildMenuItem(LucideIcons.megaphone, 'Mening e’lonlarim', controller.onMyPostsTap),
+                    _buildMenuItem(LucideIcons.globe, 'Tillar', controller.onLanguagesTap, lang: true),
+                    _buildMenuItem(LucideIcons.headset, 'Qo‘llab-quvvatlash', controller.onSupportTap),
+                    _buildMenuItem(LucideIcons.badgeInfo, 'Ilova haqida', controller.onAboutAppTap),
+                    _buildMenuItem(LucideIcons.shieldAlert, 'Xavfsizlik va Maxfiylik', controller.onPrivacyTap),
+                    _buildMenuItem(LucideIcons.bell, 'Bildirishnomalar', controller.onNotificationsTap),
+                    _buildMenuItem(LucideIcons.badgeHelp, 'Yordam markazi', controller.onHelpTap),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerLeft,
@@ -161,17 +159,15 @@ class ProfileScreen extends GetView<ProfileController> {
                             color: Colors.grey.shade400, fontWeight: FontWeight.w600),
                       ),
                     ),
-                    _buildMenuItem(Icons.telegram, 'Telegram',
-                            () => controller.launchUrl('https://t.me/ishtopchi')),
-                    _buildMenuItem(Icons.camera_alt_outlined, 'Instagram',
-                            () => controller.launchUrl('https://instagram.com/ishtopchi')),
+                    _buildMenuItem(Icons.telegram, 'Telegram', () => controller.launchUrl('https://t.me/ishtopchi')),
+                    _buildMenuItem(Icons.camera_alt_outlined, 'Instagram', () => controller.launchUrl('https://instagram.com/ishtopchi')),
                     const SizedBox(height: 20),
                     if (controller.hasToken.value)
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
                           onPressed: controller.onLogoutTap,
-                          icon: const Icon(Icons.logout, color: Colors.white),
+                          icon: const Icon(LucideIcons.logOut, color: Colors.white),
                           label: const Text('Chiqish', style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.redAccent.shade200,
