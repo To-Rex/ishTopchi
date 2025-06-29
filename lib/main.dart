@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'config/theme/app_theme.dart';
 import 'config/routes/app_pages.dart';
 import 'config/routes/app_routes.dart';
+import 'config/translations.dart';
 import 'controllers/api_controller.dart';
 import 'controllers/funcController.dart';
 import 'firebase_options.dart';
@@ -34,9 +35,13 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Ishtopchi',
       theme: AppTheme.theme,
+      darkTheme: AppTheme.theme,
       initialRoute: AppRoutes.splash,
       getPages: AppPages.pages,
       debugShowCheckedModeBanner: false,
+      translations: AppTranslations(),
+      locale: const Locale('uz'),
+      fallbackLocale: const Locale('uz'),
     );
   }
 }

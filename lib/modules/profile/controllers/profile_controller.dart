@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../common/widgets/bottom_sheets.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../views/about_app_screen.dart';
@@ -64,7 +65,7 @@ class ProfileController extends GetxController {
   //MyResumesScreen
   void onMyResumesTap() => Get.to(() => MyResumesScreen());
   void onMyPostsTap() => Get.snackbar('Mening e’lonlarim', 'Mening e’lonlarim sozlamalari ochildi');
-  void onLanguagesTap() => Get.snackbar('Tillar', 'Tillar sozlamalari ochildi');
+  void onLanguagesTap() => BottomSheets().showLanguageBottomSheet();
   void onSupportTap() => Get.to(() => SupportScreen());
   void onAboutAppTap() => Get.to(() => AboutAppScreen());
   void onPrivacyTap() => Get.to(() => PrivacyScreen());

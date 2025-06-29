@@ -104,7 +104,7 @@ class ProfileScreen extends GetView<ProfileController> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
-                                  child: const Text('Kirish',
+                                  child: Text('Kirish'.tr,
                                       style: TextStyle(color: Colors.white)),
                                 ),
                             ],
@@ -194,8 +194,7 @@ class ProfileScreen extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildMenuItem(
-      IconData icon, String title, VoidCallback onTap, {lang = false}) {
+  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, {lang = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Material(
@@ -210,7 +209,6 @@ class ProfileScreen extends GetView<ProfileController> {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              //color: Colors.white.withOpacity(0.05),
               color: AppColors.darkBlue
             ),
             child: Row(
@@ -218,7 +216,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 Icon(icon, color: Colors.white),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Text(title, style: const TextStyle(color: Colors.white)),
+                  child: Text(title.tr, style: const TextStyle(color: Colors.white)),
                 ),
                 if (lang)
                   Text('O‘zbek', style: const TextStyle(color: Colors.white)),
@@ -232,3 +230,4 @@ class ProfileScreen extends GetView<ProfileController> {
     );
   }
 }
+
