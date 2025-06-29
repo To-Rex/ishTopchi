@@ -9,7 +9,7 @@ class MainController extends GetxController {
     super.onInit();
     final token = apiController.funcController.getToken();
     if (token != null) {
-      apiController.getMe(); // Asinxron kutish
+      apiController.getMe();
     } else {
       print('Token mavjud emas, iltimos login qiling');
     }

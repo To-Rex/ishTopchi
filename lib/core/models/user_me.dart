@@ -1,4 +1,22 @@
 class UserMe {
+  Data? data;
+
+  UserMe({this.data});
+
+  UserMe.fromJson(Map<String, dynamic> json) {
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    return data;
+  }
+}
+
+class Data {
   int? id;
   String? firstName;
   String? lastName;
@@ -12,9 +30,21 @@ class UserMe {
   String? updatedAt;
   String? deletedAt;
 
-  UserMe({this.id, this.firstName, this.lastName, this.profilePicture, this.birthDate, this.verified, this.isBlocked, this.role, this.authProviders, this.createdAt, this.updatedAt, this.deletedAt});
+  Data(
+      {this.id,
+        this.firstName,
+        this.lastName,
+        this.profilePicture,
+        this.birthDate,
+        this.verified,
+        this.isBlocked,
+        this.role,
+        this.authProviders,
+        this.createdAt,
+        this.updatedAt,
+        this.deletedAt});
 
-  UserMe.fromJson(Map<String, dynamic> json) {
+  Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     firstName = json['first_name'];
     lastName = json['last_name'];
@@ -68,7 +98,18 @@ class AuthProviders {
   String? refreshToken;
   String? passwordHash;
 
-  AuthProviders({this.id, this.useType, this.providerType, this.providersUserId, this.email, this.fullName, this.profilePicture, this.inUse, this.accessToken, this.refreshToken, this.passwordHash});
+  AuthProviders(
+      {this.id,
+        this.useType,
+        this.providerType,
+        this.providersUserId,
+        this.email,
+        this.fullName,
+        this.profilePicture,
+        this.inUse,
+        this.accessToken,
+        this.refreshToken,
+        this.passwordHash});
 
   AuthProviders.fromJson(Map<String, dynamic> json) {
     id = json['id'];

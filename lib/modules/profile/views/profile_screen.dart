@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/theme/app_colors.dart';
@@ -16,31 +17,41 @@ class ProfileScreen extends GetView<ProfileController> {
 
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: AppColors.darkNavy,
-            pinned: true,
-            expandedHeight: 220,
-            collapsedHeight: 70,
-            flexibleSpace: LayoutBuilder(
-              builder: (context, constraints) {
-                final isCollapsed = constraints.maxHeight <= 80;
-                return Obx(() {
+      body: Obx(() {
+        return CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              backgroundColor: AppColors.darkNavy,
+              pinned: true,
+              expandedHeight: 220,
+              collapsedHeight: 70,
+              flexibleSpace: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isCollapsed = constraints.maxHeight <= 80;
                   final hasToken = controller.hasToken.value;
-                  final user = controller.userMe.value;
+                  final user = funcController.userMe.value;
                   return FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     title: hasToken && isCollapsed
                         ? Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(radius: 16, backgroundImage: NetworkImage(user?.profilePicture ?? 'https://help.tithe.ly/hc/article_attachments/18804144460951')),
-                          const SizedBox(width: 10),
-                          Text(user?.firstName ?? 'no name', style: const TextStyle(fontSize: 14, color: Colors.white))
-                        ]
-                    ) : null,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(
+                            user?.data?.profilePicture ??
+                                'https://help.tithe.ly/hc/article_attachments/18804144460951',
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          user?.data?.firstName ?? 'no name',
+                          style: const TextStyle(fontSize: 14, color: Colors.white),
+                        ),
+                      ],
+                    )
+                        : null,
                     background: Stack(
                       alignment: Alignment.topRight,
                       children: [
@@ -52,29 +63,53 @@ class ProfileScreen extends GetView<ProfileController> {
                             children: [
                               CircleAvatar(
                                 radius: avatarSize / 2,
-                                backgroundImage: NetworkImage(hasToken && user?.profilePicture != null ? user!.profilePicture! : 'https://help.tithe.ly/hc/article_attachments/18804144460951')
+                                backgroundImage: NetworkImage(
+                                  hasToken && user?.data?.profilePicture != null
+                                      ? user!.data!.profilePicture.toString()
+                                      : 'https://help.tithe.ly/hc/article_attachments/18804144460951',
+                                ),
                               ),
                               const SizedBox(height: 12),
                               if (hasToken)
                                 Column(
                                   children: [
-                                    Text(user?.firstName ?? 'no name', style: const TextStyle(color: Colors.white)),
-                                    Text(user?.authProviders?.first.email ?? 'no email', style: const TextStyle(color: Colors.white70))
-                                  ]
+                                    Text(
+                                      user?.data?.firstName != null
+                                          ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}'
+                                          : user?.data!.lastName != null || user?.data!.lastName != 'null'
+                                          ? user!.data!.lastName.toString()
+                                          : 'no name',
+                                      style: const TextStyle(color: Colors.white)
+                                    ),
+                                    if (user?.data?.authProviders?.first.email != null)
+                                      Text(
+                                        user?.data?.authProviders?.first.email ?? 'no email',
+                                        style: const TextStyle(color: Colors.white70),
+                                      )
+                                    else
+                                      Text(
+                                        user?.data?.authProviders?.first.providersUserId ?? 'no phone',
+                                        style: const TextStyle(color: Colors.white70),
+                                      ),
+                                  ],
                                 )
                               else
                                 ElevatedButton(
                                   onPressed: controller.onLoginTap,
                                   style: ElevatedButton.styleFrom(
                                     minimumSize: const Size(200, 40),
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                                    padding:
+                                    const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                                     backgroundColor: AppColors.midBlue,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  child: const Text('Kirish', style: TextStyle(color: Colors.white)),
-                                )
-                            ]
-                          )
+                                  child: const Text('Kirish',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                            ],
+                          ),
                         ),
                         if (hasToken)
                           Positioned(
@@ -86,47 +121,52 @@ class ProfileScreen extends GetView<ProfileController> {
                               label: const Text('Tahrirlash',
                                   style: TextStyle(color: Colors.white, fontSize: 13)),
                               style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               ),
                             ),
                           ),
                       ],
                     ),
                   );
-                });
-              },
+                },
+              ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
-              child: Obx(() {
-                final hasToken = controller.hasToken.value;
-                return Column(
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+                child: Column(
                   children: [
                     const SizedBox(height: 10),
-                    if (hasToken)
+                    if (controller.hasToken.value)
                       _buildMenuItem(Icons.work, 'Mening Rezumelarim', controller.onMyPostsTap),
-                    if (hasToken)
+                    if (controller.hasToken.value)
                       _buildMenuItem(Icons.list_alt, 'Mening e’lonlarim', controller.onMyPostsTap),
-                    _buildMenuItem(Icons.language, 'Tillar', controller.onLanguagesTap, lang: true),
-                    _buildMenuItem(Icons.support_agent, 'Qo‘llab-quvvatlash', controller.onSupportTap),
+                    _buildMenuItem(Icons.language, 'Tillar', controller.onLanguagesTap,
+                        lang: true),
+                    _buildMenuItem(
+                        Icons.support_agent, 'Qo‘llab-quvvatlash', controller.onSupportTap),
                     _buildMenuItem(Icons.info_outline, 'Ilova haqida', controller.onAboutAppTap),
-                    _buildMenuItem(Icons.privacy_tip, 'Xavfsizlik va Maxfiylik', controller.onPrivacyTap),
-                    _buildMenuItem(Icons.notifications_none, 'Bildirishnomalar', controller.onNotificationsTap),
+                    _buildMenuItem(
+                        Icons.privacy_tip, 'Xavfsizlik va Maxfiylik', controller.onPrivacyTap),
+                    _buildMenuItem(
+                        Icons.notifications_none, 'Bildirishnomalar', controller.onNotificationsTap),
                     _buildMenuItem(Icons.help_outline, 'Yordam markazi', controller.onHelpTap),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Ijtimoiy tarmoqlar',
-                        style: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            color: Colors.grey.shade400, fontWeight: FontWeight.w600),
                       ),
                     ),
-                    _buildMenuItem(Icons.telegram, 'Telegram', () => controller.launchUrl('https://t.me/ishtopchi')),
-                    _buildMenuItem(Icons.camera_alt_outlined, 'Instagram', () => controller.launchUrl('https://instagram.com/ishtopchi')),
+                    _buildMenuItem(Icons.telegram, 'Telegram',
+                            () => controller.launchUrl('https://t.me/ishtopchi')),
+                    _buildMenuItem(Icons.camera_alt_outlined, 'Instagram',
+                            () => controller.launchUrl('https://instagram.com/ishtopchi')),
                     const SizedBox(height: 20),
-                    if (hasToken)
+                    if (controller.hasToken.value)
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -135,10 +175,12 @@ class ProfileScreen extends GetView<ProfileController> {
                           label: const Text('Chiqish', style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.redAccent.shade200,
-                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
-                          )
-                        )
+                            padding:
+                            const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
                       ),
                     const SizedBox(height: 24),
                     Center(
@@ -148,16 +190,17 @@ class ProfileScreen extends GetView<ProfileController> {
                       ),
                     ),
                   ],
-                );
-              }),
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, {lang = false}) {
+  Widget _buildMenuItem(
+      IconData icon, String title, VoidCallback onTap, {lang = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Material(
@@ -172,7 +215,7 @@ class ProfileScreen extends GetView<ProfileController> {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: Colors.white.withOpacity(0.05), // optional: background color
+              color: Colors.white.withOpacity(0.05),
             ),
             child: Row(
               children: [

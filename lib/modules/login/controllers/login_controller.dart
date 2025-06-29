@@ -41,63 +41,37 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<UserCredential?> signInWithGoogle2() async {
-    try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        Get.snackbar('Xato', 'Foydalanuvchi kirishni bekor qildi'.tr);
-        return null;
-      }
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-      print('ID: ${googleUser.id}');
-      print('Email: ${googleUser.email}');
-      print('Display Name: ${googleUser.displayName}');
-      print('Photo URL: ${googleUser.photoUrl}');
-      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'MOBILE');
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } catch (e) {
-      print('Google Sign-In Error: $e');
-      if (e.toString().contains('com.google.android.gms.common.api')) {
-        Get.snackbar('Xato', 'Google Play Services o‘rnatilmagan yoki yangilanmagan. Iltimos, yangilang.'.tr);
-      } else {
-        Get.snackbar('Xato', 'Google Sign-In xatosi: $e'.tr);
-      }
-      return null;
-    }
-  }
-
   Future<void> signInWithGoogle() async {
     isLoading.value = true;
     final GoogleSignIn _googleSignInIos = GoogleSignIn(
       scopes: ['email', 'profile'],
-      clientId: '331143083816-7tus0l0ekvvhjok5omabgmo9uejkb1aa.apps.googleusercontent.com', // iOS Client ID
-      serverClientId: '331143083816-hu0k8p4p6mjds4rh0d7r0hb6tm67bloj.apps.googleusercontent.com', // Android Client ID
+      clientId: '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com', // iOS Client ID
+      serverClientId: '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com', // Android Client ID
     );
+    //final GoogleSignIn _googleSignInIos = GoogleSignIn();
     try {
-      // Google Sign-In jarayoni
-      await _googleSignInIos.signOut(); // Oldingi sessiyani tozalash
+      // Google account tanlash
       final GoogleSignInAccount? googleUser = await _googleSignInIos.signIn();
       if (googleUser == null) {
-        throw Exception('Foydalanuvchi Google Sign-In ni bekor qildi');
-      }
+        print('Google account tanlandi');
 
-      // Google Authentication ma'lumotlari
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final String? idToken = googleAuth.idToken;
-      if (idToken == null) {
-        throw Exception('ID Token topilmadi');
+        return; // User bekor qildi
       }
-      // ID Token ni konsolda chop etish va API'ga yuborish
-      print('ID Token: $idToken');
-      await _apiController.sendGoogleIdToken(idToken, 'MOBILE');
-      // Navigatsiya
-    } catch (error) {
-      print('Google Sign-In xatosi: $error');
-      Get.snackbar('Xato', 'Google kirish xatosi: $error', backgroundColor: Colors.red);
-    } finally {
+      //print cleint id ni konsolda chop etish
+      print('Client ID: ${_googleSignInIos.clientId}');
+      print('Client ID: ${_googleSignInIos.currentUser}');
+      print('Client ID: ${_googleSignInIos.forceAccountName}');
+      print('Client ID: ${_googleSignInIos.serverClientId}');
+
+      // Google auth ma'lumotlarini olish
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      print('User email address: ${googleUser.email}');
+      print('User name: ${googleUser.displayName}');
+      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'WEB');
+
+    } catch (e) {
       isLoading.value = false;
+      print('Google Sign-In error: $e');
     }
   }
 

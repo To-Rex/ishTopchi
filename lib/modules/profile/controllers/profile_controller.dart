@@ -1,14 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
-import '../../../core/models/user_me.dart';
 
 class ProfileController extends GetxController {
-  final userMe = Rxn<UserMe>();
   final hasToken = false.obs;
+  final RxBool _isLoadingUser = false.obs; // Yuklash holatini kuzatish
 
   final FuncController funcController = Get.find<FuncController>();
 
@@ -19,19 +17,27 @@ class ProfileController extends GetxController {
   }
 
   Future<void> _checkTokenAndLoadUser() async {
-    final token = await funcController.getToken();
+    final token = funcController.getToken();
     hasToken.value = token != null && token.isNotEmpty;
 
-    if (hasToken.value) {
+    if (hasToken.value && !_isLoadingUser.value) {
       await loadUser();
     }
   }
 
   Future<void> loadUser() async {
-    final api = ApiController();
-    final result = await api.getMe();
-    if (result != null) {
-      userMe.value = result;
+    if (_isLoadingUser.value) return; // Agar yuklanayotgan bo‘lsa, to‘xtatish
+    _isLoadingUser.value = true;
+
+    try {
+      final result = await ApiController().getMe();
+      if (result != null) {
+        funcController.userMe.value = result; // Foydalanuvchi ma’lumotlarini yangilash
+      }
+    } catch (e) {
+      print('loadUser xatosi: $e');
+    } finally {
+      _isLoadingUser.value = false;
     }
   }
 
@@ -70,7 +76,7 @@ class ProfileController extends GetxController {
           onPressed: () async {
             await funcController.deleteToken();
             hasToken.value = false;
-            userMe.value = null;
+            funcController.userMe.value = null;
             Get.back();
             Get.offAllNamed('/login');
           },

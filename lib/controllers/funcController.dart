@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../core/models/post_model.dart';
+import '../core/models/user_me.dart';
 import '../core/models/wish_list.dart';
 
 class FuncController {
@@ -16,7 +17,7 @@ class FuncController {
   final RxString searchQuery = ''.obs;
   final RxInt currentPage = 1.obs;
   final RxBool hasMore = true.obs;
-
+  final userMe = Rxn<UserMe>();
 
   setOtpToken(String token, String phone) {
     otpToken.value = token;
