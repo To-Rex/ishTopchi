@@ -1,3 +1,8 @@
+import 'user_model.dart';
+import 'category_model.dart';
+import 'district_model.dart';
+import 'location_model.dart';
+
 class Post {
   final int id;
   final String title;
@@ -14,6 +19,7 @@ class Post {
   final User? user;
   final Category? category;
   final District? district;
+  final Location? location;
 
   Post({
     required this.id,
@@ -31,6 +37,7 @@ class Post {
     this.user,
     this.category,
     this.district,
+    this.location,
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -50,69 +57,7 @@ class Post {
       user: json['user'] != null ? User.fromJson(json['user']) : null,
       category: json['category'] != null ? Category.fromJson(json['category']) : null,
       district: json['district'] != null ? District.fromJson(json['district']) : null,
+      location: json['location'] != null ? Location.fromJson(json['location']) : null,
     );
-  }
-}
-
-class User {
-  final int id;
-  final String firstName;
-  final String? lastName;
-  final String? profilePicture;
-  final String? birthDate;
-  final bool verified;
-  final bool isBlocked;
-  final String role;
-  final String createdAt;
-  final String updatedAt;
-
-  User({
-    required this.id,
-    required this.firstName,
-    this.lastName,
-    this.profilePicture,
-    this.birthDate,
-    required this.verified,
-    required this.isBlocked,
-    required this.role,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
-      profilePicture: json['profile_picture'],
-      birthDate: json['birth_date'],
-      verified: json['verified'],
-      isBlocked: json['is_blocked'],
-      role: json['role'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-    );
-  }
-}
-
-class Category {
-  final int id;
-  final String title;
-
-  Category({required this.id, required this.title});
-
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(id: json['id'], title: json['title']);
-  }
-}
-
-class District {
-  final int id;
-  final String name;
-
-  District({required this.id, required this.name});
-
-  factory District.fromJson(Map<String, dynamic> json) {
-    return District(id: json['id'], name: json['name']);
   }
 }

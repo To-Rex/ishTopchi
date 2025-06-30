@@ -56,7 +56,7 @@ class PostCard extends StatelessWidget {
                     ),
 
                     Obx(() {
-                      final isFavorite = funcController.wishList.any((w) => w.postId == post.id);
+                      final isFavorite = funcController.wishList.any((w) => w.id == post.id);
                       return IconButton(
                         icon: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -65,12 +65,10 @@ class PostCard extends StatelessWidget {
                         ),
                         onPressed: () async {
                           if (isFavorite) {
-                            await apiController.removeFromWishlist(post.id);
+                            await apiController.removeFromWishlist(post.id.toInt());
                           } else {
-                            await apiController.addToWishlist(post.id);
+                            await apiController.addToWishlist(post.id.toInt());
                           }
-
-                          await apiController.fetchWishlist();
                         },
                         padding: EdgeInsets.all(Responsive.scaleWidth(2, context)),
                         constraints: BoxConstraints(

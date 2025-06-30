@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
 import '../core/models/post_model.dart';
 import '../core/models/user_me.dart';
 import '../core/models/wish_list.dart';
@@ -12,12 +11,16 @@ class FuncController {
   RxString otpPhone = ''.obs;
 
   final RxList<Post> posts = <Post>[].obs;
-  final RxList<WishList> wishList = <WishList>[].obs;
+  final RxList<Post> wishList = <Post>[].obs;
   final RxBool isLoading = false.obs;
   final RxString searchQuery = ''.obs;
   final RxInt currentPage = 1.obs;
   final RxBool hasMore = true.obs;
   final userMe = Rxn<UserMe>();
+
+  void clearWishList() {
+    wishList.clear();
+  }
 
   void setUserMe(UserMe userModel) {
     userMe.value = userModel;

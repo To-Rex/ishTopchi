@@ -7,7 +7,6 @@ class WishList {
   final String createdAt;
   final String updatedAt;
   final Post post;
-  final User? user;
 
   WishList({
     required this.id,
@@ -16,18 +15,16 @@ class WishList {
     required this.createdAt,
     required this.updatedAt,
     required this.post,
-    required this.user,
   });
 
   factory WishList.fromJson(Map<String, dynamic> json) {
     return WishList(
       id: json['id'],
-      userId: json['user_id'],
-      postId: json['post_id'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      userId: json['user_id'] ?? 0,
+      postId: json['post']?['id'] ?? 0,
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
       post: Post.fromJson(json['post']),
-      user: json['user'] != null ? User.fromJson(json['user']) : null,
     );
   }
 }

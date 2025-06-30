@@ -16,13 +16,7 @@ class FavoritesScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
-      appBar: AppBar(
-        title: const Text('Saqlanganlar', style: TextStyle(color: Colors.white)),
-        backgroundColor: AppColors.darkNavy,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: Obx(
-            () {
+      body: Obx(() {
           print('WishList uzunligi: ${funcController.wishList.length}'); // Debug uchun
           return funcController.isLoading.value
               ? const Center(child: CircularProgressIndicator())
@@ -45,7 +39,7 @@ class FavoritesScreen extends StatelessWidget {
             itemCount: funcController.wishList.length,
             itemBuilder: (context, index) {
               final wish = funcController.wishList[index];
-              return PostCard(post: wish.post);
+              return PostCard(post: wish);
             },
           );
         },

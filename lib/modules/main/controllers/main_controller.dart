@@ -13,8 +13,5 @@ class MainController extends GetxController {
     } else {
       print('Token mavjud emas, iltimos login qiling');
     }
-
-    apiController.fetchPosts(); // Postlarni yuklash
-    apiController.fetchWishlist(); // Wishlistni yuklash
   }
 }
