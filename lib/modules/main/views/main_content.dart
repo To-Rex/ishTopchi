@@ -66,7 +66,6 @@ class MainContent extends StatelessWidget {
             } else if (funcController.posts.isEmpty) {
               return const Center(child: Text('Postlar yo‘q', style: TextStyle(color: Colors.white)));
             }
-
             return GridView.builder(
               controller: scrollController,
               padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context)),

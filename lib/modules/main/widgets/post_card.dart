@@ -118,15 +118,12 @@ class PostCard extends StatelessWidget {
                           post.district?.name ?? 'Noma’lum tuman',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: Responsive.scaleFont(isSmallScreen ? 8 : 12, context),
-                            color: AppColors.lightBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                          style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 8 : 12, context), color: AppColors.lightBlue)
+                        )
+                      ]
+                    )
+                  )
+                ]
               ),
               Spacer(),
               if (post.user != null)
@@ -136,7 +133,7 @@ class PostCard extends StatelessWidget {
                   CircleAvatar(
                     radius: Responsive.scaleWidth(isSmallScreen ? 9 : 12, context), // Yumaloq rasm
                     backgroundImage: NetworkImage(post.user?.profilePicture ?? ''),
-                    backgroundColor: AppColors.lightGray.withOpacity(0.3), // Agar rasm yuklanmasa
+                    backgroundColor: AppColors.darkBlue
                   ),
                   SizedBox(width: Responsive.scaleWidth(8, context)),
                   Expanded(
