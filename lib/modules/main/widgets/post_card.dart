@@ -33,7 +33,6 @@ class PostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Sarlavha va yurakcha bir qatorda
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: screenWidth * 0.8),
                 child: Row(
@@ -47,14 +46,9 @@ class PostCard extends StatelessWidget {
                         maxLines: isSmallScreen ? 1 : 2,
                         overflow: TextOverflow.ellipsis,
                         softWrap: true,
-                        style: TextStyle(
-                          fontSize: Responsive.scaleFont(isSmallScreen ? 14 : 18, context),
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
-                      ),
+                        style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 14 : 18, context), fontWeight: FontWeight.bold, color: AppColors.white)
+                      )
                     ),
-
                     Obx(() {
                       final isFavorite = funcController.wishList.any((w) => w.id == post.id);
                       return IconButton(
@@ -71,10 +65,7 @@ class PostCard extends StatelessWidget {
                           }
                         },
                         padding: EdgeInsets.all(Responsive.scaleWidth(2, context)),
-                        constraints: BoxConstraints(
-                          minWidth: Responsive.scaleWidth(24, context),
-                          minHeight: Responsive.scaleHeight(24, context),
-                        ),
+                        constraints: BoxConstraints(minWidth: Responsive.scaleWidth(24, context), minHeight: Responsive.scaleHeight(24, context))
                       );
                     })
                   ]
@@ -88,11 +79,8 @@ class PostCard extends StatelessWidget {
                   post.content,
                   maxLines: isSmallScreen ? 2 : 5,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: Responsive.scaleFont(isSmallScreen ? 12 : 14, context),
-                    color: AppColors.lightGray,
-                  ),
-                ),
+                  style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 12 : 14, context), color: AppColors.lightGray)
+                )
               ),
               SizedBox(height: Responsive.scaleHeight(12, context)),
               Row(
@@ -107,11 +95,7 @@ class PostCard extends StatelessWidget {
                           '${post.salaryFrom} - ${post.salaryTo} UZS',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 14, context),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.lightBlue,
-                          ),
+                          style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 14, context), fontWeight: FontWeight.w600, color: AppColors.lightBlue)
                         ),
                         SizedBox(height: Responsive.scaleHeight(4, context)),
                         Text(
@@ -144,16 +128,16 @@ class PostCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: Responsive.scaleFont(isSmallScreen ? 7 : 11, context),
                         color: AppColors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+                        fontWeight: FontWeight.w500
+                      )
+                    )
+                  )
+                ]
+              )
+            ]
+          )
+        )
+      )
     );
   }
 }
