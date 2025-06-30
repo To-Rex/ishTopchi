@@ -118,7 +118,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 'Saqlash',
                 style: TextStyle(
                   fontSize: Responsive.scaleFont(16, context),
-                  color: AppColors.darkNavy,
+                  color: AppColors.white,
                   fontWeight: FontWeight.w600,
                 ),
               ),
