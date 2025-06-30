@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../config/routes/app_routes.dart';
 import '../core/models/post_model.dart';
 import '../core/models/user_me.dart';
-import '../core/models/wish_list.dart';
 import '../modules/login/views/otp_verification_screen.dart';
 import 'funcController.dart';
 
@@ -289,6 +288,62 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       print('removeFromWishlist xatolik: $e');
+    }
+  }
+
+
+
+
+  // Viloyatlarni olish
+  Future<List<Map<String, dynamic>>> fetchRegions() async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+
+      final response = await _dio.get(
+        '$_baseUrl/regions',
+        options: Options(headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data['data']['items'] as List<dynamic>;
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Viloyatlarni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchRegions xatolik: $e');
+      return [];
+    }
+  }
+
+
+  // Tumanlarni olish (region_id bo‘yicha)
+  Future<List<Map<String, dynamic>>> fetchDistricts(int regionId) async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+
+      final response = await _dio.get(
+        '$_baseUrl/districts?region_id=$regionId&page=1&limit=100',
+        options: Options(headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data['data']['items'] as List<dynamic>;
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Tumanlarni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchDistricts xatolik: $e');
+      return [];
     }
   }
 

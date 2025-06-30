@@ -1,5 +1,7 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
@@ -21,7 +23,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
-  String? selectedDistrictId = '1';
 
   @override
   void initState() {
@@ -31,7 +32,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       firstNameController.text = user.firstName ?? 'Alisher';
       lastNameController.text = user.lastName ?? 'Diyorov';
       birthDateController.text = user.birthDate?.split('T')[0] ?? '1990-01-01';
-      selectedDistrictId ='1';
     }
   }
 
@@ -45,7 +45,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     final success = await apiController.completeRegistration(
       firstName: firstNameController.text,
       lastName: lastNameController.text,
-      districtId: int.parse(selectedDistrictId!),
+      districtId: int.parse(profileController.selectedDistrictId.value),
       birthDate: birthDateController.text,
       token: token,
     );
@@ -67,7 +67,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         title: Text('Tahrirlash', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
         backgroundColor: AppColors.darkNavy,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
           onPressed: () => Get.back(),
         ),
         elevation: 0,
@@ -78,7 +78,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Profil rasm va asosiy ma'lumotlar
             CircleAvatar(
               radius: Responsive.scaleWidth(60, context),
               backgroundImage: NetworkImage(
@@ -96,16 +95,31 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
             ),
             SizedBox(height: Responsive.scaleHeight(24, context)),
-            // Tahrirlanadigan maydonlar
-            _buildTextField(firstNameController, 'Ism', Icons.person),
+            _buildTextField(firstNameController, 'Ism', LucideIcons.user),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildTextField(lastNameController, 'Familiya', Icons.person_outline),
+            _buildTextField(lastNameController, 'Familiya', LucideIcons.user),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildDateField(birthDateController, 'Tug‘ilgan sana'),
+            _buildDateField(birthDateController, 'Tug‘ilgan sana', LucideIcons.calendar),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildDropdown(selectedDistrictId, (newValue) => setState(() => selectedDistrictId = newValue)),
+            Obx(() => _buildDropdown(
+              profileController.regions,
+              profileController.selectedRegionId.value,
+                  (newValue) {
+                profileController.selectedRegionId.value = newValue!;
+                profileController.loadDistricts(int.parse(newValue));
+              },
+              'Viloyat',
+              LucideIcons.map,
+            )),
+            SizedBox(height: Responsive.scaleHeight(12, context)),
+            Obx(() => _buildDropdown(
+              profileController.districts,
+              profileController.selectedDistrictId.value,
+                  (newValue) => profileController.selectedDistrictId.value = newValue!,
+              'Tuman',
+              LucideIcons.mapPin,
+            )),
             SizedBox(height: Responsive.scaleHeight(24, context)),
-            // Saqlash tugmasi
             ElevatedButton(
               onPressed: _saveProfile,
               style: ElevatedButton.styleFrom(
@@ -151,11 +165,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildDateField(TextEditingController controller, String label) {
+  Widget _buildDateField(TextEditingController controller, String label, IconData icon) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.calendar_today, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+        prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
         labelText: label,
         labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
@@ -199,12 +213,20 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildDropdown(String? value, Function(String?) onChanged) {
-    return DropdownButtonFormField<String>(
-      value: value,
+
+  Widget _buildDropdown(
+      List<Map<String, dynamic>> items,
+      String value,
+      Function(String?) onChanged,
+      String label,
+      IconData icon,
+      ) {
+    return DropdownButtonFormField2<String>(
+      value: value.isNotEmpty ? value : null,
+      isExpanded: true,
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.location_city, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
-        labelText: 'Tuman',
+        prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+        labelText: label,
         labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
         fillColor: AppColors.darkBlue.withOpacity(0.7),
@@ -217,16 +239,31 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5),
         ),
       ),
-      dropdownColor: AppColors.darkBlue,
+      dropdownStyleData: DropdownStyleData(
+        maxHeight: Responsive.scaleHeight(400, context),
+        width: Responsive.scaleWidth(250, context),
+        decoration: BoxDecoration(
+          color: AppColors.darkBlue,
+          borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
+        ),
+        elevation: 5,
+      ),
+      iconStyleData: IconStyleData(
+        icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+      ),
       style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)),
-      iconEnabledColor: AppColors.lightBlue,
-      items: ['1', '2', '3'].map<DropdownMenuItem<String>>((String value) {
+      items: items.map<DropdownMenuItem<String>>((item) {
         return DropdownMenuItem<String>(
-          value: value,
-          child: Text('Tuman $value', style: TextStyle(fontSize: Responsive.scaleFont(14, context))),
+          value: item['id'].toString(),
+          child: Text(
+            item['name'],
+            style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
+            overflow: TextOverflow.ellipsis,
+          ),
         );
       }).toList(),
       onChanged: onChanged,
+      hint: Text('Tanlang', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
     );
   }
 }

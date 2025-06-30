@@ -15,6 +15,10 @@ import '../views/support_screen.dart';
 class ProfileController extends GetxController {
   final hasToken = false.obs;
   final RxBool _isLoadingUser = false.obs; // Yuklash holatini kuzatish
+  var regions = <Map<String, dynamic>>[].obs;
+  var districts = <Map<String, dynamic>>[].obs;
+  var selectedRegionId = ''.obs;
+  var selectedDistrictId = ''.obs;
 
   final FuncController funcController = Get.find<FuncController>();
 
@@ -22,6 +26,7 @@ class ProfileController extends GetxController {
   void onInit() {
     super.onInit();
     _checkTokenAndLoadUser();
+    loadRegions();
   }
 
   Future<void> _checkTokenAndLoadUser() async {
@@ -54,14 +59,28 @@ class ProfileController extends GetxController {
     }
   }
 
-  void onLoginTap() {
-    Get.toNamed('/login');
+  void onLoginTap() => Get.toNamed('/login');
+
+  Future<void> loadRegions() async {
+    final fetchedRegions = await ApiController().fetchRegions();
+    if (fetchedRegions.isNotEmpty) {
+      regions.value = fetchedRegions;
+      selectedRegionId.value = fetchedRegions.first['id'].toString();
+      await loadDistricts(int.parse(selectedRegionId.value));
+    }
+  }
+
+  Future<void> loadDistricts(int regionId) async {
+    final fetchedDistricts = await ApiController().fetchDistricts(regionId);
+    districts.value = fetchedDistricts;
+    if (fetchedDistricts.isNotEmpty) {
+      selectedDistrictId.value = fetchedDistricts.first['id'].toString();
+    }
   }
 
 
-  void onEditProfile() {
-    Get.to(() => EditProfileScreen()); // Yangi ekran ochish
-  }
+  void onEditProfile() => Get.to(() => EditProfileScreen()); // Yangi ekran ochish
+
   //MyResumesScreen
   void onMyResumesTap() => Get.to(() => MyResumesScreen());
   void onMyPostsTap() => Get.snackbar('Mening e’lonlarim', 'Mening e’lonlarim sozlamalari ochildi');
