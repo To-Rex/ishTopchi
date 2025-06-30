@@ -8,14 +8,7 @@ import '../../../controllers/funcController.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/profile_controller.dart';
 
-class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
-
-  @override
-  EditProfileScreenState createState() => EditProfileScreenState();
-}
-
-class EditProfileScreenState extends State<EditProfileScreen> {
+class EditProfileScreen extends StatelessWidget {
   final ProfileController profileController = Get.find<ProfileController>();
   final FuncController funcController = Get.find<FuncController>();
   final ApiController apiController = Get.find<ApiController>();
@@ -24,16 +17,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    final user = funcController.userMe.value?.data;
-    if (user != null) {
-      firstNameController.text = user.firstName ?? 'Alisher';
-      lastNameController.text = user.lastName ?? 'Diyorov';
-      birthDateController.text = user.birthDate?.split('T')[0] ?? '1990-01-01';
-    }
-  }
+  EditProfileScreen({super.key});
 
   Future<void> _saveProfile() async {
     final token = funcController.getToken();
@@ -62,6 +46,13 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = funcController.userMe.value?.data;
+    if (user != null) {
+      firstNameController.text = user.firstName ?? 'Alisher';
+      lastNameController.text = user.lastName ?? 'Diyorov';
+      birthDateController.text = user.birthDate?.split('T')[0] ?? '1990-01-01';
+    }
+
+    final screenWidth = Responsive.screenWidth(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Tahrirlash', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
@@ -95,30 +86,20 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
             ),
             SizedBox(height: Responsive.scaleHeight(24, context)),
-            _buildTextField(firstNameController, 'Ism', LucideIcons.user),
+            _buildTextField(context, firstNameController, 'Ism', LucideIcons.user),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildTextField(lastNameController, 'Familiya', LucideIcons.user),
+            _buildTextField(context, lastNameController, 'Familiya', LucideIcons.user),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildDateField(birthDateController, 'Tug‘ilgan sana', LucideIcons.calendar),
+            _buildDateField(context, birthDateController, 'Tug‘ilgan sana', LucideIcons.calendar),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            Obx(() => _buildDropdown(
-              profileController.regions,
-              profileController.selectedRegionId.value,
-                  (newValue) {
-                profileController.selectedRegionId.value = newValue!;
-                profileController.loadDistricts(int.parse(newValue));
-              },
-              'Viloyat',
-              LucideIcons.map,
-            )),
+            Obx(() => _buildDropdown(context, profileController.regions, profileController.selectedRegionId.value,
+                    (newValue) {
+                  profileController.selectedRegionId.value = newValue!;
+                  profileController.loadDistricts(int.parse(newValue));
+                }, 'Viloyat', LucideIcons.map)),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            Obx(() => _buildDropdown(
-              profileController.districts,
-              profileController.selectedDistrictId.value,
-                  (newValue) => profileController.selectedDistrictId.value = newValue!,
-              'Tuman',
-              LucideIcons.mapPin,
-            )),
+            Obx(() => _buildDropdown(context, profileController.districts, profileController.selectedDistrictId.value,
+                    (newValue) => profileController.selectedDistrictId.value = newValue!, 'Tuman', LucideIcons.mapPin)),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             ElevatedButton(
               onPressed: _saveProfile,
@@ -143,7 +124,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon) {
+  Widget _buildTextField(BuildContext context, TextEditingController controller, String label, IconData icon) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -165,7 +146,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildDateField(TextEditingController controller, String label, IconData icon) {
+  Widget _buildDateField(BuildContext context, TextEditingController controller, String label, IconData icon) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -205,16 +186,14 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           },
         );
         if (pickedDate != null) {
-          setState(() {
-            controller.text = pickedDate.toLocal().toString().split(' ')[0];
-          });
+          controller.text = pickedDate.toLocal().toString().split(' ')[0];
         }
       },
     );
   }
 
-
   Widget _buildDropdown(
+      BuildContext context,
       List<Map<String, dynamic>> items,
       String value,
       Function(String?) onChanged,
