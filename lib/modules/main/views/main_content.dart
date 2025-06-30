@@ -32,8 +32,9 @@ class MainContent extends StatelessWidget {
     return Column(
       children: [
         Container(
-          height: Responsive.scaleHeight(50, context),
+          height: Responsive.scaleHeight(45, context),
           margin: EdgeInsets.only(
+            top: Responsive.scaleHeight(10, context),
             left: Responsive.scaleWidth(16, context),
             right: Responsive.scaleWidth(16, context),
             bottom: Responsive.scaleHeight(10, context)
