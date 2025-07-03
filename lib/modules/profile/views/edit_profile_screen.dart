@@ -61,7 +61,7 @@ class EditProfileScreen extends StatelessWidget {
           icon: Icon(LucideIcons.arrowLeft, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
           onPressed: () => Get.back(),
         ),
-        elevation: 0,
+        elevation: 0
       ),
       backgroundColor: AppColors.darkNavy,
       body: SingleChildScrollView(
@@ -71,20 +71,12 @@ class EditProfileScreen extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: Responsive.scaleWidth(60, context),
-              backgroundImage: NetworkImage(
-                user?.profilePicture ?? 'https://help.tithe.ly/hc/article_attachments/18804144460951',
-              ),
-              backgroundColor: AppColors.darkBlue.withOpacity(0.3),
+              backgroundImage: NetworkImage(user?.profilePicture ?? 'https://help.tithe.ly/hc/article_attachments/18804144460951'),
+              backgroundColor: AppColors.darkBlue.withOpacity(0.3)
             ),
             SizedBox(height: Responsive.scaleHeight(16, context)),
-            Text(
-              'Foydalanuvchi ID: ${user?.id ?? 1}',
-              style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
-            ),
-            Text(
-              'Email: ${user?.authProviders?.first.email ?? 'no email'}',
-              style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
-            ),
+            Text('Foydalanuvchi ID: ${user?.id ?? 1}', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context))),
+            Text('Email: ${user?.authProviders?.first.email ?? 'no email'}', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context))),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             _buildTextField(context, firstNameController, 'Ism', LucideIcons.user),
             SizedBox(height: Responsive.scaleHeight(12, context)),
@@ -92,14 +84,12 @@ class EditProfileScreen extends StatelessWidget {
             SizedBox(height: Responsive.scaleHeight(12, context)),
             _buildDateField(context, birthDateController, 'Tug‘ilgan sana', LucideIcons.calendar),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            Obx(() => _buildDropdown(context, profileController.regions, profileController.selectedRegionId.value,
-                    (newValue) {
+            Obx(() => _buildDropdown(context, profileController.regions, profileController.selectedRegionId.value, (newValue) {
                   profileController.selectedRegionId.value = newValue!;
                   profileController.loadDistricts(int.parse(newValue));
-                }, 'Viloyat', LucideIcons.map)),
+                  }, 'Viloyat', LucideIcons.map)),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            Obx(() => _buildDropdown(context, profileController.districts, profileController.selectedDistrictId.value,
-                    (newValue) => profileController.selectedDistrictId.value = newValue!, 'Tuman', LucideIcons.mapPin)),
+            Obx(() => _buildDropdown(context, profileController.districts, profileController.selectedDistrictId.value, (newValue) => profileController.selectedDistrictId.value = newValue!, 'Tuman', LucideIcons.mapPin)),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             ElevatedButton(
               onPressed: _saveProfile,
@@ -109,18 +99,11 @@ class EditProfileScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: Responsive.scaleHeight(12, context), horizontal: Responsive.scaleWidth(40, context)),
                 elevation: 2,
               ),
-              child: Text(
-                'Saqlash',
-                style: TextStyle(
-                  fontSize: Responsive.scaleFont(16, context),
-                  color: AppColors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+              child: Text('Saqlash', style: TextStyle(fontSize: Responsive.scaleFont(16, context), color: AppColors.white, fontWeight: FontWeight.w600))
+            )
+          ]
+        )
+      )
     );
   }
 
@@ -133,16 +116,13 @@ class EditProfileScreen extends StatelessWidget {
         labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
         fillColor: AppColors.darkBlue.withOpacity(0.7),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)), borderSide: BorderSide.none),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5),
-        ),
+          borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5)
+        )
       ),
-      style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)),
+      style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context))
     );
   }
 
@@ -155,14 +135,11 @@ class EditProfileScreen extends StatelessWidget {
         labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
         fillColor: AppColors.darkBlue.withOpacity(0.7),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)), borderSide: BorderSide.none),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5),
-        ),
+          borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5)
+        )
       ),
       style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)),
       readOnly: true,
@@ -174,21 +151,15 @@ class EditProfileScreen extends StatelessWidget {
           lastDate: DateTime(2100),
           builder: (context, child) {
             return Theme(
-              data: ThemeData.dark().copyWith(
-                colorScheme: ColorScheme.dark(
-                  primary: AppColors.lightBlue,
-                  onPrimary: AppColors.white,
-                  surface: AppColors.darkBlue,
-                ),
-              ),
-              child: child!,
+              data: ThemeData.dark().copyWith(colorScheme: ColorScheme.dark(primary: AppColors.lightBlue, onPrimary: AppColors.white, surface: AppColors.darkBlue)),
+              child: child!
             );
-          },
+          }
         );
         if (pickedDate != null) {
           controller.text = pickedDate.toLocal().toString().split(' ')[0];
         }
-      },
+      }
     );
   }
 

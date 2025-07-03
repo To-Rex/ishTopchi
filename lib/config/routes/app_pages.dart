@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ishtopchi/modules/login/views/register_screen.dart';
 import 'package:ishtopchi/modules/main/bindings/notifications_binding.dart';
 import 'package:ishtopchi/modules/splash/bindings/splash_binding.dart';
 import 'package:ishtopchi/modules/splash/splash_screen.dart';
@@ -7,6 +8,7 @@ import '../../modules/ad_posting/views/ad_posting_screen.dart';
 import '../../modules/favorites/bindings/favorites_binding.dart';
 import '../../modules/favorites/views/favorites_screen.dart';
 import '../../modules/login/bindings/login_binding.dart';
+import '../../modules/login/bindings/register_binding.dart';
 import '../../modules/login/views/login_screen.dart';
 import '../../modules/main/bindings/main_binding.dart';
 import '../../modules/main/views/main_screen.dart';
@@ -39,6 +41,13 @@ class AppPages {
       name: AppRoutes.login,
       page: () => LoginScreen(),
       binding: LoginBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 400),
+    ),
+    GetPage(
+      name: AppRoutes.register,
+      page: () => RegisterScreen(),
+      binding: RegisterBinding(),
       transition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 400),
     ),
