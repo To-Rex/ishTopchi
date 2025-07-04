@@ -81,7 +81,6 @@ class OtpVerificationScreen extends StatelessWidget {
                        otpCode = value;
                        if (value.length == 6) {
                          ApiController().loginWithOtp(otp: value);
-                        // debugPrint('Tasdiqlash kodi: $value');
                        }
                      },
                      appContext: context

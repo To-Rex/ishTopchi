@@ -106,11 +106,25 @@ class ApiController extends GetxController {
       print('✅ Javob: ${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final accessToken = response.data['data']['token']['access_token'];
+        /*final accessToken = response.data['data']['token']['access_token'];
         await funcController.saveToken(accessToken);
         Get.offNamed(AppRoutes.main);
         getMe();
-        print('✅ Login muvaffaqiyatli. Access Token: $accessToken');
+        print('✅ Login muvaffaqiyatli. Access Token: $accessToken');*/
+
+        if (response.data['meta']['is_first_login'] == true) {
+          final token = response.data['data']['token']['access_token'];
+          await funcController.saveToken(token);
+          Get.toNamed(AppRoutes.register);
+          print('✅ Login muvaffaqiyatli. Access Token: $token');
+        } else {
+          final token = response.data['data']['token']['access_token'];
+          await funcController.saveToken(token);
+          Get.offNamed(AppRoutes.main);
+          getMe();
+          print('✅ Login muvaffaqiyatli. Access Token: $token');
+        }
+
       } else {
         print('❌ Status: ${response.statusCode}');
       }

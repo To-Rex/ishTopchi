@@ -38,13 +38,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     Future.delayed(const Duration(seconds: 1), () {
       final token = funcController.getToken();
       if (token != null && token.isNotEmpty) {
-        //Get.offNamed(AppRoutes.main);
-        Get.offNamed(AppRoutes.register);
-        //Get.off(() => const MainScreen(),
-        /*Get.off(() => const MainScreen(),
-          transition: Transition.fadeIn,
-          duration: const Duration(seconds: 1),
-        );*/
+        Get.offNamed(AppRoutes.main);
+        //Get.offNamed(AppRoutes.register);
       } else {
         //Get.offNamed(AppRoutes.onboarding);
         Get.off(() => const OnboardingScreen(),
