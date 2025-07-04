@@ -26,21 +26,21 @@ class EditProfileScreen extends StatelessWidget {
       return;
     }
 
-    final success = await apiController.completeRegistration(
+/*    final success = await apiController.completeRegistration(
       firstName: firstNameController.text,
       lastName: lastNameController.text,
       districtId: int.parse(profileController.selectedDistrictId.value),
       birthDate: birthDateController.text,
       token: token,
-    );
+    );*/
 
-    if (success) {
+    /*if (success) {
       Get.snackbar('Muvaffaqiyat', 'Profil yangilandi', backgroundColor: AppColors.lightBlue.withOpacity(0.8));
       await profileController.loadUser();
       Get.back();
     } else {
       Get.snackbar('Xatolik', 'Profilni yangilashda xatolik', backgroundColor: Colors.redAccent.withOpacity(0.8));
-    }
+    }*/
   }
 
   @override

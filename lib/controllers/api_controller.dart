@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile;
+import 'package:ishtopchi/core/services/show_toast.dart';
 import '../config/routes/app_routes.dart';
 import '../core/models/post_model.dart';
 import '../core/models/user_me.dart';
@@ -13,6 +15,33 @@ class ApiController extends GetxController {
   final Dio _dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10)));
 
   final FuncController funcController = Get.put(FuncController()); // ✅ DI orqali chaqiramiz
+
+
+  Future<String?> uploadImage(File image) async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+
+      final String fileName = image.path.split('/').last;
+      final formData = FormData.fromMap({'file': await MultipartFile.fromFile(image.path, filename: fileName)});
+
+      final response = await _dio.post('$_baseUrl/upload/image', data: formData, options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'}));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final String url = response.data['data']['url'];
+        print('✅ Rasm serverga yuklandi: $url');
+        return url;
+      } else {
+        ShowToast.show('Xatolik', 'Rasm serverga yuklashda xatolik yuz berdi', 3, 1);
+        print('❌ uploadImage xatolik: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Exxx nimadir xato ketdi', 3, 1);
+      print('❌ uploadImage exception: $e');
+      return null;
+    }
+  }
 
   Future<void> sendGoogleIdToken(String idToken, String platform) async {
     print('ID Token: $idToken');
@@ -114,7 +143,6 @@ class ApiController extends GetxController {
 
         if (response.data['meta']['is_first_login'] == true) {
           final token = response.data['data']['token']['access_token'];
-          await funcController.saveToken(token);
           Get.toNamed(AppRoutes.register);
           print('✅ Login muvaffaqiyatli. Access Token: $token');
         } else {
@@ -133,7 +161,60 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<bool> completeRegistration({required String firstName, required String lastName, required int districtId, required String birthDate, required String token}) async {
+
+  Future completeRegistration({required String firstName, required String lastName, required int districtId, required String birthDate, required int gender, required File? image}) async {
+    try {
+      String? imageUrl;
+
+      // 1️⃣ Agar image mavjud bo'lsa — yuklaymiz
+      if (image != null) {
+        imageUrl = await uploadImage(image);
+        if (imageUrl == null) {
+          print('❌ Rasm yuklashda muammo bo‘ldi');
+          return false;
+        }
+      }
+
+      // 2️⃣ Ma'lumotlarni tayyorlaymiz
+      final Map<String, dynamic> data = {
+        'first_name': firstName,
+        'last_name': lastName,
+        'district_id': districtId,
+        'birth_date': birthDate,
+        'gender': gender == 1 ? 'MALE' : 'FEMALE',
+      };
+
+      if (imageUrl != null) {
+        data['profile_picture'] = imageUrl;
+      }
+
+      print('➡️ Registration body: $data');
+
+      // 3️⃣ Registration so'rovi
+      final response = await _dio.post(
+        '$_baseUrl/otp-based-auth/complete-registration',
+        data: json.encode(data),
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.getOtpToken()}', 'Content-Type': 'application/json'})
+      );
+
+      // 4️⃣ Javobni tekshirish
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ Ro‘yxatdan o‘tish yakunlandi.');
+        await funcController.saveToken(funcController.getOtpToken());
+        Get.offNamed(AppRoutes.main);
+      } else {
+        print('❌ completeRegistration xatolik: ${response.statusCode} - ${response.data}');
+      }
+    } catch (e) {
+      print('❌ completeRegistration exception: $e');
+    }
+  }
+
+  Future<bool> completeRegistration1({required String firstName, required String lastName, required int districtId, required String birthDate, required int gender,required File? image}) async {
+    if (image != null) {
+      final imageUrl = await uploadImage(image);
+      print('✅ Rasm serverga yuklandi: $imageUrl');
+    }
     try {
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/complete-registration',
@@ -142,12 +223,14 @@ class ApiController extends GetxController {
           'last_name': lastName,
           'district_id': districtId,
           'birth_date': birthDate,
+          'gender': gender == 1 ? 'MALE' : 'FEMALE',
+          'profile_picture': image
         },
         options: Options(headers: {
           'accept': '*/*',
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        }),
+          'Authorization': 'Bearer ${funcController.getOtpToken()}',
+          'Content-Type': 'application/json'
+        })
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -162,8 +245,6 @@ class ApiController extends GetxController {
       return false;
     }
   }
-
-
 
 
 
