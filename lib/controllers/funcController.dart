@@ -52,7 +52,6 @@ class FuncController {
   // Tokenni saqlash
   Future<void> saveToken(String token) async {
     await storage.write('token', token);
-    clearOtp();
   }
 
   // Tokenni o'qish

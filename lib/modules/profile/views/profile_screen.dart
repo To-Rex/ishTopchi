@@ -12,6 +12,15 @@ class ProfileScreen extends GetView<ProfileController> {
   final FuncController funcController = Get.put(FuncController());
 
 
+  String _getProfileUrl(String? url) {
+    const base = 'https://ishtopchi.uz';
+    if (url == null || url.trim().isEmpty) {
+      return 'https://help.tithe.ly/hc/article_attachments/18804144460951';
+    }
+    url = url.trim();
+    return url.startsWith('http') ? url : '$base/${url.replaceAll(RegExp(r'^(file://)?/+'), '')}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final double avatarSize = Responsive.scaleWidth(100, context);
@@ -38,13 +47,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundImage: NetworkImage(
-                            user?.data?.profilePicture ??
-                                'https://help.tithe.ly/hc/article_attachments/18804144460951',
-                          ),
-                        ),
+                        CircleAvatar(radius: 16, backgroundImage: NetworkImage(_getProfileUrl(user?.data?.profilePicture))),
                         const SizedBox(width: 10),
                         Text(
                           user?.data?.firstName ?? 'no name',
@@ -64,22 +67,13 @@ class ProfileScreen extends GetView<ProfileController> {
                             children: [
                               CircleAvatar(
                                 radius: avatarSize / 2,
-                                backgroundImage: NetworkImage(
-                                  hasToken && user?.data?.profilePicture != null
-                                      ? user!.data!.profilePicture.toString()
-                                      : 'https://help.tithe.ly/hc/article_attachments/18804144460951',
-                                ),
+                                backgroundImage: NetworkImage(_getProfileUrl(user?.data?.profilePicture)),
                               ),
                               const SizedBox(height: 12),
                               if (hasToken)
                                 Column(
                                   children: [
-                                    Text(
-                                      user?.data?.firstName != null
-                                          ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}'
-                                          : user?.data!.lastName != null ? user!.data!.lastName.toString() : 'no name',
-                                      style: const TextStyle(color: Colors.white)
-                                    ),
+                                    Text(user?.data?.firstName != null ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}' : user?.data!.lastName != null ? user!.data!.lastName.toString() : 'no name', style: const TextStyle(color: Colors.white)),
                                     if (user?.data?.authProviders?.first.email != null)
                                       Text(
                                         user?.data?.authProviders?.first.email ?? 'no email',
