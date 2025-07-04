@@ -23,7 +23,7 @@ class RegisterScreen extends StatelessWidget {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       registerController.selectedImage.value = File(image.path); // Suratni saqlash
-      Get.snackbar('Muvaffaqiyat', 'Surat tanlandi', backgroundColor: AppColors.lightBlue.withOpacity(0.8));
+      Get.snackbar('Muvaffaqiyat', 'Surat tanlandi', backgroundColor: AppColors.lightBlue);
     }
   }
 
@@ -73,50 +73,16 @@ class RegisterScreen extends StatelessWidget {
                                   child: Container(
                                     width: Responsive.scaleWidth(120, context),
                                     height: Responsive.scaleWidth(120, context),
-                                    color: AppColors.darkBlue.withOpacity(0.3),
+                                    color: AppColors.lightBlue,
                                     child: Stack(
                                       children: [
-                                        // 📌 1. Background rasm yoki icon
-                                        Positioned.fill(
-                                          child: registerController.selectedImage.value != null
-                                              ? Image.file(
-                                            registerController.selectedImage.value!,
-                                            fit: BoxFit.cover,
-                                          )
-                                              : Icon(
-                                            LucideIcons.user,
-                                            color: AppColors.lightGray,
-                                            size: Responsive.scaleFont(50, context),
-                                          ),
-                                        ),
-
-                                        // 📌 2. Pastki yarimoy fon
-                                        Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: Container(
-                                            height: Responsive.scaleHeight(35, context),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.darkBlue.withAlpha(150),
-                                            ),
-                                          ),
-                                        ),
-
-                                        // 📌 3. Kamera tugmasi
-                                        Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: IconButton(
-                                            icon: Icon(
-                                              LucideIcons.camera,
-                                              color: AppColors.lightBlue,
-                                              size: Responsive.scaleFont(20, context),
-                                            ),
-                                            onPressed: _pickImage,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )),
+                                        Positioned.fill(child: registerController.selectedImage.value != null ? Image.file(registerController.selectedImage.value!, fit: BoxFit.cover) : Icon(LucideIcons.user, color: AppColors.lightGray, size: Responsive.scaleFont(50, context))),
+                                        Align(alignment: Alignment.bottomCenter, child: Container(height: Responsive.scaleHeight(35, context), decoration: BoxDecoration(color: AppColors.darkBlue.withAlpha(150)))),
+                                        Align(alignment: Alignment.bottomCenter, child: IconButton(icon: Icon(LucideIcons.camera, color: AppColors.lightBlue, size: Responsive.scaleFont(20, context)), onPressed: _pickImage))
+                                      ]
+                                    )
+                                  )
+                                ))
                               ),
                               SizedBox(height: Responsive.scaleHeight(24, context)),
                               _buildTextField(context, firstNameController, 'Ism', LucideIcons.user),
@@ -133,9 +99,7 @@ class RegisterScreen extends StatelessWidget {
                                     registerController.selectedRegionId.value = newValue;
                                     registerController.loadDistricts(int.parse(newValue));
                                   }
-                                },
-                                'Viloyat',
-                                LucideIcons.map,
+                                }, 'Viloyat', LucideIcons.map
                               )),
                               SizedBox(height: Responsive.scaleHeight(16, context)),
                               Obx(() => _buildDropdown(
@@ -177,14 +141,8 @@ class RegisterScreen extends StatelessWidget {
         labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
         fillColor: AppColors.darkBlue,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)), borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)), borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5))
       ),
       style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)),
     );
@@ -199,14 +157,8 @@ class RegisterScreen extends StatelessWidget {
         labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
         fillColor: AppColors.darkBlue,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)), borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)), borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5))
       ),
       style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)),
       readOnly: true,
@@ -218,16 +170,10 @@ class RegisterScreen extends StatelessWidget {
           lastDate: DateTime(2100),
           builder: (context, child) {
             return Theme(
-              data: ThemeData.dark().copyWith(
-                colorScheme: ColorScheme.dark(
-                  primary: AppColors.lightBlue,
-                  onPrimary: AppColors.white,
-                  surface: AppColors.darkBlue,
-                ),
-              ),
-              child: child!,
+              data: ThemeData.dark().copyWith(colorScheme: ColorScheme.dark(primary: AppColors.lightBlue, onPrimary: AppColors.white, surface: AppColors.darkBlue)),
+              child: child!
             );
-          },
+          }
         );
         if (pickedDate != null) {
           controller.text = pickedDate.toLocal().toString().split(' ')[0];
