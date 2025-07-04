@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,6 +20,8 @@ class ProfileController extends GetxController {
   var districts = <Map<String, dynamic>>[].obs;
   var selectedRegionId = ''.obs;
   var selectedDistrictId = ''.obs;
+  final Rx<File?> selectedImage = Rx<File?>(null); // Surat uchun observable
+  final RxString selectedGender = ''.obs;
 
   final FuncController funcController = Get.find<FuncController>();
 
@@ -42,9 +45,22 @@ class ProfileController extends GetxController {
     if (_isLoadingUser.value) return; // Agar yuklanayotgan bo‘lsa, to‘xtatish
     _isLoadingUser.value = true;
     try {
-      ApiController().getMe();
+      final user = await ApiController().getMe();
+      if (user != null) {
+        funcController.setUserMe(user);
+        if (user.data != null && user.data!.district != null && user.data!.district!.region != null) {
+          selectedRegionId.value = user.data!.district!.region!.id.toString();
+          selectedDistrictId.value = user.data!.district!.id.toString();
+          selectedGender.value = user.data!.gender == 'MALE' ? '1' : '2';
+        } else {
+          selectedRegionId.value = regions.isNotEmpty ? regions.first['id'].toString() : '';
+          selectedDistrictId.value = '0';
+          selectedGender.value = '1'; // Default qiymat
+        }
+      }
     } catch (e) {
       _isLoadingUser.value = false;
+      print('loadUser xatolik: $e');
     } finally {
       _isLoadingUser.value = false;
     }
@@ -65,23 +81,23 @@ class ProfileController extends GetxController {
     final fetchedRegions = await ApiController().fetchRegions();
     if (fetchedRegions.isNotEmpty) {
       regions.value = fetchedRegions;
-      selectedRegionId.value = fetchedRegions.first['id'].toString();
-      await loadDistricts(int.parse(selectedRegionId.value));
+      if (selectedRegionId.value.isEmpty) {
+        selectedRegionId.value = fetchedRegions.first['id'].toString();
+        await loadDistricts(int.parse(selectedRegionId.value));
+      }
     }
   }
 
   Future<void> loadDistricts(int regionId) async {
     final fetchedDistricts = await ApiController().fetchDistricts(regionId);
     districts.value = fetchedDistricts;
-    if (fetchedDistricts.isNotEmpty) {
+    if (fetchedDistricts.isNotEmpty && selectedDistrictId.value == '0') {
       selectedDistrictId.value = fetchedDistricts.first['id'].toString();
     }
   }
 
+  void onEditProfile() => Get.to(() => EditProfileScreen());
 
-  void onEditProfile() => Get.to(() => EditProfileScreen()); // Yangi ekran ochish
-
-  //MyResumesScreen
   void onMyResumesTap() => Get.to(() => MyResumesScreen());
   void onMyPostsTap() => Get.snackbar('Mening e’lonlarim', 'Mening e’lonlarim sozlamalari ochildi');
   void onLanguagesTap() => BottomSheets().showLanguageBottomSheet();

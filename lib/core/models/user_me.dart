@@ -22,27 +22,17 @@ class Data {
   String? lastName;
   String? profilePicture;
   String? birthDate;
+  String? gender;
   bool? verified;
   bool? isBlocked;
   String? role;
+  District? district;
   List<AuthProviders>? authProviders;
   String? createdAt;
   String? updatedAt;
   String? deletedAt;
 
-  Data(
-      {this.id,
-        this.firstName,
-        this.lastName,
-        this.profilePicture,
-        this.birthDate,
-        this.verified,
-        this.isBlocked,
-        this.role,
-        this.authProviders,
-        this.createdAt,
-        this.updatedAt,
-        this.deletedAt});
+  Data({this.id, this.firstName, this.lastName, this.profilePicture, this.birthDate, this.gender, this.verified, this.isBlocked, this.role, this.district, this.authProviders, this.createdAt, this.updatedAt, this.deletedAt});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -50,9 +40,13 @@ class Data {
     lastName = json['last_name'];
     profilePicture = json['profile_picture'];
     birthDate = json['birth_date'];
+    gender = json['gender'];
     verified = json['verified'];
     isBlocked = json['is_blocked'];
     role = json['role'];
+    district = json['district'] != null
+        ? District.fromJson(json['district'])
+        : null;
     if (json['auth_providers'] != null) {
       authProviders = <AuthProviders>[];
       json['auth_providers'].forEach((v) {
@@ -71,9 +65,13 @@ class Data {
     data['last_name'] = lastName;
     data['profile_picture'] = profilePicture;
     data['birth_date'] = birthDate;
+    data['gender'] = gender;
     data['verified'] = verified;
     data['is_blocked'] = isBlocked;
     data['role'] = role;
+    if (district != null) {
+      data['district'] = district!.toJson();
+    }
     if (authProviders != null) {
       data['auth_providers'] =
           authProviders!.map((v) => v.toJson()).toList();
@@ -81,6 +79,53 @@ class Data {
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
     data['deletedAt'] = deletedAt;
+    return data;
+  }
+}
+
+class District {
+  int? id;
+  String? name;
+  Region? region;
+
+  District({this.id, this.name, this.region});
+
+  District.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    region =
+    json['region'] != null ? Region.fromJson(json['region']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    if (region != null) {
+      data['region'] = region!.toJson();
+    }
+    return data;
+  }
+}
+
+class Region {
+  int? id;
+  String? name;
+  String? code;
+
+  Region({this.id, this.name, this.code});
+
+  Region.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    code = json['code'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['code'] = code;
     return data;
   }
 }
@@ -98,18 +143,7 @@ class AuthProviders {
   String? refreshToken;
   String? passwordHash;
 
-  AuthProviders(
-      {this.id,
-        this.useType,
-        this.providerType,
-        this.providersUserId,
-        this.email,
-        this.fullName,
-        this.profilePicture,
-        this.inUse,
-        this.accessToken,
-        this.refreshToken,
-        this.passwordHash});
+  AuthProviders({this.id, this.useType, this.providerType, this.providersUserId, this.email, this.fullName, this.profilePicture, this.inUse, this.accessToken, this.refreshToken, this.passwordHash});
 
   AuthProviders.fromJson(Map<String, dynamic> json) {
     id = json['id'];

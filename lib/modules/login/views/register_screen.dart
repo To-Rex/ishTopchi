@@ -129,25 +129,19 @@ class RegisterScreen extends StatelessWidget {
                       _buildDateField(context, birthDateController, 'Tug‘ilgan sana', LucideIcons.calendar),
                       SizedBox(height: Responsive.scaleHeight(16, context)),
 
-                      Obx(() => _buildDropdown(
-                        context,
-                        regions,
-                        registerController.selectedRegionId.value,
-                            (newValue) {
+                      Obx(() => _buildDropdown(context, regions,
+                        registerController.selectedRegionId.value, (newValue) {
                           if (newValue != null) {
                             registerController.selectedRegionId.value = newValue;
                             registerController.loadDistricts(int.parse(newValue));
                           }
-                        },
-                        'Viloyat',
-                        LucideIcons.map,
+                        }, 'Viloyat', LucideIcons.map
                       )),
                       SizedBox(height: Responsive.scaleHeight(16, context)),
                       Obx(() => _buildDropdown(
                         context,
                         registerController.districts,
-                        registerController.selectedDistrictId.value,
-                            (newValue) => registerController.selectedDistrictId.value = newValue ?? '0',
+                        registerController.selectedDistrictId.value, (newValue) => registerController.selectedDistrictId.value = newValue ?? '0',
                         'Tuman',
                         LucideIcons.mapPin,
                       )),
@@ -159,7 +153,7 @@ class RegisterScreen extends StatelessWidget {
                               Get.snackbar('Xatolik', 'Jins tanlanishi shart', backgroundColor: AppColors.red.withOpacity(0.8), colorText: Colors.white);
                               return;
                             }
-                            //registerController.registerUser(firstNameController.text, lastNameController.text, registerController.selectedGender.value, birthDateController.text, registerController.selectedRegionId.value, registerController.selectedDistrictId.value, registerController.selectedImage.value);
+                            registerController.registerUser(firstNameController.text, lastNameController.text, registerController.selectedGender.value, birthDateController.text, registerController.selectedRegionId.value, registerController.selectedDistrictId.value, registerController.selectedImage.value);
                           } else {
                             ShowToast.show('Xatolik', 'Iltimos, barcha majburiy maydonlarni to‘ldiring', 3, 1, duration: 2);
                           }
@@ -253,14 +247,7 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDropdown(
-      BuildContext context,
-      List<Map<String, dynamic>> items,
-      String value,
-      Function(String?) onChanged,
-      String label,
-      IconData icon,
-      ) {
+  Widget _buildDropdown(BuildContext context, List<Map<String, dynamic>> items, String value, Function(String?) onChanged, String label, IconData icon) {
     return DropdownButtonFormField2<String>(
       value: value.isNotEmpty && items.any((item) => item['id'].toString() == value) ? value : null,
       isExpanded: true,
