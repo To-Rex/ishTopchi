@@ -9,23 +9,30 @@ import '../core/models/user_me.dart';
 import '../modules/login/views/otp_verification_screen.dart';
 import 'funcController.dart';
 
-
 class ApiController extends GetxController {
   static const String _baseUrl = 'https://ishtopchi.uz/api';
   final Dio _dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10)));
 
-  final FuncController funcController = Get.put(FuncController()); // ✅ DI orqali chaqiramiz
+  final FuncController funcController = Get.put(FuncController());
 
-
-  Future<String?> uploadImage(File image) async {
+  Future<String?> uploadImage(File image, String? token) async {
+    print('uploadImage: ${image.path}');
+    print('Token: $token');
     try {
-      final token = funcController.getToken();
       if (token == null) throw Exception('Token mavjud emas');
 
       final String fileName = image.path.split('/').last;
       final formData = FormData.fromMap({'file': await MultipartFile.fromFile(image.path, filename: fileName)});
 
-      final response = await _dio.post('$_baseUrl/upload/image', data: formData, options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'}));
+      final response = await _dio.post(
+        '$_baseUrl/upload/image',
+        data: formData,
+        options: Options(headers: {
+          'accept': 'application/json',
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'multipart/form-data'
+        }),
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final String url = response.data['data']['url'];
@@ -43,18 +50,52 @@ class ApiController extends GetxController {
     }
   }
 
+  // Viloyatlarni olish
+  Future<List<Map<String, dynamic>>> fetchRegions() async {
+    try {
+      final response = await _dio.get('$_baseUrl/regions');
+      if (response.statusCode == 200) {
+        final data = response.data['data']['items'] as List<dynamic>;
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Viloyatlarni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchRegions xatolik: $e');
+      return [];
+    }
+  }
+
+  // Tumanlarni olish (region_id bo‘yicha)
+  Future<List<Map<String, dynamic>>> fetchDistricts(int regionId) async {
+    try {
+      final response = await _dio.get('$_baseUrl/districts?region_id=$regionId&page=1&limit=1000');
+      if (response.statusCode == 200) {
+        final data = response.data['data']['items'] as List<dynamic>;
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Tumanlarni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchDistricts xatolik: $e');
+      return [];
+    }
+  }
+
   Future<void> sendGoogleIdToken(String idToken, String platform) async {
     print('ID Token: $idToken');
     print('Platform: $platform');
-
     try {
-      final response = await _dio.post('$_baseUrl/oauth/google', options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}), data: {'idToken': idToken, 'platform': platform},);
+      final response = await _dio.post(
+        '$_baseUrl/oauth/google',
+        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}),
+        data: {'idToken': idToken, 'platform': platform},
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('API javobi: ${response.data}');
         final accessToken = response.data['data']['token']['access_token'];
         await funcController.saveToken(accessToken);
-
         print('Access token saqlandi: $accessToken');
         Get.offNamed(AppRoutes.main);
         getMe();
@@ -76,7 +117,10 @@ class ApiController extends GetxController {
         throw Exception('Token mavjud emas');
       }
 
-      final response = await _dio.get('$_baseUrl/user/me', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token'}));
+      final response = await _dio.get(
+        '$_baseUrl/user/me',
+        options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -101,16 +145,13 @@ class ApiController extends GetxController {
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/generate-otp',
         data: {'phoneNumber': '+998$phoneNumber'},
-        options: Options(headers: {
-          'accept': '*/*',
-          'Content-Type': 'application/json'})
+        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('API javobi: ${response.data}');
         final encryptedOtp = response.data['data'];
         print('OTP yuborildi. Encrypted OTP: $encryptedOtp');
-        //funcController.setOtpToken(encryptedOtp, phoneNumber);
         funcController.setOtpTokenOnly(encryptedOtp);
         funcController.setOtpPhone(phoneNumber);
         Get.to(() => OtpVerificationScreen(phone: phoneNumber.trim()), transition: Transition.fadeIn);
@@ -123,26 +164,22 @@ class ApiController extends GetxController {
   }
 
   Future<void> loginWithOtp({required String otp}) async {
-    final fingerprint = await funcController.getOtpToken(); // JWT fingerprint
+    final fingerprint = await funcController.getOtpToken();
     final phone = await funcController.getOtpPhone();
 
     try {
-      final response = await _dio.post('$_baseUrl/otp-based-auth/login',
+      final response = await _dio.post(
+        '$_baseUrl/otp-based-auth/login',
         data: json.encode({"phone_number": "$phone", "otp": otp, "fingerprint": "$fingerprint"}),
-        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json', 'Authorization': 'Bearer $fingerprint'})
+        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json', 'Authorization': 'Bearer $fingerprint'}),
       );
 
       print('✅ Javob: ${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        /*final accessToken = response.data['data']['token']['access_token'];
-        await funcController.saveToken(accessToken);
-        Get.offNamed(AppRoutes.main);
-        getMe();
-        print('✅ Login muvaffaqiyatli. Access Token: $accessToken');*/
-
         if (response.data['meta']['is_first_login'] == true) {
           final token = response.data['data']['token']['access_token'];
+          await funcController.saveToken(token);
           Get.toNamed(AppRoutes.register);
           print('✅ Login muvaffaqiyatli. Access Token: $token');
         } else {
@@ -152,7 +189,6 @@ class ApiController extends GetxController {
           getMe();
           print('✅ Login muvaffaqiyatli. Access Token: $token');
         }
-
       } else {
         print('❌ Status: ${response.statusCode}');
       }
@@ -161,46 +197,35 @@ class ApiController extends GetxController {
     }
   }
 
-
-  Future completeRegistration({required String firstName, required String lastName, required int districtId, required String birthDate, required int gender, required File? image}) async {
+  Future completeRegistration({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, required File? image}) async {
     try {
       String? imageUrl;
-
-      // 1️⃣ Agar image mavjud bo'lsa — yuklaymiz
       if (image != null) {
-        imageUrl = await uploadImage(image);
+        imageUrl = await uploadImage(image, funcController.getToken());
         if (imageUrl == null) {
           print('❌ Rasm yuklashda muammo bo‘ldi');
-          return false;
+          return;
         }
       }
-
-      // 2️⃣ Ma'lumotlarni tayyorlaymiz
       final Map<String, dynamic> data = {
         'first_name': firstName,
         'last_name': lastName,
         'district_id': districtId,
         'birth_date': birthDate,
-        'gender': gender == 1 ? 'MALE' : 'FEMALE',
+        'gender': gender == '1' ? 'MALE' : 'FEMALE',
       };
-
       if (imageUrl != null) {
         data['profile_picture'] = imageUrl;
       }
-
       print('➡️ Registration body: $data');
-
-      // 3️⃣ Registration so'rovi
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/complete-registration',
-        data: json.encode(data),
-        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.getOtpToken()}', 'Content-Type': 'application/json'})
+        data: data,
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.getToken()}', 'Content-Type': 'application/json'}),
       );
 
-      // 4️⃣ Javobni tekshirish
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('✅ Ro‘yxatdan o‘tish yakunlandi.');
-        await funcController.saveToken(funcController.getOtpToken());
         Get.offNamed(AppRoutes.main);
       } else {
         print('❌ completeRegistration xatolik: ${response.statusCode} - ${response.data}');
@@ -210,9 +235,9 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<bool> completeRegistration1({required String firstName, required String lastName, required int districtId, required String birthDate, required int gender,required File? image}) async {
+  Future<bool> completeRegistration1({required String firstName, required String lastName, required int districtId, required String birthDate, required int gender, required File? image}) async {
     if (image != null) {
-      final imageUrl = await uploadImage(image);
+      final imageUrl = await uploadImage(image, funcController.getOtpToken());
       print('✅ Rasm serverga yuklandi: $imageUrl');
     }
     try {
@@ -230,7 +255,7 @@ class ApiController extends GetxController {
           'accept': '*/*',
           'Authorization': 'Bearer ${funcController.getOtpToken()}',
           'Content-Type': 'application/json'
-        })
+        }),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -246,7 +271,64 @@ class ApiController extends GetxController {
     }
   }
 
+  // Profilni yangilash
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required int districtId,
+    required String birthDate,
+    required String gender,
+    File? image,
+  }) async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
 
+      String? imageUrl;
+      if (image != null) {
+        imageUrl = await uploadImage(image, token);
+        if (imageUrl == null) {
+          print('❌ Rasm yuklashda muammo bo‘ldi');
+          return false;
+        }
+      }
+
+      final Map<String, dynamic> data = {
+        'first_name': firstName,
+        'last_name': lastName,
+        'birth_date': birthDate,
+        'gender': gender,
+        'district_id': districtId,
+      };
+      if (imageUrl != null) {
+        data['profile_picture'] = imageUrl;
+      }
+
+      final userId = funcController.userMe.value?.data?.id ?? 0; // Foydalanuvchi ID sini olish
+      final response = await _dio.patch(
+        '$_baseUrl/user/$userId',
+        data: json.encode(data),
+        options: Options(headers: {
+          'accept': 'application/json',
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('✅ Profil yangilandi: ${response.data}');
+        // Yangilangan ma'lumotlarni yuklash
+        await getMe();
+        return true;
+      } else {
+        print('❌ updateProfile xatolik: ${response.statusCode} - ${response.data}');
+        return false;
+      }
+    } catch (e) {
+      print('❌ updateProfile exception: $e');
+      return false;
+    }
+  }
 
   // Posts
   Future<void> fetchPosts({int page = 1, int limit = 10, String? search}) async {
@@ -385,61 +467,4 @@ class ApiController extends GetxController {
       print('removeFromWishlist xatolik: $e');
     }
   }
-
-
-
-
-  // Viloyatlarni olish
-  Future<List<Map<String, dynamic>>> fetchRegions() async {
-    try {
-      final token = funcController.getToken();
-      if (token == null) throw Exception('Token mavjud emas');
-
-      final response = await _dio.get(
-        '$_baseUrl/regions',
-        options: Options(headers: {
-          'accept': '*/*',
-          'Authorization': 'Bearer $token',
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data['data']['items'] as List<dynamic>;
-        return data.cast<Map<String, dynamic>>();
-      } else {
-        throw Exception('Viloyatlarni olishda xatolik: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('fetchRegions xatolik: $e');
-      return [];
-    }
-  }
-
-
-  // Tumanlarni olish (region_id bo‘yicha)
-  Future<List<Map<String, dynamic>>> fetchDistricts(int regionId) async {
-    try {
-      final token = funcController.getToken();
-      if (token == null) throw Exception('Token mavjud emas');
-
-      final response = await _dio.get(
-        '$_baseUrl/districts?region_id=$regionId&page=1&limit=100',
-        options: Options(headers: {
-          'accept': '*/*',
-          'Authorization': 'Bearer $token',
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data['data']['items'] as List<dynamic>;
-        return data.cast<Map<String, dynamic>>();
-      } else {
-        throw Exception('Tumanlarni olishda xatolik: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('fetchDistricts xatolik: $e');
-      return [];
-    }
-  }
-
 }
