@@ -10,6 +10,7 @@ import 'config/translations.dart';
 import 'controllers/api_controller.dart';
 import 'controllers/funcController.dart';
 import 'firebase_options.dart';
+import 'modules/ad_posting/controllers/ad_posting_controller.dart';
 import 'modules/favorites/controllers/favorites_controller.dart';
 import 'modules/favorites/views/favorites_screen.dart';
 import 'modules/main/controllers/main_controller.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
   Get.lazyPut(() => ProfileController());
   Get.put(ApiController());
   Get.put(MainController());
+  Get.put(AdPostingController());
   Get.put(FavoritesController());
   Get.put(MessagesController());
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

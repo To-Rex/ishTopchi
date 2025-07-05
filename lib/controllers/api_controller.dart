@@ -272,14 +272,7 @@ class ApiController extends GetxController {
   }
 
   // Profilni yangilash
-  Future<bool> updateProfile({
-    required String firstName,
-    required String lastName,
-    required int districtId,
-    required String birthDate,
-    required String gender,
-    File? image,
-  }) async {
+  Future<bool> updateProfile({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, File? image}) async {
     try {
       final token = funcController.getToken();
       if (token == null) throw Exception('Token mavjud emas');
