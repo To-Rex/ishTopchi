@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:ishtopchi/modules/messages/controllers/messages_controller.dart';
 import 'config/theme/app_theme.dart';
 import 'config/routes/app_pages.dart';
 import 'config/routes/app_routes.dart';
@@ -21,9 +22,8 @@ Future<void> main() async {
   Get.lazyPut(() => ProfileController());
   Get.put(ApiController());
   Get.put(MainController());
-
-
   Get.put(FavoritesController());
+  Get.put(MessagesController());
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 

@@ -18,6 +18,15 @@ class FuncController {
   final RxBool hasMore = true.obs;
   final userMe = Rxn<UserMe>();
 
+  String getProfileUrl(String? url) {
+    const base = 'https://ishtopchi.uz';
+    if (url == null || url.trim().isEmpty) {
+      return 'https://help.tithe.ly/hc/article_attachments/18804144460951';
+    }
+    url = url.trim();
+    return url.startsWith('http') ? url : '$base/${url.replaceAll(RegExp(r'^(file://)?/+'), '')}';
+  }
+
   void clearWishList() {
     wishList.clear();
   }

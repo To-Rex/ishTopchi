@@ -14,6 +14,7 @@ import '../../modules/main/bindings/main_binding.dart';
 import '../../modules/main/views/main_screen.dart';
 import '../../modules/main/views/notifications_screen.dart';
 import '../../modules/messages/bindings/messages_binding.dart';
+import '../../modules/messages/views/message_detail_screen.dart';
 import '../../modules/messages/views/messages_screen.dart';
 import '../../modules/onboarding/bindings/onboarding_binding.dart';
 import '../../modules/onboarding/views/onboarding_screen.dart';
@@ -90,6 +91,13 @@ class AppPages {
       name: AppRoutes.notifications,
       page: () => NotificationsScreen(),
       binding: NotificationsBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 400),
+    ),
+    GetPage(
+      name: AppRoutes.messagesDetail,
+      page: () => MessageDetailScreen(),
+      binding: MessagesBinding(),
       transition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 400),
     ),

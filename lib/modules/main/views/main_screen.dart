@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../core/utils/responsive.dart';
-import '../controllers/main_controller.dart';
 import '../../favorites/views/favorites_screen.dart';
 import '../../ad_posting/views/ad_posting_screen.dart';
 import '../../messages/views/messages_screen.dart';
@@ -23,7 +22,7 @@ class _MainScreenState extends State<MainScreen> {
     const MainContent(), // Asosiy sahifa uchun placeholder
     const FavoritesScreen(),
     const AdPostingScreen(),
-    const MessagesScreen(),
+    MessagesScreen(),
     ProfileScreen(),
   ];
 

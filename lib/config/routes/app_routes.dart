@@ -9,4 +9,6 @@ class AppRoutes {
   static const profile = '/profile';
   static const notifications = '/notifications';
   static const register = '/register';
+  static const messagesDetail = '/messages_detail';
+
 }

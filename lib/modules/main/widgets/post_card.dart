@@ -116,7 +116,8 @@ class PostCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: Responsive.scaleWidth(isSmallScreen ? 9 : 12, context), // Yumaloq rasm
-                    backgroundImage: NetworkImage(post.user?.profilePicture ?? ''),
+                    //backgroundImage: NetworkImage(post.user?.profilePicture ?? ''),
+                    backgroundImage: NetworkImage(FuncController().getProfileUrl(post.user?.profilePicture)),
                     backgroundColor: AppColors.darkBlue
                   ),
                   SizedBox(width: Responsive.scaleWidth(8, context)),

@@ -455,8 +455,8 @@ class ApiController extends GetxController {
         '$_baseUrl/wishlist/$wishlistId',
         options: Options(headers: {
           'accept': '*/*',
-          'Authorization': 'Bearer $token',
-        }),
+          'Authorization': 'Bearer $token'
+        })
       );
       if (response.statusCode == 200 || response.statusCode == 204 || response.statusCode == 201) {
         fetchWishlist(); // Wishlistni yangilash
