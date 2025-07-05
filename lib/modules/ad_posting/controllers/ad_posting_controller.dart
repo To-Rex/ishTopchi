@@ -20,6 +20,7 @@ class AdPostingController extends GetxController {
   final selectedImage = Rx<File?>(null);
   final regions = <Map<String, dynamic>>[].obs;
   final districts = <Map<String, dynamic>>[].obs;
+  final categories = <Map<String, dynamic>>[].obs;
   final selectedRegionId = ''.obs;
   final selectedDistrictId = '0'.obs;
   final isLoadingDistricts = false.obs;
@@ -27,13 +28,11 @@ class AdPostingController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   final ApiController apiController = Get.find<ApiController>();
 
-  // Kategoriya ro'yxati (namuna sifatida)
-  final categories = ['IT', 'Marketing', 'Ta\'lim', 'Sotuv'].obs;
-
   @override
   void onInit() {
     super.onInit();
     loadRegions();
+    loadCategories();
   }
 
   Future<void> loadRegions() async {
@@ -42,6 +41,14 @@ class AdPostingController extends GetxController {
       regions.value = fetchedRegions;
       selectedRegionId.value = fetchedRegions.first['id'].toString();
       await loadDistricts(int.parse(selectedRegionId.value));
+    }
+  }
+
+  Future<void> loadCategories() async {
+    final fetchedCategories = await apiController.fetchCategories();
+    if (fetchedCategories.isNotEmpty) {
+      categories.value = fetchedCategories;
+      selectedCategory.value = fetchedCategories.first['id'] as int;
     }
   }
 
@@ -69,7 +76,8 @@ class AdPostingController extends GetxController {
         contentController.text.isNotEmpty &&
         phoneNumberController.text.isNotEmpty &&
         selectedRegionId.value.isNotEmpty &&
-        selectedDistrictId.value != '0';
+        selectedDistrictId.value != '0' &&
+        selectedCategory.value != 0;
   }
 
   void submitAd() {
@@ -94,10 +102,11 @@ class AdPostingController extends GetxController {
       selectedImage.value = null;
       selectedRegionId.value = regions.isNotEmpty ? regions.first['id'].toString() : '';
       selectedDistrictId.value = '0';
+      selectedCategory.value = categories.isNotEmpty ? categories.first['id'] as int : 1;
     } else {
       Get.snackbar(
         'Xato',
-        'Iltimos, majburiy maydonlarni to\'ldiring (sarlavha, tavsif, telefon, viloyat, tuman)!',
+        'Iltimos, majburiy maydonlarni to\'ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya)!',
         backgroundColor: AppColors.red,
         colorText: AppColors.white,
       );

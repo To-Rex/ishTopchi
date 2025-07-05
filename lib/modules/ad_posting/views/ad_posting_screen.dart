@@ -14,23 +14,46 @@ class AdPostingScreen extends GetView<AdPostingController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
+      appBar: AppBar(
+        backgroundColor: AppColors.darkNavy,
+        elevation: 0,
+        title: Text(
+          'E’lon qo‘shish',
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            fontSize: Responsive.scaleFont(20, context),
+            color: AppColors.lightGray,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: _buildBody(context),
     );
   }
 
   Widget _buildBody(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: controller.apiController.fetchRegions(),
-      builder: (context, regionSnapshot) {
-        if (regionSnapshot.connectionState == ConnectionState.waiting) {
+    return FutureBuilder<List<List<Map<String, dynamic>>>>(
+      future: Future.wait([
+        controller.apiController.fetchRegions(),
+        controller.apiController.fetchCategories(),
+      ]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator(color: AppColors.lightBlue));
         }
-        if (regionSnapshot.hasError || !regionSnapshot.hasData || regionSnapshot.data!.isEmpty) {
-          return Center(child: Text('Viloyatlar yuklanmadi', style: TextStyle(color: AppColors.lightGray)));
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Ma’lumotlar yuklanmadi', style: TextStyle(color: AppColors.lightGray)));
         }
 
+        final regions = snapshot.data![0];
+        final categories = snapshot.data![1];
         if (controller.regions.isEmpty) {
-          controller.regions.value = regionSnapshot.data!;
+          controller.regions.assignAll(regions);
+        }
+        if (controller.categories.isEmpty) {
+          controller.categories.assignAll(categories);
         }
 
         return SingleChildScrollView(
@@ -46,10 +69,14 @@ class AdPostingScreen extends GetView<AdPostingController> {
               SizedBox(height: AppDimensions.paddingMedium),
               Row(
                 children: [
-                  Expanded(child: _buildTextField(context, controller.salaryFromController, 'Oylik (dan)', '50000', keyboardType: TextInputType.number)),
+                  Expanded(
+                    child: _buildTextField(context, controller.salaryFromController, 'Oylik (dan)', '50000', keyboardType: TextInputType.number),
+                  ),
                   SizedBox(width: AppDimensions.paddingMedium),
-                  Expanded(child: _buildTextField(context, controller.salaryToController, 'Oylik (gacha)', '70000', keyboardType: TextInputType.number))
-                ]
+                  Expanded(
+                    child: _buildTextField(context, controller.salaryToController, 'Oylik (gacha)', '70000', keyboardType: TextInputType.number),
+                  ),
+                ],
               ),
               SizedBox(height: AppDimensions.paddingMedium),
               _buildDropdownField<int>(
@@ -240,12 +267,11 @@ class AdPostingScreen extends GetView<AdPostingController> {
           icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
         ),
         style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
-        items: items.asMap().entries.map((entry) {
-          final item = entry.value;
+        items: items.map((item) {
           return DropdownMenuItem<T>(
-            value: isInt ? (entry.key + 1) as T : item['id'].toString() as T,
+            value: isInt ? item['id'] as T : item['id'].toString() as T,
             child: Text(
-              isInt ? item.toString() : item['name'] ?? 'Noma’lum',
+              item['title'] ?? item['name'] ?? 'Noma’lum',
               style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
               overflow: TextOverflow.ellipsis,
             ),

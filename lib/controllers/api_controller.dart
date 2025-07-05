@@ -235,41 +235,7 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<bool> completeRegistration1({required String firstName, required String lastName, required int districtId, required String birthDate, required int gender, required File? image}) async {
-    if (image != null) {
-      final imageUrl = await uploadImage(image, funcController.getOtpToken());
-      print('✅ Rasm serverga yuklandi: $imageUrl');
-    }
-    try {
-      final response = await _dio.post(
-        '$_baseUrl/otp-based-auth/complete-registration',
-        data: {
-          'first_name': firstName,
-          'last_name': lastName,
-          'district_id': districtId,
-          'birth_date': birthDate,
-          'gender': gender == 1 ? 'MALE' : 'FEMALE',
-          'profile_picture': image
-        },
-        options: Options(headers: {
-          'accept': '*/*',
-          'Authorization': 'Bearer ${funcController.getOtpToken()}',
-          'Content-Type': 'application/json'
-        }),
-      );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        print('Ro‘yxatdan o‘tish yakunlandi.');
-        return true;
-      } else {
-        print('completeRegistration xatolik: ${response.statusCode}');
-        return false;
-      }
-    } catch (e) {
-      print('completeRegistration xatolik: $e');
-      return false;
-    }
-  }
 
   // Profilni yangilash
   Future<bool> updateProfile({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, File? image}) async {
@@ -322,6 +288,29 @@ class ApiController extends GetxController {
       return false;
     }
   }
+
+
+
+  // Kategoriyalarni olish
+  Future<List<Map<String, dynamic>>> fetchCategories() async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+
+      final response = await _dio.get('$_baseUrl/category?page=1&limit=1000', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+
+      if (response.statusCode == 200) {
+        final data = response.data['data'] as List<dynamic>;
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Kategoriyalarni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchCategories xatolik: $e');
+      return [];
+    }
+  }
+
 
   // Posts
   Future<void> fetchPosts({int page = 1, int limit = 10, String? search}) async {
