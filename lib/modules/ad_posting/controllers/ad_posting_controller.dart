@@ -5,8 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
-import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
+import '../../../core/services/show_toast.dart';
 import 'dart:convert';
 
 class CachedTileProvider extends TileProvider {
@@ -36,13 +36,13 @@ class AdPostingController extends GetxController {
   final selectedRegionId = ''.obs;
   final selectedDistrictId = '0'.obs;
   final isLoadingDistricts = false.obs;
-  final selectedLocation = LatLng(41.3111, 69.2401).obs; // Default joylashuv (Toshkent)
-  final currentLocation = Rx<LatLng?>(null); // Joriy joylashuv uchun
-  final mapController = MapController(); // Oddiy MapController
-  final isMapReady = false.obs; // Xarita tayyorligini kuzatish
-  final currentZoom = 13.0.obs; // Joriy zoom darajasini kuzatish
-  final isLocationInitialized = false.obs; // Joylashuv initsializatsiyasi
-  static const double _optimalZoom = 13.0; // Optimal zoom darajasi
+  final selectedLocation = LatLng(41.3111, 69.2401).obs;
+  final currentLocation = Rx<LatLng?>(null);
+  final mapController = MapController();
+  final isMapReady = false.obs;
+  final currentZoom = 13.0.obs;
+  final isLocationInitialized = false.obs;
+  static const double _optimalZoom = 13.0;
 
   final ImagePicker _picker = ImagePicker();
   final ApiController apiController = Get.find<ApiController>();
@@ -52,8 +52,33 @@ class AdPostingController extends GetxController {
   void onInit() {
     super.onInit();
     _location.changeSettings(accuracy: LocationAccuracy.high, interval: 1000);
-    loadRegions();
-    loadCategories();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    final token = await _waitForToken();
+    if (token == null) {
+      ShowToast.show('Xato', 'Token mavjud emas, iltimos login qiling', 3, 1);
+      Get.offNamed('/login');
+      return;
+    }
+    await Future.wait([
+      loadRegions(),
+      loadCategories(),
+    ]);
+  }
+
+  Future<String?> _waitForToken() async {
+    int retries = 5;
+    while (retries > 0) {
+      final token = apiController.funcController.getToken();
+      if (token != null && token.isNotEmpty) {
+        return token;
+      }
+      await Future.delayed(const Duration(milliseconds: 500));
+      retries--;
+    }
+    return null;
   }
 
   Future<void> loadRegions() async {
@@ -66,7 +91,7 @@ class AdPostingController extends GetxController {
       }
     } catch (e) {
       print('Viloyatlarni yuklashda xato: $e');
-      Get.snackbar('Xato', 'Viloyatlarni yuklashda xato yuz berdi', backgroundColor: AppColors.red, colorText: AppColors.white);
+      ShowToast.show('Xato', 'Viloyatlarni yuklashda xato yuz berdi', 3, 1);
     }
   }
 
@@ -79,7 +104,7 @@ class AdPostingController extends GetxController {
       }
     } catch (e) {
       print('Kategoriyalarni yuklashda xato: $e');
-      Get.snackbar('Xato', 'Kategoriyalarni yuklashda xato yuz berdi', backgroundColor: AppColors.red, colorText: AppColors.white);
+      ShowToast.show('Xato', 'Kategoriyalarni yuklashda xato yuz berdi', 3, 1);
     }
   }
 
@@ -95,7 +120,7 @@ class AdPostingController extends GetxController {
       }
     } catch (e) {
       print('Tumanlarni yuklashda xato: $e');
-      Get.snackbar('Xato', 'Tumanlarni yuklashda xato yuz berdi', backgroundColor: AppColors.red, colorText: AppColors.white);
+      ShowToast.show('Xato', 'Tumanlarni yuklashda xato yuz berdi', 3, 1);
     } finally {
       isLoadingDistricts.value = false;
     }
@@ -109,25 +134,22 @@ class AdPostingController extends GetxController {
       }
     } catch (e) {
       print('Rasm tanlashda xato: $e');
-      Get.snackbar('Xato', 'Rasm tanlashda xato yuz berdi', backgroundColor: AppColors.red, colorText: AppColors.white);
+      ShowToast.show('Xato', 'Rasm tanlashda xato yuz berdi', 3, 1);
     }
   }
 
   Future<void> getCurrentLocation(void Function(LatLng, double) onMove) async {
     if (!isMapReady.value) {
-      Get.snackbar('Xato', 'Xarita hali tayyor emas, iltimos bir oz kuting',
-          backgroundColor: AppColors.red, colorText: AppColors.white);
+      ShowToast.show('Xato', 'Xarita hali tayyor emas, iltimos bir oz kuting', 3, 1);
       return;
     }
 
-    //Get.dialog(const Center(child: CircularProgressIndicator(color: AppColors.lightBlue)), barrierDismissible: false);
     try {
       bool serviceEnabled = await _location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await _location.requestService();
         if (!serviceEnabled) {
-          Get.back();
-          Get.snackbar('Xato', 'Joylashuv xizmati yoqilmagan', backgroundColor: AppColors.red, colorText: AppColors.white);
+          ShowToast.show('Xato', 'Joylashuv xizmati yoqilmagan', 3, 1);
           return;
         }
       }
@@ -136,45 +158,39 @@ class AdPostingController extends GetxController {
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await _location.requestPermission();
         if (permissionGranted != PermissionStatus.granted) {
-          Get.back();
-          Get.snackbar('Xato', 'Joylashuv ruxsati berilmagan', backgroundColor: AppColors.red, colorText: AppColors.white);
+          ShowToast.show('Xato', 'Joylashuv ruxsati berilmagan', 3, 1);
           return;
         }
       }
 
       LocationData locationData = await _location.getLocation();
-      Get.back();
       if (locationData.latitude != null && locationData.longitude != null) {
-        currentLocation.value = LatLng(locationData.latitude!, locationData.longitude!);
-        selectedLocation.value = LatLng(locationData.latitude!, locationData.longitude!); // Faqat tugma bosilganda yangilanadi
+        final newLocation = LatLng(locationData.latitude!, locationData.longitude!);
+        currentLocation.value = newLocation;
+        selectedLocation.value = newLocation;
         latitudeController.text = locationData.latitude!.toString();
         longitudeController.text = locationData.longitude!.toString();
         try {
-          // Moslashuvchan zoom darajasini aniqlash
           double targetZoom = _optimalZoom;
-          if (currentZoom.value > 15.0) {
-            targetZoom = _optimalZoom; // Juda yaqin bo'lsa, optimal zoomga qaytamiz
-          } else if (currentZoom.value < 10.0) {
-            targetZoom = _optimalZoom; // Juda uzoq bo'lsa, yaqinlashtiramiz
+          if (currentZoom.value > 15.0 || currentZoom.value < 10.0) {
+            targetZoom = _optimalZoom;
           } else {
-            targetZoom = currentZoom.value; // O'rtacha zoomni saqlaymiz
+            targetZoom = currentZoom.value;
           }
 
-          onMove(selectedLocation.value, targetZoom); // Animatsiyani UI qismida boshqarish
-          print('Xarita yangilandi (joriy joylashuv): ${selectedLocation.value}, Zoom: $targetZoom');
-          isLocationInitialized.value = true; // Initsializatsiya tugallandi
+          onMove(newLocation, targetZoom);
+          print('Xarita yangilandi (joriy joylashuv): $newLocation, Zoom: $targetZoom');
+          isLocationInitialized.value = true;
         } catch (e) {
           print('Xarita harakatlantirishda xato: $e');
+          ShowToast.show('Xato', 'Xarita yangilashda xato: $e', 3, 1);
         }
       } else {
-        Get.snackbar('Xato', 'Joylashuv ma\'lumotlari olinmadi',
-            backgroundColor: AppColors.red, colorText: AppColors.white);
+        ShowToast.show('Xato', 'Joylashuv ma\'lumotlari olinmadi', 3, 1);
       }
     } catch (e) {
-      Get.back();
       print('Joylashuv aniqlashda xato: $e');
-      Get.snackbar('Xato', 'Joylashuv aniqlashda xato yuz berdi: $e',
-          backgroundColor: AppColors.red, colorText: AppColors.white);
+      ShowToast.show('Xato', 'Joylashuv aniqlashda xato yuz berdi: $e', 3, 1);
     }
   }
 
@@ -183,14 +199,15 @@ class AdPostingController extends GetxController {
       print('Xarita hali tayyor emas');
       return;
     }
-    selectedLocation.value = point; // Foydalanuvchi tanlagan joy saqlanadi
+    selectedLocation.value = point;
     latitudeController.text = point.latitude.toString();
     longitudeController.text = point.longitude.toString();
     try {
-      onMove(point, currentZoom.value); // Joriy zoom bilan animatsiya
+      onMove(point, currentZoom.value);
       print('Xarita yangilandi (tanlangan joy): $point, Zoom: ${currentZoom.value}');
     } catch (e) {
       print('Xarita harakatlantirishda xato: $e');
+      ShowToast.show('Xato', 'Xarita yangilashda xato: $e', 3, 1);
     }
   }
 
@@ -201,10 +218,11 @@ class AdPostingController extends GetxController {
     }
     currentZoom.value = (currentZoom.value + 1).clamp(1.0, 18.0);
     try {
-      onMove(selectedLocation.value, currentZoom.value); // Animatsiyani UI qismida boshqarish
+      onMove(selectedLocation.value, currentZoom.value);
       print('Xarita yaqinlashtirildi: Zoom = ${currentZoom.value}');
     } catch (e) {
       print('Yaqinlashtirishda xato: $e');
+      ShowToast.show('Xato', 'Yaqinlashtirishda xato: $e', 3, 1);
     }
   }
 
@@ -215,10 +233,11 @@ class AdPostingController extends GetxController {
     }
     currentZoom.value = (currentZoom.value - 1).clamp(1.0, 18.0);
     try {
-      onMove(selectedLocation.value, currentZoom.value); // Animatsiyani UI qismida boshqarish
+      onMove(selectedLocation.value, currentZoom.value);
       print('Xarita uzoqlashtirildi: Zoom = ${currentZoom.value}');
     } catch (e) {
       print('Uzoqlashtirishda xato: $e');
+      ShowToast.show('Xato', 'Uzoqlashtirishda xato: $e', 3, 1);
     }
   }
 
@@ -226,6 +245,8 @@ class AdPostingController extends GetxController {
     return titleController.text.isNotEmpty &&
         contentController.text.isNotEmpty &&
         phoneNumberController.text.isNotEmpty &&
+        phoneNumberController.text.startsWith('+998') &&
+        phoneNumberController.text.length == 12 &&
         selectedRegionId.value.isNotEmpty &&
         selectedDistrictId.value != '0' &&
         selectedCategory.value != 0 &&
@@ -235,41 +256,27 @@ class AdPostingController extends GetxController {
 
   Future<void> submitAd() async {
     if (!validateForm()) {
-      Get.snackbar(
-        'Xato',
-        'Iltimos, majburiy maydonlarni to\'ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!',
-        backgroundColor: AppColors.red,
-        colorText: AppColors.white,
-      );
+      ShowToast.show('Xato', 'Iltimos, majburiy maydonlarni to‘ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!', 3, 1);
       return;
     }
 
     try {
-      // Tokenni olish
       final token = apiController.funcController.getToken();
       if (token == null) {
-        Get.snackbar('Xato', 'Token mavjud emas, iltimos login qiling', backgroundColor: AppColors.red, colorText: AppColors.white);
+        ShowToast.show('Xato', 'Token mavjud emas, iltimos login qiling', 3, 1);
         Get.offNamed('/login');
         return;
       }
 
-      // Telefon raqami validatsiyasi
-      if (!phoneNumberController.text.startsWith('+998')) {
-        Get.snackbar('Xato', 'Telefon raqami +998 bilan boshlanishi kerak', backgroundColor: AppColors.red, colorText: AppColors.white);
-        return;
-      }
-
-      // Agar rasm tanlangan bo‘lsa, uni serverga yuklash
       String? imageUrl;
       if (selectedImage.value != null) {
         imageUrl = await apiController.uploadImage(selectedImage.value!, token);
         if (imageUrl == null) {
-          Get.snackbar('Xato', 'Rasm yuklashda xato yuz berdi', backgroundColor: AppColors.red, colorText: AppColors.white);
+          ShowToast.show('Xato', 'Rasm yuklashda xato yuz berdi', 3, 1);
           return;
         }
       }
 
-      // Post ma'lumotlarini tayyorlash
       final Map<String, dynamic> postData = {
         'title': titleController.text,
         'content': contentController.text,
@@ -292,11 +299,12 @@ class AdPostingController extends GetxController {
       }
 
       print('Yuborilayotgan ma\'lumotlar: ${jsonEncode(postData)}');
-      // Postni serverga yuborish
       await apiController.createPost(postData, token);
+      ShowToast.show('Muvaffaqiyat', 'E’lon muvaffaqiyatli yuborildi', 1, 1);
+      Get.back();
     } catch (e) {
       print('submitAd xatolik: $e');
-      Get.snackbar('Xato', 'E\'lon yuborishda xato yuz berdi: $e', backgroundColor: AppColors.red, colorText: AppColors.white);
+      ShowToast.show('Xato', 'E\'lon yuborishda xato yuz berdi: $e', 3, 1);
     }
   }
 

@@ -1,13 +1,16 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../core/utils/responsive.dart';
+import '../../../core/services/show_toast.dart';
 import '../controllers/ad_posting_controller.dart';
 
 class AdPostingScreen extends StatefulWidget {
@@ -20,14 +23,30 @@ class AdPostingScreen extends StatefulWidget {
 class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderStateMixin {
   final AdPostingController controller = Get.find<AdPostingController>();
   late final AnimatedMapController _animatedMapController;
+  final _formKey = GlobalKey<FormState>();
+
+  final phoneFormatter = MaskTextInputFormatter(
+    mask: '+998 ## ### ## ##',
+    filter: {"#": RegExp(r'[0-9]')},
+    initialText: '+998 ',
+  );
+
+  String? _validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Telefon raqami kiritilishi shart';
+    }
+    if (!value.startsWith('+998') || phoneFormatter.getUnmaskedText().length != 9) {
+      return 'Telefon raqami +998 bilan boshlanishi va 9 ta raqamdan iborat bo‘lishi kerak';
+    }
+    return null;
+  }
 
   @override
   void initState() {
     super.initState();
-    _animatedMapController = AnimatedMapController(
-      mapController: controller.mapController,
-      vsync: this,
-    );
+    _animatedMapController = AnimatedMapController(mapController: controller.mapController, vsync: this);
+    // Telefon raqami maydoniga +998 ni avtomatik qo‘shish
+    controller.phoneNumberController.text = '+998 ';
   }
 
   @override
@@ -36,21 +55,17 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
     super.dispose();
   }
 
-  void _moveMap(LatLng point, double zoom) {
-    _animatedMapController.animateTo(
-      dest: point,
-      zoom: zoom,
-      duration: const Duration(milliseconds: 500),
-    );
-  }
+  void _moveMap(LatLng point, double zoom) => _animatedMapController.animateTo(
+    dest: point,
+    zoom: zoom,
+    duration: const Duration(milliseconds: 900),
+  );
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.darkNavy,
-      body: _buildBody(context),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: AppColors.darkNavy,
+    body: _buildBody(context),
+  );
 
   Widget _buildBody(BuildContext context) => FutureBuilder<List<List<Map<String, dynamic>>>>(
     future: Future.wait([
@@ -76,53 +91,86 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
 
       return SingleChildScrollView(
         padding: EdgeInsets.all(AppDimensions.paddingMedium),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildImagePicker(context),
-            SizedBox(height: AppDimensions.paddingMedium),
-            _buildTextField(context, controller.titleController, 'E’lon sarlavhasi *', 'Masalan: Yangi ish imkoniyati', maxLines: 1, keyboardType: TextInputType.text),
-            SizedBox(height: AppDimensions.paddingMedium),
-            _buildTextField(context, controller.contentController, 'Tavsif *', 'Tavsif yozing...', maxLines: 4, keyboardType: TextInputType.multiline),
-            SizedBox(height: AppDimensions.paddingMedium),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildTextField(context, controller.salaryFromController, 'Oylik (dan)', '50000', maxLines: 1, keyboardType: TextInputType.number),
-                ),
-                SizedBox(width: AppDimensions.paddingMedium),
-                Expanded(
-                  child: _buildTextField(context, controller.salaryToController, 'Oylik (gacha)', '70000', maxLines: 1, keyboardType: TextInputType.number),
-                ),
-              ],
-            ),
-            SizedBox(height: AppDimensions.paddingMedium),
-            _buildDropdownField<int>(
-              context,
-              'Kategoriya *',
-              controller.categories,
-              controller.selectedCategory,
-              LucideIcons.briefcase,
-                  (value) => controller.selectedCategory.value = value ?? 1,
-              isInt: true,
-            ),
-            SizedBox(height: AppDimensions.paddingMedium),
-            _buildDropdownField<String>(
-              context,
-              'Viloyat *',
-              controller.regions,
-              controller.selectedRegionId,
-              LucideIcons.map,
-                  (value) {
-                if (value != null) {
-                  controller.selectedRegionId.value = value;
-                  controller.loadDistricts(int.parse(value));
-                }
-              },
-            ),
-            SizedBox(height: AppDimensions.paddingMedium),
-            Obx(() {
-              return controller.isLoadingDistricts.value
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildImagePicker(context),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildTextField(
+                context,
+                controller.titleController,
+                'E’lon sarlavhasi *',
+                'Masalan: Yangi ish imkoniyati',
+                maxLines: 1,
+                keyboardType: TextInputType.text,
+                validator: (value) => value == null || value.trim().isEmpty ? 'Sarlavha kiritilishi shart' : null,
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildTextField(
+                context,
+                controller.contentController,
+                'Tavsif *',
+                'Tavsif yozing...',
+                maxLines: 4,
+                keyboardType: TextInputType.multiline,
+                validator: (value) => value == null || value.trim().isEmpty ? 'Tavsif kiritilishi shart' : null,
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildTextField(
+                      context,
+                      controller.salaryFromController,
+                      'Oylik (dan)',
+                      '50000',
+                      maxLines: 1,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  SizedBox(width: AppDimensions.paddingMedium),
+                  Expanded(
+                    child: _buildTextField(
+                      context,
+                      controller.salaryToController,
+                      'Oylik (gacha)',
+                      '70000',
+                      maxLines: 1,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildDropdownField<int>(
+                context,
+                'Kategoriya *',
+                controller.categories,
+                controller.selectedCategory,
+                LucideIcons.briefcase,
+                    (value) => controller.selectedCategory.value = value ?? 1,
+                validator: (value) => value == null || value == 0 ? 'Kategoriya tanlanishi shart' : null,
+                isInt: true,
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildDropdownField<String>(
+                context,
+                'Viloyat *',
+                controller.regions,
+                controller.selectedRegionId,
+                LucideIcons.map,
+                    (value) {
+                  if (value != null) {
+                    controller.selectedRegionId.value = value;
+                    controller.loadDistricts(int.parse(value));
+                  }
+                },
+                validator: (value) => value == null || value.isEmpty ? 'Viloyat tanlanishi shart' : null,
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
+              Obx(() => controller.isLoadingDistricts.value
                   ? SizedBox(
                 height: AppDimensions.buttonHeight,
                 child: const Center(child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2)),
@@ -134,19 +182,43 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 controller.selectedDistrictId,
                 LucideIcons.mapPin,
                     (value) => controller.selectedDistrictId.value = value ?? '0',
-              );
-            }),
-            SizedBox(height: AppDimensions.paddingMedium),
-            _buildTextField(context, controller.locationTitleController, 'Manzil', 'Masalan: Office Building', maxLines: 1, keyboardType: TextInputType.text),
-            SizedBox(height: AppDimensions.paddingMedium),
-            _buildMapPicker(context),
-            SizedBox(height: AppDimensions.paddingMedium),
-            _buildTextField(context, controller.phoneNumberController, 'Telefon raqami *', '+998901234567', maxLines: 1, keyboardType: TextInputType.phone),
-            SizedBox(height: AppDimensions.paddingMedium),
-            _buildTextField(context, controller.emailController, 'Email', 'example@email.com', maxLines: 1, keyboardType: TextInputType.emailAddress),
-            SizedBox(height: AppDimensions.paddingLarge),
-            _buildSubmitButton(context),
-          ],
+                validator: (value) => value == null || value == '0' ? 'Tuman tanlanishi shart' : null,
+              )),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildTextField(
+                context,
+                controller.locationTitleController,
+                'Manzil',
+                'Masalan: Office Building',
+                maxLines: 1,
+                keyboardType: TextInputType.text,
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildMapPicker(context),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildTextField(
+                context,
+                controller.phoneNumberController,
+                'Telefon raqami *',
+                '+998 90 123 45 67',
+                maxLines: 1,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [phoneFormatter],
+                validator: _validatePhone,
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildTextField(
+                context,
+                controller.emailController,
+                'Email',
+                'example@email.com',
+                maxLines: 1,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              SizedBox(height: AppDimensions.paddingLarge),
+              _buildSubmitButton(context),
+            ],
+          ),
         ),
       );
     },
@@ -200,10 +272,10 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
     ),
   ));
 
-  Widget _buildMapPicker(BuildContext context) => Obx(() => Column(
+  Widget _buildMapPicker(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text('Xaritada joyni tanlang', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightBlue)),
+      Text('Xaritada joyni tanlang *', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightBlue)),
       SizedBox(height: AppDimensions.paddingSmall),
       Stack(
         children: [
@@ -215,44 +287,62 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-              child: FlutterMap(
-                mapController: _animatedMapController.mapController,
-                options: MapOptions(
-                  initialCenter: controller.selectedLocation.value,
-                  initialZoom: controller.currentZoom.value,
-                  onTap: (tapPosition, point) {
-                    controller.updateLocation(point, _moveMap);
-                  },
-                  onMapReady: () {
-                    controller.isMapReady.value = true;
-                    controller.getCurrentLocation(_moveMap); // Xarita tayyor bo'lganda joriy joylashuvni aniqlash
-                  },
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    subdomains: const ['a', 'b', 'c'],
-                    userAgentPackageName: 'com.example.ishtopchi',
-                    tileProvider: CachedTileProvider(),
-                  ),
-                  MarkerLayer(
-                    markers: [
-                      if (controller.currentLocation.value != null)
-                        Marker(
-                          width: 40.0,
-                          height: 40.0,
-                          point: controller.currentLocation.value!,
-                          child: const Icon(LucideIcons.locateFixed, color: Colors.blue, size: 30.0),
+              child: FormField<String>(
+                validator: (value) => controller.latitudeController.text.isEmpty || controller.longitudeController.text.isEmpty ? 'Joylashuv tanlanishi shart' : null,
+                builder: (formFieldState) => Column(
+                  children: [
+                    Expanded(
+                      child: FlutterMap(
+                        mapController: _animatedMapController.mapController,
+                        options: MapOptions(
+                          initialCenter: controller.selectedLocation.value,
+                          initialZoom: controller.currentZoom.value,
+                          onTap: (tapPosition, point) {
+                            controller.updateLocation(point, _moveMap);
+                            formFieldState.didChange(point.toString());
+                          },
+                          onMapReady: () {
+                            controller.isMapReady.value = true;
+                            controller.getCurrentLocation(_moveMap); // Avtomatik joriy joylashuvni olish
+                          },
                         ),
-                      Marker(
-                        width: 40.0,
-                        height: 40.0,
-                        point: controller.selectedLocation.value,
-                        child: const Icon(Icons.location_pin, color: Colors.red, size: 30.0),
+                        children: [
+                          TileLayer(
+                            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            subdomains: const ['a', 'b', 'c'],
+                            userAgentPackageName: 'com.example.ishtopchi',
+                            tileProvider: CachedTileProvider(),
+                          ),
+                          Obx(() => MarkerLayer(
+                            markers: [
+                              if (controller.currentLocation.value != null)
+                                Marker(
+                                  width: 40.0,
+                                  height: 40.0,
+                                  point: controller.currentLocation.value!,
+                                  child: const Icon(LucideIcons.locateFixed600, color: Colors.blue, size: 20.0),
+                                ),
+                              Marker(
+                                width: 40.0,
+                                height: 40.0,
+                                point: controller.selectedLocation.value,
+                                child: const Icon(Icons.location_pin, color: Colors.red, size: 30.0),
+                              ),
+                            ],
+                          )),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    if (formFieldState.hasError)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          formFieldState.errorText!,
+                          style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context)),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -291,14 +381,16 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
         ],
       ),
     ],
-  ));
+  );
 
-  Widget _buildTextField(BuildContext context, TextEditingController controller, String label, String hint, {int maxLines = 1, TextInputType? keyboardType}) =>
-      TextField(
+  Widget _buildTextField(BuildContext context, TextEditingController controller, String label, String hint, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator, List<TextInputFormatter>? inputFormatters}) =>
+      TextFormField(
         controller: controller,
         maxLines: maxLines,
         keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         style: const TextStyle(color: AppColors.lightGray),
+        validator: validator,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.7)),
@@ -315,62 +407,68 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
             borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5),
           ),
           contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
+          errorStyle: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context)),
         ),
       );
 
-  Widget _buildDropdownField<T>(BuildContext context, String label, RxList<dynamic> items, Rx<T> selectedValue, IconData icon, Function(T?) onChanged, {bool isInt = false}) => Obx(() => DropdownButtonFormField2<T>(
+  Widget _buildDropdownField<T>(BuildContext context, String label, RxList<dynamic> items, Rx<T> selectedValue, IconData icon, Function(T?) onChanged, {String? Function(T?)? validator, bool isInt = false}) => DropdownButtonFormField2<T>(
     value: selectedValue.value,
     isExpanded: true,
-    validator: (value) => value == null || (isInt && (value as int) == 0) || (!isInt && (value as String).isEmpty) ? '$label tanlanishi shart' : null,
-    decoration: InputDecoration(
-      prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
-      labelText: label,
-      labelStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.7)),
-      filled: true,
-      fillColor: AppColors.darkBlue,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5),
-      ),
-      contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
-    ),
-    dropdownStyleData: DropdownStyleData(
-      maxHeight: Responsive.scaleHeight(200, context),
-      width: Responsive.scaleWidth(250, context),
-      decoration: BoxDecoration(
-        color: AppColors.darkBlue,
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        boxShadow: [BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5)],
-      ),
-      elevation: 4,
-    ),
-    iconStyleData: IconStyleData(
-      icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
-    ),
-    style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
-    items: items.map((item) {
-      return DropdownMenuItem<T>(
-        value: isInt ? item['id'] as T : item['id'].toString() as T,
-        child: Text(
-          item['title'] ?? item['name'] ?? 'Noma’lum',
-          style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
-          overflow: TextOverflow.ellipsis,
+        validator: validator,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+          labelText: label,
+          labelStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.7)),
+          filled: true,
+          fillColor: AppColors.darkBlue,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+            borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5),
+          ),
+          contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
+          errorStyle: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context)),
         ),
+        dropdownStyleData: DropdownStyleData(
+          maxHeight: Responsive.scaleHeight(200, context),
+          width: Responsive.scaleWidth(250, context),
+          decoration: BoxDecoration(
+            color: AppColors.darkBlue,
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+            boxShadow: [BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5)],
+          ),
+          elevation: 4,
+        ),
+        iconStyleData: IconStyleData(
+          icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+        ),
+        style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+        items: items.map((item) {
+          return DropdownMenuItem<T>(
+            value: isInt ? item['id'] as T : item['id'].toString() as T,
+            child: Text(
+              item['title'] ?? item['name'] ?? 'Noma’lum',
+              style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
+              overflow: TextOverflow.ellipsis,
+            ),
+          );
+        }).toList(),
+        onChanged: onChanged,
+        hint: Text('Tanlang', style: TextStyle(color: AppColors.lightBlue.withOpacity(0.7), fontSize: Responsive.scaleFont(14, context))),
       );
-    }).toList(),
-    onChanged: onChanged,
-    hint: Text('Tanlang', style: TextStyle(color: AppColors.lightBlue.withOpacity(0.7), fontSize: Responsive.scaleFont(14, context))),
-  ));
 
   Widget _buildSubmitButton(BuildContext context) => SizedBox(
     width: double.infinity,
     height: AppDimensions.buttonHeight,
     child: ElevatedButton(
-      onPressed: controller.submitAd,
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          controller.submitAd();
+        }
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.red,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius)),
