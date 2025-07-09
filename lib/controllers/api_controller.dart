@@ -367,6 +367,33 @@ class ApiController extends GetxController {
     }
   }
 
+  Future<void> createPost(Map<String, dynamic> postData, String token) async {
+    try {
+      final response = await _dio.post(
+        '$_baseUrl/posts',
+        data: json.encode(postData),
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ Post muvaffaqiyatli yaratildi: ${response.data}');
+      } else {
+        print('❌ createPost xatolik: ${response.statusCode} - ${response.data}');
+        ShowToast.show('Xatolik', 'Post yuborishda xatolik yuz berdi', 3, 1);
+      }
+    } catch (e) {
+      print('❌ createPost exception: $e');
+      ShowToast.show('Xatolik', 'Post yuborishda xato: $e', 3, 1);
+    }
+  }
+
+
   // Wishlistni olish
   Future<void> fetchWishlist() async {
     try {

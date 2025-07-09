@@ -5,7 +5,6 @@ import '../../config/theme/app_colors.dart';
 
 
 class BottomSheets {
-
   void showLanguageBottomSheet() {
     Get.bottomSheet(
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16))),
