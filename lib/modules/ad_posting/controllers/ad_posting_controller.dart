@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,20 +7,15 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
-import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CachedTileProvider extends TileProvider {
   @override
   ImageProvider<Object> getImage(TileCoordinates coordinates, TileLayer options) {
-    final url = options.urlTemplate!
-        .replaceAll('{x}', coordinates.x.toString())
-        .replaceAll('{y}', coordinates.y.toString())
-        .replaceAll('{z}', coordinates.z.toString())
-        .replaceAll('{s}', options.subdomains!.first);
-    return NetworkImage(url); // NetworkImage orqali plitka yuklanadi
+    final url = options.urlTemplate!.replaceAll('{x}', coordinates.x.toString()).replaceAll('{y}', coordinates.y.toString()).replaceAll('{z}', coordinates.z.toString()).replaceAll('{s}', options.subdomains.first);
+    return NetworkImage(url);
   }
 }
-
 
 class AdPostingController extends GetxController {
   final titleController = TextEditingController();
@@ -44,10 +38,11 @@ class AdPostingController extends GetxController {
   final isLoadingDistricts = false.obs;
   final selectedLocation = LatLng(41.3111, 69.2401).obs; // Default joylashuv (Toshkent)
   final currentLocation = Rx<LatLng?>(null); // Joriy joylashuv uchun
-  final mapController = MapController();
+  final mapController = MapController(); // Oddiy MapController
   final isMapReady = false.obs; // Xarita tayyorligini kuzatish
   final currentZoom = 13.0.obs; // Joriy zoom darajasini kuzatish
   final isLocationInitialized = false.obs; // Joylashuv initsializatsiyasi
+  static const double _optimalZoom = 13.0; // Optimal zoom darajasi
 
   final ImagePicker _picker = ImagePicker();
   final ApiController apiController = Get.find<ApiController>();
@@ -59,21 +54,6 @@ class AdPostingController extends GetxController {
     _location.changeSettings(accuracy: LocationAccuracy.high, interval: 1000);
     loadRegions();
     loadCategories();
-  }
-
-  void startLocationUpdates() {
-    if (isLocationInitialized.value) return; // Bir marta initsializatsiya qilingan bo'lsa, qayta ishlamaydi
-    _location.onLocationChanged.listen((LocationData locationData) {
-      if (locationData.latitude != null && locationData.longitude != null && isMapReady.value) {
-        currentLocation.value = LatLng(locationData.latitude!, locationData.longitude!);
-        selectedLocation.value = LatLng(locationData.latitude!, locationData.longitude!);
-        latitudeController.text = locationData.latitude!.toString();
-        longitudeController.text = locationData.longitude!.toString();
-        mapController.move(selectedLocation.value, currentZoom.value);
-        print('Xarita yangilandi (fon rejimi): ${selectedLocation.value}');
-        isLocationInitialized.value = true; // Joylashuv bir marta aniqlandi
-      }
-    });
   }
 
   Future<void> loadRegions() async {
@@ -133,32 +113,21 @@ class AdPostingController extends GetxController {
     }
   }
 
-  Future<void> getCurrentLocation() async {
+  Future<void> getCurrentLocation(void Function(LatLng, double) onMove) async {
     if (!isMapReady.value) {
       Get.snackbar('Xato', 'Xarita hali tayyor emas, iltimos bir oz kuting',
           backgroundColor: AppColors.red, colorText: AppColors.white);
       return;
     }
 
-    if (isLocationInitialized.value && currentLocation.value != null) {
-      // Agar joylashuv allaqachon aniqlangan bo'lsa, faqat xaritani yangilaymiz
-      selectedLocation.value = currentLocation.value!;
-      latitudeController.text = currentLocation.value!.latitude.toString();
-      longitudeController.text = currentLocation.value!.longitude.toString();
-      mapController.move(selectedLocation.value, currentZoom.value);
-      print('Xarita yangilandi (qayta ishlatildi): ${selectedLocation.value}');
-      return;
-    }
-
-    Get.dialog(const Center(child: CircularProgressIndicator(color: AppColors.lightBlue)), barrierDismissible: false);
+    //Get.dialog(const Center(child: CircularProgressIndicator(color: AppColors.lightBlue)), barrierDismissible: false);
     try {
       bool serviceEnabled = await _location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await _location.requestService();
         if (!serviceEnabled) {
           Get.back();
-          Get.snackbar('Xato', 'Joylashuv xizmati yoqilmagan',
-              backgroundColor: AppColors.red, colorText: AppColors.white);
+          Get.snackbar('Xato', 'Joylashuv xizmati yoqilmagan', backgroundColor: AppColors.red, colorText: AppColors.white);
           return;
         }
       }
@@ -168,8 +137,7 @@ class AdPostingController extends GetxController {
         permissionGranted = await _location.requestPermission();
         if (permissionGranted != PermissionStatus.granted) {
           Get.back();
-          Get.snackbar('Xato', 'Joylashuv ruxsati berilmagan',
-              backgroundColor: AppColors.red, colorText: AppColors.white);
+          Get.snackbar('Xato', 'Joylashuv ruxsati berilmagan', backgroundColor: AppColors.red, colorText: AppColors.white);
           return;
         }
       }
@@ -178,12 +146,22 @@ class AdPostingController extends GetxController {
       Get.back();
       if (locationData.latitude != null && locationData.longitude != null) {
         currentLocation.value = LatLng(locationData.latitude!, locationData.longitude!);
-        selectedLocation.value = LatLng(locationData.latitude!, locationData.longitude!);
+        selectedLocation.value = LatLng(locationData.latitude!, locationData.longitude!); // Faqat tugma bosilganda yangilanadi
         latitudeController.text = locationData.latitude!.toString();
         longitudeController.text = locationData.longitude!.toString();
         try {
-          mapController.move(selectedLocation.value, currentZoom.value);
-          print('Xarita yangilandi: ${selectedLocation.value}');
+          // Moslashuvchan zoom darajasini aniqlash
+          double targetZoom = _optimalZoom;
+          if (currentZoom.value > 15.0) {
+            targetZoom = _optimalZoom; // Juda yaqin bo'lsa, optimal zoomga qaytamiz
+          } else if (currentZoom.value < 10.0) {
+            targetZoom = _optimalZoom; // Juda uzoq bo'lsa, yaqinlashtiramiz
+          } else {
+            targetZoom = currentZoom.value; // O'rtacha zoomni saqlaymiz
+          }
+
+          onMove(selectedLocation.value, targetZoom); // Animatsiyani UI qismida boshqarish
+          print('Xarita yangilandi (joriy joylashuv): ${selectedLocation.value}, Zoom: $targetZoom');
           isLocationInitialized.value = true; // Initsializatsiya tugallandi
         } catch (e) {
           print('Xarita harakatlantirishda xato: $e');
@@ -200,44 +178,44 @@ class AdPostingController extends GetxController {
     }
   }
 
-  void updateLocation(LatLng point) {
+  void updateLocation(LatLng point, void Function(LatLng, double) onMove) {
     if (!isMapReady.value) {
       print('Xarita hali tayyor emas');
       return;
     }
-    selectedLocation.value = point;
+    selectedLocation.value = point; // Foydalanuvchi tanlagan joy saqlanadi
     latitudeController.text = point.latitude.toString();
     longitudeController.text = point.longitude.toString();
     try {
-      mapController.move(point, currentZoom.value);
-      print('Xarita yangilandi: $point');
+      onMove(point, currentZoom.value); // Joriy zoom bilan animatsiya
+      print('Xarita yangilandi (tanlangan joy): $point, Zoom: ${currentZoom.value}');
     } catch (e) {
       print('Xarita harakatlantirishda xato: $e');
     }
   }
 
-  void zoomIn() {
+  void zoomIn(void Function(LatLng, double) onMove) {
     if (!isMapReady.value) {
       print('Xarita hali tayyor emas');
       return;
     }
     currentZoom.value = (currentZoom.value + 1).clamp(1.0, 18.0);
     try {
-      mapController.move(selectedLocation.value, currentZoom.value);
+      onMove(selectedLocation.value, currentZoom.value); // Animatsiyani UI qismida boshqarish
       print('Xarita yaqinlashtirildi: Zoom = ${currentZoom.value}');
     } catch (e) {
       print('Yaqinlashtirishda xato: $e');
     }
   }
 
-  void zoomOut() {
+  void zoomOut(void Function(LatLng, double) onMove) {
     if (!isMapReady.value) {
       print('Xarita hali tayyor emas');
       return;
     }
     currentZoom.value = (currentZoom.value - 1).clamp(1.0, 18.0);
     try {
-      mapController.move(selectedLocation.value, currentZoom.value);
+      onMove(selectedLocation.value, currentZoom.value); // Animatsiyani UI qismida boshqarish
       print('Xarita uzoqlashtirildi: Zoom = ${currentZoom.value}');
     } catch (e) {
       print('Uzoqlashtirishda xato: $e');
@@ -313,7 +291,7 @@ class AdPostingController extends GetxController {
         postData['image_url'] = imageUrl;
       }
 
-      print('Yuborilayotgan ma\'lumotlar: ${json.encode(postData)}');
+      print('Yuborilayotgan ma\'lumotlar: ${jsonEncode(postData)}');
       // Postni serverga yuborish
       await apiController.createPost(postData, token);
     } catch (e) {
