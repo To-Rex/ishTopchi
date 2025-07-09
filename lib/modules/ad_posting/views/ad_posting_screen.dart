@@ -10,7 +10,6 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../core/utils/responsive.dart';
-import '../../../core/services/show_toast.dart';
 import '../controllers/ad_posting_controller.dart';
 
 class AdPostingScreen extends StatefulWidget {
@@ -24,6 +23,19 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
   final AdPostingController controller = Get.find<AdPostingController>();
   late final AnimatedMapController _animatedMapController;
   final _formKey = GlobalKey<FormState>();
+  final _scrollController = ScrollController();
+
+  // Har bir maydon uchun GlobalKey
+  final _titleFieldKey = GlobalKey<FormFieldState>();
+  final _contentFieldKey = GlobalKey<FormFieldState>();
+  final _salaryFromFieldKey = GlobalKey<FormFieldState>();
+  final _salaryToFieldKey = GlobalKey<FormFieldState>();
+  final _categoryFieldKey = GlobalKey<FormFieldState>();
+  final _regionFieldKey = GlobalKey<FormFieldState>();
+  final _districtFieldKey = GlobalKey<FormFieldState>();
+  final _locationFieldKey = GlobalKey<FormFieldState>();
+  final _phoneFieldKey = GlobalKey<FormFieldState>();
+  final _emailFieldKey = GlobalKey<FormFieldState>();
 
   final phoneFormatter = MaskTextInputFormatter(
     mask: '+998 ## ### ## ##',
@@ -45,13 +57,13 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
   void initState() {
     super.initState();
     _animatedMapController = AnimatedMapController(mapController: controller.mapController, vsync: this);
-    // Telefon raqami maydoniga +998 ni avtomatik qo‘shish
     controller.phoneNumberController.text = '+998 ';
   }
 
   @override
   void dispose() {
     _animatedMapController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -60,6 +72,36 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
     zoom: zoom,
     duration: const Duration(milliseconds: 900),
   );
+
+  // Xato maydoniga scroll qilish funksiyasi
+  void _scrollToErrorField() {
+    final List<GlobalKey<FormFieldState>> fieldKeys = [
+      _titleFieldKey,
+      _contentFieldKey,
+      _salaryFromFieldKey,
+      _salaryToFieldKey,
+      _categoryFieldKey,
+      _regionFieldKey,
+      _districtFieldKey,
+      _locationFieldKey,
+      _phoneFieldKey,
+      _emailFieldKey,
+    ];
+
+    for (var key in fieldKeys) {
+      if (key.currentState != null && !key.currentState!.isValid) {
+        final context = key.currentContext;
+        if (context != null) {
+          Scrollable.ensureVisible(
+            context,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+          break; // Birinchi xato topilganda to'xtatamiz
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -90,6 +132,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
       }
 
       return SingleChildScrollView(
+        controller: _scrollController,
         padding: EdgeInsets.all(AppDimensions.paddingMedium),
         child: Form(
           key: _formKey,
@@ -106,6 +149,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 maxLines: 1,
                 keyboardType: TextInputType.text,
                 validator: (value) => value == null || value.trim().isEmpty ? 'Sarlavha kiritilishi shart' : null,
+                fieldKey: _titleFieldKey,
               ),
               SizedBox(height: AppDimensions.paddingMedium),
               _buildTextField(
@@ -116,6 +160,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 maxLines: 4,
                 keyboardType: TextInputType.multiline,
                 validator: (value) => value == null || value.trim().isEmpty ? 'Tavsif kiritilishi shart' : null,
+                fieldKey: _contentFieldKey,
               ),
               SizedBox(height: AppDimensions.paddingMedium),
               Row(
@@ -128,6 +173,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                       '50000',
                       maxLines: 1,
                       keyboardType: TextInputType.number,
+                      fieldKey: _salaryFromFieldKey,
                     ),
                   ),
                   SizedBox(width: AppDimensions.paddingMedium),
@@ -139,6 +185,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                       '70000',
                       maxLines: 1,
                       keyboardType: TextInputType.number,
+                      fieldKey: _salaryToFieldKey,
                     ),
                   ),
                 ],
@@ -153,6 +200,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                     (value) => controller.selectedCategory.value = value ?? 1,
                 validator: (value) => value == null || value == 0 ? 'Kategoriya tanlanishi shart' : null,
                 isInt: true,
+                fieldKey: _categoryFieldKey,
               ),
               SizedBox(height: AppDimensions.paddingMedium),
               _buildDropdownField<String>(
@@ -168,6 +216,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                   }
                 },
                 validator: (value) => value == null || value.isEmpty ? 'Viloyat tanlanishi shart' : null,
+                fieldKey: _regionFieldKey,
               ),
               SizedBox(height: AppDimensions.paddingMedium),
               Obx(() => controller.isLoadingDistricts.value
@@ -183,6 +232,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 LucideIcons.mapPin,
                     (value) => controller.selectedDistrictId.value = value ?? '0',
                 validator: (value) => value == null || value == '0' ? 'Tuman tanlanishi shart' : null,
+                fieldKey: _districtFieldKey,
               )),
               SizedBox(height: AppDimensions.paddingMedium),
               _buildTextField(
@@ -192,6 +242,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 'Masalan: Office Building',
                 maxLines: 1,
                 keyboardType: TextInputType.text,
+                fieldKey: _locationFieldKey,
               ),
               SizedBox(height: AppDimensions.paddingMedium),
               _buildMapPicker(context),
@@ -205,6 +256,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 keyboardType: TextInputType.phone,
                 inputFormatters: [phoneFormatter],
                 validator: _validatePhone,
+                fieldKey: _phoneFieldKey,
               ),
               SizedBox(height: AppDimensions.paddingMedium),
               _buildTextField(
@@ -214,6 +266,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 'example@email.com',
                 maxLines: 1,
                 keyboardType: TextInputType.emailAddress,
+                fieldKey: _emailFieldKey,
               ),
               SizedBox(height: AppDimensions.paddingLarge),
               _buildSubmitButton(context),
@@ -275,7 +328,13 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
   Widget _buildMapPicker(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text('Xaritada joyni tanlang *', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightBlue)),
+      Text(
+        'Xaritada joyni tanlang *',
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          fontSize: Responsive.scaleFont(16, context),
+          color: AppColors.lightBlue,
+        ),
+      ),
       SizedBox(height: AppDimensions.paddingSmall),
       Stack(
         children: [
@@ -283,12 +342,22 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
             height: Responsive.scaleHeight(300, context),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 6, offset: const Offset(0, 2))],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
               child: FormField<String>(
-                validator: (value) => controller.latitudeController.text.isEmpty || controller.longitudeController.text.isEmpty ? 'Joylashuv tanlanishi shart' : null,
+                key: _locationFieldKey,
+                validator: (value) =>
+                controller.latitudeController.text.isEmpty || controller.longitudeController.text.isEmpty
+                    ? 'Joylashuv tanlanishi shart'
+                    : null,
                 builder: (formFieldState) => Column(
                   children: [
                     Expanded(
@@ -303,7 +372,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                           },
                           onMapReady: () {
                             controller.isMapReady.value = true;
-                            controller.getCurrentLocation(_moveMap); // Avtomatik joriy joylashuvni olish
+                            controller.getCurrentLocation(_moveMap);
                           },
                         ),
                         children: [
@@ -320,13 +389,21 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                                   width: 40.0,
                                   height: 40.0,
                                   point: controller.currentLocation.value!,
-                                  child: const Icon(LucideIcons.locateFixed600, color: Colors.blue, size: 20.0),
+                                  child: const Icon(
+                                    LucideIcons.locateFixed,
+                                    color: Colors.blue,
+                                    size: 30.0,
+                                  ),
                                 ),
                               Marker(
                                 width: 40.0,
                                 height: 40.0,
                                 point: controller.selectedLocation.value,
-                                child: const Icon(Icons.location_pin, color: Colors.red, size: 30.0),
+                                child: const Icon(
+                                  Icons.location_pin,
+                                  color: Colors.red,
+                                  size: 30.0,
+                                ),
                               ),
                             ],
                           )),
@@ -338,7 +415,10 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
                           formFieldState.errorText!,
-                          style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context)),
+                          style: TextStyle(
+                            color: AppColors.red,
+                            fontSize: Responsive.scaleFont(12, context),
+                          ),
                         ),
                       ),
                   ],
@@ -355,14 +435,22 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                   mini: true,
                   backgroundColor: AppColors.darkBlue,
                   onPressed: () => controller.zoomIn(_moveMap),
-                  child: Icon(LucideIcons.plus, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+                  child: Icon(
+                    LucideIcons.plus,
+                    color: AppColors.lightGray,
+                    size: Responsive.scaleFont(18, context),
+                  ),
                 ),
                 SizedBox(height: AppDimensions.paddingSmall),
                 FloatingActionButton(
                   mini: true,
                   backgroundColor: AppColors.darkBlue,
                   onPressed: () => controller.zoomOut(_moveMap),
-                  child: Icon(LucideIcons.minus, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+                  child: Icon(
+                    LucideIcons.minus,
+                    color: AppColors.lightGray,
+                    size: Responsive.scaleFont(18, context),
+                  ),
                 ),
               ],
             ),
@@ -374,7 +462,11 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
               mini: true,
               backgroundColor: AppColors.darkBlue,
               onPressed: () => controller.getCurrentLocation(_moveMap),
-              child: Icon(LucideIcons.locate, color: Colors.blue, size: Responsive.scaleFont(20, context)),
+              child: Icon(
+                LucideIcons.locate,
+                color: Colors.blue,
+                size: Responsive.scaleFont(20, context),
+              ),
               tooltip: 'Joriy joylashuvni aniqlash',
             ),
           ),
@@ -383,8 +475,19 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
     ],
   );
 
-  Widget _buildTextField(BuildContext context, TextEditingController controller, String label, String hint, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator, List<TextInputFormatter>? inputFormatters}) =>
+  Widget _buildTextField(
+      BuildContext context,
+      TextEditingController controller,
+      String label,
+      String hint, {
+        int maxLines = 1,
+        TextInputType? keyboardType,
+        String? Function(String?)? validator,
+        List<TextInputFormatter>? inputFormatters,
+        GlobalKey<FormFieldState>? fieldKey,
+      }) =>
       TextFormField(
+        key: fieldKey,
         controller: controller,
         maxLines: maxLines,
         keyboardType: keyboardType,
@@ -411,9 +514,21 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
         ),
       );
 
-  Widget _buildDropdownField<T>(BuildContext context, String label, RxList<dynamic> items, Rx<T> selectedValue, IconData icon, Function(T?) onChanged, {String? Function(T?)? validator, bool isInt = false}) => DropdownButtonFormField2<T>(
-    value: selectedValue.value,
-    isExpanded: true,
+  Widget _buildDropdownField<T>(
+      BuildContext context,
+      String label,
+      RxList<dynamic> items,
+      Rx<T> selectedValue,
+      IconData icon,
+      Function(T?) onChanged, {
+        String? Function(T?)? validator,
+        bool isInt = false,
+        GlobalKey<FormFieldState>? fieldKey,
+      }) =>
+      DropdownButtonFormField2<T>(
+        key: fieldKey,
+        value: selectedValue.value,
+        isExpanded: true,
         validator: validator,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
@@ -438,12 +553,18 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
           decoration: BoxDecoration(
             color: AppColors.darkBlue,
             borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-            boxShadow: [BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5)],
+            boxShadow: [
+              BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5),
+            ],
           ),
           elevation: 4,
         ),
         iconStyleData: IconStyleData(
-          icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+          icon: Icon(
+            LucideIcons.chevronDown,
+            color: AppColors.lightGray,
+            size: Responsive.scaleFont(18, context),
+          ),
         ),
         style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         items: items.map((item) {
@@ -457,7 +578,13 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
           );
         }).toList(),
         onChanged: onChanged,
-        hint: Text('Tanlang', style: TextStyle(color: AppColors.lightBlue.withOpacity(0.7), fontSize: Responsive.scaleFont(14, context))),
+        hint: Text(
+          'Tanlang',
+          style: TextStyle(
+            color: AppColors.lightBlue.withOpacity(0.7),
+            fontSize: Responsive.scaleFont(14, context),
+          ),
+        ),
       );
 
   Widget _buildSubmitButton(BuildContext context) => SizedBox(
@@ -467,14 +594,24 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
       onPressed: () {
         if (_formKey.currentState!.validate()) {
           controller.submitAd();
+        } else {
+          _scrollToErrorField();
         }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.red,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+        ),
         elevation: 2,
       ),
-      child: Text('E’lonni yuborish', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.white)),
+      child: Text(
+        'E’lonni yuborish',
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontSize: Responsive.scaleFont(16, context),
+          color: AppColors.white,
+        ),
+      ),
     ),
   );
 }
