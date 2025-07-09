@@ -22,6 +22,10 @@
         <string>google</string>
         <string>com.googleusercontent.apps.331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj</string>
     </array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Joylashuv ma'lumotlari e'lon joyini aniqlash uchun kerak</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Joylashuv ma'lumotlari e'lon joyini aniqlash uchun kerak</string>
 	<!-- Tarmoqqa ulanish uchun -->
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Bu ilova debugging va hot-reload funksiyalari uchun mahalliy tarmoqqa ulanishi kerak.</string>
