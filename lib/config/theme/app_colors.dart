@@ -11,4 +11,8 @@ class AppColors {
   //red
   static const Color red = Color(0xFFE74C3C);
   static const Color selectedItem = Color(0xFFE74C3C); // Tanlangan uchun
+//yellow
+  static const Color yellow = Color(0xFFFFD600);
+  //green
+  static const Color green = Color(0xFF2ECC71);
 }

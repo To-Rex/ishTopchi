@@ -5,6 +5,7 @@ import '../../../controllers/funcController.dart';
 import '../../../core/models/post_model.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../config/theme/app_colors.dart';
+import '../views/post_detail_screen.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
@@ -26,6 +27,7 @@ class PostCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           // Postni ochish uchun qo‘shimcha logika qo‘shish mumkin
+          Get.to(() => PostDetailScreen(post: post));
         },
         borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context)),
         child: Padding(

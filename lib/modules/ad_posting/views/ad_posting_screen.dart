@@ -345,9 +345,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
               child: FormField<String>(
                 key: _locationFieldKey,
                 validator: (value) =>
-                controller.latitudeController.text.isEmpty || controller.longitudeController.text.isEmpty
-                    ? 'Joylashuv tanlanishi shart'
-                    : null,
+                controller.latitudeController.text.isEmpty || controller.longitudeController.text.isEmpty ? 'Joylashuv tanlanishi shart' : null,
                 builder: (formFieldState) => Column(
                   children: [
                     Expanded(
