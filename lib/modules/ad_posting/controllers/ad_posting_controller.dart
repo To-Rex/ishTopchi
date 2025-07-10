@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../core/services/show_toast.dart';
 import 'dart:convert';
@@ -12,7 +13,11 @@ import 'dart:convert';
 class CachedTileProvider extends TileProvider {
   @override
   ImageProvider<Object> getImage(TileCoordinates coordinates, TileLayer options) {
-    final url = options.urlTemplate!.replaceAll('{x}', coordinates.x.toString()).replaceAll('{y}', coordinates.y.toString()).replaceAll('{z}', coordinates.z.toString()).replaceAll('{s}', options.subdomains.first);
+    final url = options.urlTemplate!
+        .replaceAll('{x}', coordinates.x.toString())
+        .replaceAll('{y}', coordinates.y.toString())
+        .replaceAll('{z}', coordinates.z.toString())
+        .replaceAll('{s}', options.subdomains.first);
     return NetworkImage(url);
   }
 }
@@ -46,12 +51,10 @@ class AdPostingController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
   final ApiController apiController = Get.find<ApiController>();
-  final Location _location = Location();
 
   @override
   void onInit() {
     super.onInit();
-    _location.changeSettings(accuracy: LocationAccuracy.high, interval: 1000);
     _initializeData();
   }
 
@@ -138,55 +141,83 @@ class AdPostingController extends GetxController {
     }
   }
 
+  Future<bool> checkLocationPermission() async {
+    print('MainController: Checking location service status...');
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    print('MainController: Location service enabled: $serviceEnabled');
+    if (!serviceEnabled) {
+      print('MainController: Location service is disabled.');
+      return false;
+    }
+    print('MainController: Checking location permission status...');
+    var status = await Permission.locationWhenInUse.status;
+    print('MainController: Current permission status: $status');
+    if (status.isDenied) {
+      status = await Permission.locationWhenInUse.request();
+      print('MainController: Permission request result: $status');
+    }
+    if (status.isPermanentlyDenied) {
+      print('MainController: Permission permanently denied, prompting to open settings...');
+      ShowToast.show('Xato', 'Joylashuv ruxsati doimiy ravishda rad etilgan. Iltimos, sozlamalardan ruxsat bering.', 3, 1);
+      await openAppSettings();
+      status = await Permission.locationWhenInUse.status;
+      print('MainController: Permission status after settings: $status');
+      return status.isGranted;
+    }
+    return status.isGranted;
+  }
+
+  Future<void> initializeApp() async {
+    print('MainController: Initializing app...');
+    if (await checkLocationPermission()) {
+      try {
+        Position position = await Geolocator.getCurrentPosition();
+        print('MainController: Initial location: ${position.latitude}, ${position.longitude}');
+      } catch (e) {
+        print('MainController: Initial location error: $e');
+      }
+    }
+  }
+
   Future<void> getCurrentLocation(void Function(LatLng, double) onMove) async {
     if (!isMapReady.value) {
       ShowToast.show('Xato', 'Xarita hali tayyor emas, iltimos bir oz kuting', 3, 1);
       return;
     }
 
+    // Ruxsatlarni tekshirish va so‘rash
+    bool hasPermission = await checkLocationPermission();
+    print('Has permission: $hasPermission');
+    if (!hasPermission) {
+      return;
+    }
+
     try {
-      bool serviceEnabled = await _location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await _location.requestService();
-        if (!serviceEnabled) {
-          ShowToast.show('Xato', 'Joylashuv xizmati yoqilmagan', 3, 1);
-          return;
+      print('Getting current location...');
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: Duration(seconds: 10),
+      );
+      print('Current location obtained: ${position.latitude}, ${position.longitude}');
+      final newLocation = LatLng(position.latitude, position.longitude);
+      currentLocation.value = newLocation;
+      selectedLocation.value = newLocation;
+      latitudeController.text = position.latitude.toString();
+      longitudeController.text = position.longitude.toString();
+      try {
+        double targetZoom = _optimalZoom;
+        if (currentZoom.value > 15.0 || currentZoom.value < 10.0) {
+          targetZoom = _optimalZoom;
+        } else {
+          targetZoom = currentZoom.value;
         }
-      }
 
-      PermissionStatus permissionGranted = await _location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await _location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          ShowToast.show('Xato', 'Joylashuv ruxsati berilmagan', 3, 1);
-          return;
-        }
-      }
-
-      LocationData locationData = await _location.getLocation();
-      if (locationData.latitude != null && locationData.longitude != null) {
-        final newLocation = LatLng(locationData.latitude!, locationData.longitude!);
-        currentLocation.value = newLocation;
-        selectedLocation.value = newLocation;
-        latitudeController.text = locationData.latitude!.toString();
-        longitudeController.text = locationData.longitude!.toString();
-        try {
-          double targetZoom = _optimalZoom;
-          if (currentZoom.value > 15.0 || currentZoom.value < 10.0) {
-            targetZoom = _optimalZoom;
-          } else {
-            targetZoom = currentZoom.value;
-          }
-
-          onMove(newLocation, targetZoom);
-          print('Xarita yangilandi (joriy joylashuv): $newLocation, Zoom: $targetZoom');
-          isLocationInitialized.value = true;
-        } catch (e) {
-          print('Xarita harakatlantirishda xato: $e');
-          ShowToast.show('Xato', 'Xarita yangilashda xato: $e', 3, 1);
-        }
-      } else {
-        ShowToast.show('Xato', 'Joylashuv ma\'lumotlari olinmadi', 3, 1);
+        onMove(newLocation, targetZoom);
+        print('Xarita yangilandi (joriy joylashuv): $newLocation, Zoom: $targetZoom');
+        isLocationInitialized.value = true;
+      } catch (e) {
+        print('Xarita harakatlantirishda xato: $e');
+        ShowToast.show('Xato', 'Xarita yangilashda xato: $e', 3, 1);
       }
     } catch (e) {
       print('Joylashuv aniqlashda xato: $e');
@@ -246,7 +277,7 @@ class AdPostingController extends GetxController {
         contentController.text.isNotEmpty &&
         phoneNumberController.text.isNotEmpty &&
         phoneNumberController.text.startsWith('+998') &&
-        phoneNumberController.text.length == 12 &&
+        phoneNumberController.text.length == 13 &&
         selectedRegionId.value.isNotEmpty &&
         selectedDistrictId.value != '0' &&
         selectedCategory.value != 0 &&
@@ -256,7 +287,8 @@ class AdPostingController extends GetxController {
 
   Future<void> submitAd() async {
     if (!validateForm()) {
-      ShowToast.show('Xato', 'Iltimos, majburiy maydonlarni to‘ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!', 3, 1);
+      ShowToast.show(
+          'Xato', 'Iltimos, majburiy maydonlarni to‘ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!', 3, 1);
       return;
     }
 

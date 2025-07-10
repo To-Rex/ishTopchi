@@ -2,37 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Google Sign-In uchun URL scheme -->
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>com.googleusercontent.apps.331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj</string>
-            </array>
-        </dict>
-    </array>
-    <key>com.apple.security.files.user-selected.read-only</key>
-    <true/>
-
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>google</string>
-        <string>com.googleusercontent.apps.331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj</string>
-    </array>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Joylashuv ma'lumotlari e'lon joyini aniqlash uchun kerak</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Joylashuv ma'lumotlari e'lon joyini aniqlash uchun kerak</string>
-	<!-- Tarmoqqa ulanish uchun -->
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Bu ilova debugging va hot-reload funksiyalari uchun mahalliy tarmoqqa ulanishi kerak.</string>
-	<!-- Google Sign-In uchun foydalanuvchi ma’lumotlari -->
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Bu ilova foydalanuvchi ma'lumotlarini Google Sign-In orqali xavfsiz autentifikatsiya qilish uchun ishlatadi.</string>
-	<!-- Boshqa zarur sozlamalar -->
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -51,9 +22,40 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>google</string>
+		<string>com.googleusercontent.apps.331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>MKDirectionsApplicationSupportedModes</key>
+	<array/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Bu ilova debugging va hot-reload funksiyalari uchun mahalliy tarmoqqa ulanishi kerak.</string>
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>E’lon joyini aniqlash uchun joylashuv ma'lumotlari talab qilinadi.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>E’lon joyini aniqlash uchun joylashuv ma'lumotlari talab qilinadi.</string>
+
+
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Bu ilova foydalanuvchi ma'lumotlarini Google Sign-In orqali xavfsiz autentifikatsiya qilish uchun ishlatadi.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -72,9 +74,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<key>com.apple.security.files.user-selected.read-only</key>
 	<true/>
 </dict>
 </plist>
