@@ -8,6 +8,17 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Ishtopchi</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>MKDirectionsRequest</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.apple.maps.directionsrequest</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -43,16 +54,17 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MKDirectionsApplicationSupportedModes</key>
-	<array/>
+	<array>
+		<string>MKDirectionsModeOther</string>
+	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Bu ilova debugging va hot-reload funksiyalari uchun mahalliy tarmoqqa ulanishi kerak.</string>
-
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>E’lon joyini aniqlash uchun joylashuv ma'lumotlari talab qilinadi.</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>E’lon joyini aniqlash uchun joylashuv ma'lumotlari talab qilinadi.</string>
-
-
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Ilova joylashuvni aniqlash uchun doimiy ruxsat so'raydi</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Joylashuvingizdan foydalanishga doimiy ruxsat kerak</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Joylashuvingizni aniqlash uchun ilova foydalanadi</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Bu ilova foydalanuvchi ma'lumotlarini Google Sign-In orqali xavfsiz autentifikatsiya qilish uchun ishlatadi.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

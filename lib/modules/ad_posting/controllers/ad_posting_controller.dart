@@ -142,29 +142,61 @@ class AdPostingController extends GetxController {
   }
 
   Future<bool> checkLocationPermission() async {
-    print('MainController: Checking location service status...');
+    print('Checking location service status...');
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    print('MainController: Location service enabled: $serviceEnabled');
     if (!serviceEnabled) {
-      print('MainController: Location service is disabled.');
+      ShowToast.show(
+        'Joylashuv o‘chirilgan',
+        'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.',
+        4, 1,
+      );
       return false;
     }
-    print('MainController: Checking location permission status...');
+
     var status = await Permission.locationWhenInUse.status;
-    print('MainController: Current permission status: $status');
-    if (status.isDenied) {
-      status = await Permission.locationWhenInUse.request();
-      print('MainController: Permission request result: $status');
+    print('Current permission status: $status');
+
+    if (status.isGranted) {
+      print('✅ Permission GRANTED');
+      return true;
     }
+
+    if (status.isDenied || status.isRestricted) {
+      print('⚠️ Permission DENIED/RESTRICTED - requesting...');
+      final newStatus = await Permission.locationWhenInUse.request();
+      print('Requested permission result: $newStatus');
+
+      if (newStatus.isGranted) {
+        print('✅ Permission NOW GRANTED');
+        return true;
+      } else {
+        ShowToast.show(
+          'Ruxsat berilmadi',
+          'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
+          5, 1,
+        );
+        await openAppSettings();
+        return false;
+      }
+    }
+
     if (status.isPermanentlyDenied) {
-      print('MainController: Permission permanently denied, prompting to open settings...');
-      ShowToast.show('Xato', 'Joylashuv ruxsati doimiy ravishda rad etilgan. Iltimos, sozlamalardan ruxsat bering.', 3, 1);
+      print('❌ Permission PERMANENTLY_DENIED');
+      ShowToast.show(
+        'Ruxsat kerak',
+        'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
+        5, 1,
+      );
       await openAppSettings();
-      status = await Permission.locationWhenInUse.status;
-      print('MainController: Permission status after settings: $status');
-      return status.isGranted;
+      return false;
     }
-    return status.isGranted;
+
+    ShowToast.show(
+      'Xato',
+      'Joylashuv ruxsatini aniqlashda muammo yuz berdi.',
+      3, 1,
+    );
+    return false;
   }
 
   Future<void> initializeApp() async {
