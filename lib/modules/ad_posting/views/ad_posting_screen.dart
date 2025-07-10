@@ -367,7 +367,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                           TileLayer(
                             urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                             subdomains: const ['a', 'b', 'c'],
-                            userAgentPackageName: 'com.example.ishtopchi',
+                            userAgentPackageName: 'torex.top.ishtopchi',
                             tileProvider: CachedTileProvider(),
                           ),
                           Obx(() => MarkerLayer(

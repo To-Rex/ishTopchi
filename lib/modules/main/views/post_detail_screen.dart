@@ -183,7 +183,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                       ),
                       SizedBox(height: Responsive.scaleHeight(4, context)),
                       Text(
-                        '${widget.post.salaryFrom ?? 'Noma’lum'} - ${widget.post.salaryTo ?? 'Noma’lum'} UZS',
+                        '${widget.post.salaryFrom} - ${widget.post.salaryTo} UZS',
                         style: TextStyle(
                           fontSize: Responsive.scaleFont(16, context),
                           color: AppColors.white,
@@ -243,7 +243,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                         TileLayer(
                           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                           subdomains: const ['a', 'b', 'c'],
-                          userAgentPackageName: 'com.example.ishtopchi',
+                          userAgentPackageName: 'torex.top.ishtopchi',
                           tileProvider: CachedTileProvider(),
                         ),
                         Obx(() => MarkerLayer(
