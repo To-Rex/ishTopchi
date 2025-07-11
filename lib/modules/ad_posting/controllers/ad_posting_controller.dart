@@ -305,11 +305,19 @@ class AdPostingController extends GetxController {
   }
 
   bool validateForm() {
+    print('Validating form...');
+    print('Title: ${titleController.text}');
+    print('Content: ${contentController.text}');
+    print('Phone Number: ${phoneNumberController.text}');
+    print('Region: ${selectedRegionId.value}');
+    print('District: ${selectedDistrictId.value}');
+    print('Category: ${selectedCategory.value}');
+    print('Latitude: ${latitudeController.text}');
+    print('Longitude: ${longitudeController.text}');
+
     return titleController.text.isNotEmpty &&
         contentController.text.isNotEmpty &&
         phoneNumberController.text.isNotEmpty &&
-        phoneNumberController.text.startsWith('+998') &&
-        phoneNumberController.text.length == 13 &&
         selectedRegionId.value.isNotEmpty &&
         selectedDistrictId.value != '0' &&
         selectedCategory.value != 0 &&
@@ -359,7 +367,7 @@ class AdPostingController extends GetxController {
       };
 
       if (imageUrl != null && imageUrl.isNotEmpty) {
-        postData['image_url'] = imageUrl;
+        postData['picture_url'] = imageUrl;
       }
 
       print('Yuborilayotgan ma\'lumotlar: ${jsonEncode(postData)}');
