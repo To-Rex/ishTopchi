@@ -5,7 +5,8 @@ import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:ishtopchi/core/services/show_toast.dart';
 import '../config/routes/app_routes.dart';
 import '../core/models/post_model.dart';
-import '../core/models/user_me.dart';
+import '../core/models/user_me.dart' hide Data;
+import '../core/models/wish_list.dart';
 import '../modules/login/views/otp_verification_screen.dart';
 import 'funcController.dart';
 
@@ -316,33 +317,19 @@ class ApiController extends GetxController {
   Future<void> fetchPosts({int page = 1, int limit = 10, String? search}) async {
     try {
       funcController.isLoading.value = true;
-
       final token = funcController.getToken();
-      if (token == null) {
-        throw Exception('Token mavjud emas');
-      }
-
-      if (page == 1) {
-        funcController.hasMore.value = true;
-      }
-
+      if (token == null) {throw Exception('Token mavjud emas');}
+      if (page == 1) {funcController.hasMore.value = true;}
       String url = '$_baseUrl/posts?page=$page&limit=$limit';
-      if (search != null && search.isNotEmpty) {
-        url += '&search=$search';
-      }
-
-      final response = await _dio.get(
-        url,
-        options: Options(headers: {
-          'accept': '*/*',
-          'Authorization': 'Bearer $token',
-        }),
-      );
-
+      if (search != null && search.isNotEmpty) {url += '&search=$search';}
+      final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
       print('API javobi posts (page $page): ${response.data}');
       print('Status code: ${response.statusCode}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
+        final meta = Meta.fromJson(response.data['meta']);
+        funcController.totalPosts.value = meta.total ?? 0;
+        funcController.totalPages.value = meta.totalPages ?? 1;
 
         if (data.isEmpty) {
           print('Ma’lumotlar tugadi');
@@ -350,7 +337,7 @@ class ApiController extends GetxController {
           return;
         }
 
-        final newPosts = data.map((json) => Post.fromJson(json)).toList();
+        final newPosts = data.map((json) => Data.fromJson(json)).toList();
 
         if (page == 1) {
           funcController.posts.value = newPosts;
@@ -411,9 +398,14 @@ class ApiController extends GetxController {
       print('API javobi wishlist: ${response.data}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
-        funcController.wishList.value = data.map((json) => Post.fromJson(json)).toList();
+        funcController.wishList.value = data
+            .where((json) => json != null)
+            .map((json) => WishList.fromJson(json as Map<String, dynamic>))
+            .toList();
+        print('WishList uzunligi: ${funcController.wishList.length}');
       } else if (response.statusCode == 404) {
         funcController.clearWishList();
+        print('Wishlist bo‘sh');
       } else {
         print('Wishlistni olishda xatolik: ${response.statusCode}');
       }
@@ -425,6 +417,7 @@ class ApiController extends GetxController {
 
   // Yoqtirish (wishlist'ga qo'shish)
   Future<void> addToWishlist(int postId) async {
+    print(postId);
     try {
       final token = funcController.getToken();
       if (token == null) {

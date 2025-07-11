@@ -12,10 +12,20 @@ import '../../../core/utils/responsive.dart';
 import '../../ad_posting/controllers/ad_posting_controller.dart';
 import '../controllers/post_detail_controller.dart';
 
-
+class CachedTileProvider extends TileProvider {
+  @override
+  ImageProvider<Object> getImage(TileCoordinates coordinates, TileLayer options) {
+    final url = options.urlTemplate!
+        .replaceAll('{x}', coordinates.x.toString())
+        .replaceAll('{y}', coordinates.y.toString())
+        .replaceAll('{z}', coordinates.z.toString())
+        .replaceAll('{s}', options.subdomains.first);
+    return NetworkImage(url);
+  }
+}
 
 class PostDetailScreen extends StatefulWidget {
-  final Post post;
+  final Data post;
 
   const PostDetailScreen({super.key, required this.post});
 
@@ -35,10 +45,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
     controller = Get.put(PostDetailController());
     mapController = AnimatedMapController(vsync: this);
     final latitude = widget.post.location?.latitude is String
-        ? double.tryParse(widget.post.location!.latitude)
+        ? double.tryParse(widget.post.location!.latitude!)
         : widget.post.location?.latitude as double?;
     final longitude = widget.post.location?.longitude is String
-        ? double.tryParse(widget.post.location!.longitude)
+        ? double.tryParse(widget.post.location!.longitude!)
         : widget.post.location?.longitude as double?;
     if (latitude != null && longitude != null) {
       controller.setInitialLocation(LatLng(latitude, longitude));
@@ -66,7 +76,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
       backgroundColor: AppColors.darkBlue,
       appBar: AppBar(
         backgroundColor: AppColors.darkBlue,
-        elevation: Responsive.scaleWidth(4, context),
         leading: IconButton(
           icon: Icon(
             LucideIcons.arrowLeft,
@@ -86,6 +95,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
         centerTitle: true,
       ),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -97,7 +107,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                 children: [
                   Flexible(
                     child: Text(
-                      widget.post.title,
+                      widget.post.title ?? 'Noma’lum',
                       style: TextStyle(
                         fontSize: Responsive.scaleFont(24, context),
                         fontWeight: FontWeight.bold,
@@ -117,9 +127,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                       ),
                       onPressed: () async {
                         if (isFavorite) {
-                          await apiController.removeFromWishlist(widget.post.id.toInt());
+                          await apiController.removeFromWishlist(widget.post.id!.toInt());
                         } else {
-                          await apiController.addToWishlist(widget.post.id.toInt());
+                          await apiController.addToWishlist(widget.post.id!.toInt());
                         }
                       },
                     );
@@ -132,20 +142,50 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                 horizontal: Responsive.scalePadding(16, context),
                 vertical: Responsive.scaleHeight(8, context),
               ),
-              child: Chip(
-                label: Text(
-                  widget.post.status.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: Responsive.scaleFont(12, context),
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w600,
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Responsive.scaleWidth(10, context),
+                      vertical: Responsive.scaleHeight(4, context),
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(widget.post.status ?? '').withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(Responsive.scaleWidth(16, context)),
+                      border: Border.all(color: _getStatusColor(widget.post.status ?? '')),
+                    ),
+                    child: Text(
+                      widget.post.status?.toUpperCase() ?? 'NOMA’LUM',
+                      style: TextStyle(
+                        fontSize: Responsive.scaleFont(12, context),
+                        color: _getStatusColor(widget.post.status ?? ''),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-                backgroundColor: _getStatusColor(widget.post.status),
-                padding: EdgeInsets.symmetric(
-                  horizontal: Responsive.scalePadding(8, context),
-                  vertical: Responsive.scaleHeight(4, context),
-                ),
+                  if (widget.post.category != null) ...[
+                    SizedBox(width: Responsive.scaleWidth(8, context)),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Responsive.scaleWidth(10, context),
+                        vertical: Responsive.scaleHeight(4, context),
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightBlue.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(Responsive.scaleWidth(16, context)),
+                        border: Border.all(color: AppColors.lightBlue),
+                      ),
+                      child: Text(
+                        widget.post.category!.title ?? 'Noma’lum',
+                        style: TextStyle(
+                          fontSize: Responsive.scaleFont(12, context),
+                          color: AppColors.lightBlue,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             Padding(
@@ -154,7 +194,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                 vertical: Responsive.scaleHeight(8, context),
               ),
               child: Text(
-                widget.post.content,
+                widget.post.content ?? 'Tavsif yo‘q',
                 style: TextStyle(
                   fontSize: Responsive.scaleFont(16, context),
                   color: AppColors.lightGray,
@@ -170,48 +210,45 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Maosh:',
-                        style: TextStyle(
-                          fontSize: Responsive.scaleFont(14, context),
+                  Flexible(
+                    child: Row(
+                      children: [
+                        Icon(
+                          LucideIcons.wallet,
+                          size: Responsive.scaleFont(16, context),
                           color: AppColors.lightBlue,
-                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-                      SizedBox(height: Responsive.scaleHeight(4, context)),
-                      Text(
-                        '${widget.post.salaryFrom} - ${widget.post.salaryTo} UZS',
-                        style: TextStyle(
-                          fontSize: Responsive.scaleFont(16, context),
-                          color: AppColors.white,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(width: Responsive.scaleWidth(8, context)),
+                        Text(
+                          '${widget.post.salaryFrom ?? 'Noma’lum'} - ${widget.post.salaryTo ?? 'Noma’lum'} UZS',
+                          style: TextStyle(
+                            fontSize: Responsive.scaleFont(16, context),
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Joylashuv:',
-                        style: TextStyle(
-                          fontSize: Responsive.scaleFont(14, context),
+                  Flexible(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(
+                          LucideIcons.mapPin,
+                          size: Responsive.scaleFont(16, context),
                           color: AppColors.lightBlue,
-                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-                      SizedBox(height: Responsive.scaleHeight(4, context)),
-                      Text(
-                        widget.post.district?.name ?? 'Noma’lum tuman',
-                        style: TextStyle(
-                          fontSize: Responsive.scaleFont(16, context),
-                          color: AppColors.white,
+                        SizedBox(width: Responsive.scaleWidth(8, context)),
+                        Text(
+                          widget.post.district?.name ?? 'Noma’lum tuman',
+                          style: TextStyle(
+                            fontSize: Responsive.scaleFont(16, context),
+                            color: AppColors.white,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -235,6 +272,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                       options: MapOptions(
                         initialCenter: controller.selectedLocation.value ?? LatLng(41.3111, 69.2401),
                         initialZoom: controller.currentZoom.value,
+                        minZoom: 10.0,
+                        maxZoom: 18.0,
                         onMapReady: () {
                           controller.isMapReady.value = true;
                         },
@@ -243,8 +282,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                         TileLayer(
                           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                           subdomains: const ['a', 'b', 'c'],
-                          userAgentPackageName: 'torex.top.ishtopchi',
                           tileProvider: CachedTileProvider(),
+                          userAgentPackageName: 'com.example.ishtopchi',
+                          tileSize: Responsive.scaleWidth(256, context),
+                          maxNativeZoom: 19,
+                          errorTileCallback: (tile, error, stackTrace) {
+                            print('Xarita plitkasi xatosi: $error');
+                          },
                         ),
                         Obx(() => MarkerLayer(
                           markers: [
@@ -254,7 +298,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                                 height: 40.0,
                                 point: controller.currentLocation.value!,
                                 child: const Icon(
-                                  LucideIcons.locateFixed, // Tuzatildi
+                                  LucideIcons.locateFixed,
                                   color: Colors.blue,
                                   size: 20.0,
                                 ),
@@ -379,6 +423,24 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                       ],
                     ),
                   ],
+                  SizedBox(height: Responsive.scaleHeight(12, context)),
+                  Row(
+                    children: [
+                      Icon(
+                        LucideIcons.eye,
+                        size: Responsive.scaleFont(16, context),
+                        color: AppColors.lightGray,
+                      ),
+                      SizedBox(width: Responsive.scaleWidth(8, context)),
+                      Text(
+                        '${widget.post.views ?? 0} ko‘rish',
+                        style: TextStyle(
+                          fontSize: Responsive.scaleFont(14, context),
+                          color: AppColors.lightGray,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -393,6 +455,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                       funcController.getProfileUrl(widget.post.user?.profilePicture),
                     ),
                     backgroundColor: AppColors.darkBlue,
+                    child: widget.post.user?.profilePicture == null
+                        ? Icon(
+                      LucideIcons.user,
+                      size: Responsive.scaleFont(24, context),
+                      color: AppColors.lightGray,
+                    )
+                        : null,
                   ),
                   SizedBox(width: Responsive.scaleWidth(12, context)),
                   Expanded(
@@ -410,7 +479,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          'Joylashtirilgan: ${widget.post.createdAt.toString().substring(0, 10)}',
+                          'Joylashtirilgan: ${widget.post.createdAt?.substring(0, 10) ?? 'Noma’lum'}',
                           style: TextStyle(
                             fontSize: Responsive.scaleFont(12, context),
                             color: AppColors.lightGray,
