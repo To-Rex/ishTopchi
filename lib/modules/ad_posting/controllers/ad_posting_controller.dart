@@ -13,11 +13,7 @@ import 'dart:convert';
 class CachedTileProvider extends TileProvider {
   @override
   ImageProvider<Object> getImage(TileCoordinates coordinates, TileLayer options) {
-    final url = options.urlTemplate!
-        .replaceAll('{x}', coordinates.x.toString())
-        .replaceAll('{y}', coordinates.y.toString())
-        .replaceAll('{z}', coordinates.z.toString())
-        .replaceAll('{s}', options.subdomains.first);
+    final url = options.urlTemplate!.replaceAll('{x}', coordinates.x.toString()).replaceAll('{y}', coordinates.y.toString()).replaceAll('{z}', coordinates.z.toString()).replaceAll('{s}', options.subdomains.first);
     return NetworkImage(url);
   }
 }
@@ -145,11 +141,7 @@ class AdPostingController extends GetxController {
     print('Checking location service status...');
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ShowToast.show(
-        'Joylashuv o‘chirilgan',
-        'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.',
-        4, 1,
-      );
+      ShowToast.show('Joylashuv o‘chirilgan', 'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.', 4, 1);
       return false;
     }
 
@@ -170,11 +162,7 @@ class AdPostingController extends GetxController {
         print('✅ Permission NOW GRANTED');
         return true;
       } else {
-        ShowToast.show(
-          'Ruxsat berilmadi',
-          'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
-          5, 1,
-        );
+        ShowToast.show('Ruxsat berilmadi', 'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
         await openAppSettings();
         return false;
       }
@@ -182,11 +170,7 @@ class AdPostingController extends GetxController {
 
     if (status.isPermanentlyDenied) {
       print('❌ Permission PERMANENTLY_DENIED');
-      ShowToast.show(
-        'Ruxsat kerak',
-        'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
-        5, 1,
-      );
+      ShowToast.show('Ruxsat kerak', 'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
       await openAppSettings();
       return false;
     }
@@ -243,7 +227,6 @@ class AdPostingController extends GetxController {
         } else {
           targetZoom = currentZoom.value;
         }
-
         onMove(newLocation, targetZoom);
         print('Xarita yangilandi (joriy joylashuv): $newLocation, Zoom: $targetZoom');
         isLocationInitialized.value = true;
@@ -315,23 +298,14 @@ class AdPostingController extends GetxController {
     print('Latitude: ${latitudeController.text}');
     print('Longitude: ${longitudeController.text}');
 
-    return titleController.text.isNotEmpty &&
-        contentController.text.isNotEmpty &&
-        phoneNumberController.text.isNotEmpty &&
-        selectedRegionId.value.isNotEmpty &&
-        selectedDistrictId.value != '0' &&
-        selectedCategory.value != 0 &&
-        latitudeController.text.isNotEmpty &&
-        longitudeController.text.isNotEmpty;
+    return titleController.text.isNotEmpty && contentController.text.isNotEmpty && phoneNumberController.text.isNotEmpty && selectedRegionId.value.isNotEmpty && selectedDistrictId.value != '0' && selectedCategory.value != 0 && latitudeController.text.isNotEmpty && longitudeController.text.isNotEmpty;
   }
 
   Future<void> submitAd() async {
     if (!validateForm()) {
-      ShowToast.show(
-          'Xato', 'Iltimos, majburiy maydonlarni to‘ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!', 3, 1);
+      ShowToast.show('Xato', 'Iltimos, majburiy maydonlarni to‘ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!', 3, 1);
       return;
     }
-
     try {
       final token = apiController.funcController.getToken();
       if (token == null) {
@@ -339,7 +313,6 @@ class AdPostingController extends GetxController {
         Get.offNamed('/login');
         return;
       }
-
       String? imageUrl;
       if (selectedImage.value != null) {
         imageUrl = await apiController.uploadImage(selectedImage.value!, token);
@@ -348,7 +321,6 @@ class AdPostingController extends GetxController {
           return;
         }
       }
-
       final Map<String, dynamic> postData = {
         'title': titleController.text,
         'content': contentController.text,
@@ -365,11 +337,9 @@ class AdPostingController extends GetxController {
           'longitude': double.parse(longitudeController.text),
         },
       };
-
       if (imageUrl != null && imageUrl.isNotEmpty) {
         postData['picture_url'] = imageUrl;
       }
-
       print('Yuborilayotgan ma\'lumotlar: ${jsonEncode(postData)}');
       await apiController.createPost(postData, token);
       ShowToast.show('Muvaffaqiyat', 'E’lon muvaffaqiyatli yuborildi', 1, 1);
