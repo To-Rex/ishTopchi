@@ -70,7 +70,6 @@ class PostCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title
                       Text(
                         post.title ?? 'Noma’lum',
                         maxLines: isSmallScreen ? 1 : 1,
@@ -102,10 +101,32 @@ class PostCard extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                        )
+                      else
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: Responsive.scaleWidth(12, context),
+                            vertical: Responsive.scaleHeight(2, context),
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.lightBlue.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
+                            border: Border.all(color: AppColors.lightBlue),
+                          ),
+                          child: Text(
+                            'Noma’lum',
+                            style: TextStyle(
+                              fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context),
+                              color: AppColors.lightBlue,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       SizedBox(height: Responsive.scaleHeight(6, context)),
                       // Tavsif
                       Container(
+                        height: Responsive.scaleHeight(isSmallScreen ? 40 : 50, context),
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           color: AppColors.lightGray.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
