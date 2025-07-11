@@ -53,10 +53,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profil'),
         ],
 
-        selectedFontSize: Responsive.scaleFont(11, context),
-        unselectedFontSize: Responsive.scaleFont(11, context),
-        selectedIconTheme: IconThemeData(size: Responsive.scaleWidth(24, context)),
-        unselectedIconTheme: IconThemeData(size: Responsive.scaleWidth(24, context)),
+        selectedFontSize: Responsive.scaleFont(12, context),
+        unselectedFontSize: Responsive.scaleFont(12, context),
+        selectedIconTheme: IconThemeData(size: Responsive.scaleWidth(28, context)),
+        unselectedIconTheme: IconThemeData(size: Responsive.scaleWidth(28, context)),
 
         currentIndex: _currentIndex,
         selectedItemColor: AppColors.selectedItem,
