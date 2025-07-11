@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -65,9 +66,27 @@ class ProfileScreen extends GetView<ProfileController> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              CircleAvatar(
-                                radius: avatarSize / 2,
+                              /*CircleAvatar(
+                                radius: avatarSize / 1.2,
                                 backgroundImage: NetworkImage(_getProfileUrl(user?.data?.profilePicture)),
+                              ),*/
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(1000),
+                                child: SizedBox(
+                                  height: Responsive.scaleHeight(140, context),
+                                  width: Responsive.scaleWidth(140, context),
+                                  child: CachedNetworkImage(
+                                    imageUrl: _getProfileUrl(user?.data?.profilePicture),
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Center(child: CircularProgressIndicator(color: AppColors.lightBlue.withOpacity(0.7), strokeWidth: 2)),
+                                    errorWidget: (context, url, error) => Container(
+                                      height: Responsive.scaleHeight(200, context),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(color: AppColors.darkBlue.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+                                      child: Center(child: Icon(LucideIcons.imageOff, size: Responsive.scaleFont(48, context), color: AppColors.lightGray.withOpacity(0.5)))
+                                    )
+                                  )
+                                )
                               ),
                               const SizedBox(height: 12),
                               if (hasToken)
