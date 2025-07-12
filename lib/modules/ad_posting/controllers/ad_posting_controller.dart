@@ -44,6 +44,8 @@ class AdPostingController extends GetxController {
   final currentZoom = 13.0.obs;
   final isLocationInitialized = false.obs;
   static const double _optimalZoom = 13.0;
+  final selectedJobType = ''.obs;
+  final selectedEmploymentType = ''.obs;
 
   final ImagePicker _picker = ImagePicker();
   final ApiController apiController = Get.find<ApiController>();
@@ -336,7 +338,15 @@ class AdPostingController extends GetxController {
           'latitude': double.parse(latitudeController.text),
           'longitude': double.parse(longitudeController.text),
         },
+        //'job_type': selectedJobType.value,
+        //'employment_type': selectedEmploymentType.value,
       };
+      if (selectedJobType.value.isNotEmpty) {
+        postData['job_type'] = selectedJobType.value;
+      }
+      if (selectedEmploymentType.value.isNotEmpty) {
+        postData['employment_type'] = selectedEmploymentType.value;
+      }
       if (imageUrl != null && imageUrl.isNotEmpty) {
         postData['picture_url'] = imageUrl;
       }

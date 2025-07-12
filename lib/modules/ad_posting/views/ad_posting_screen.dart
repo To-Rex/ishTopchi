@@ -24,6 +24,8 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
   late final AnimatedMapController _animatedMapController;
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
+  final _jobTypeFieldKey = GlobalKey<FormFieldState>();
+  final _employmentTypeFieldKey = GlobalKey<FormFieldState>();
 
   // Har bir maydon uchun GlobalKey
   final _titleFieldKey = GlobalKey<FormFieldState>();
@@ -38,11 +40,26 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
   final _phoneFieldKey = GlobalKey<FormFieldState>();
   final _emailFieldKey = GlobalKey<FormFieldState>();
 
-  final phoneFormatter = MaskTextInputFormatter(
-    mask: '+998 ## ### ## ##',
-    filter: {"#": RegExp(r'[0-9]')},
-    initialText: '+998 ',
-  );
+  final phoneFormatter = MaskTextInputFormatter(mask: '+998 ## ### ## ##', filter: {"#": RegExp(r'[0-9]')}, initialText: '+998 ');
+
+  final List<Map<String, String>> jobTypes = [
+    {'value': '', 'title': 'Tanlang'},
+    {'value': 'FULL_TIME', 'title': 'To‘liq ish kuni'},
+    {'value': 'TEMPORARY', 'title': 'Vaqtinchalik ish'},
+    {'value': 'REMOTE', 'title': 'Masofaviy ish'},
+    {'value': 'DAILY', 'title': 'Kunlik ish'},
+    {'value': 'PROJECT_BASED', 'title': 'Loyihaviy asosda ish'},
+    {'value': 'INTERNSHIP', 'title': 'Amaliyot (stajirovka)'},
+  ];
+
+  final List<Map<String, String>> employmentTypes = [
+    {'value': '', 'title': 'Tanlang'},
+    {'value': 'FULL_TIME', 'title': 'To‘liq stavka'},
+    {'value': 'PART_TIME', 'title': 'Yarim stavka'},
+    {'value': 'SHIFT_BASED', 'title': 'Smenali ish jadvali'},
+    {'value': 'FLEXIBLE', 'title': 'Moslashuvchan ish vaqti'},
+    {'value': 'REGULAR_SCHEDULE', 'title': 'Doimiy ish jadvali'},
+  ];
 
   String? _validatePhone(String? value) {
     if (value == null || value.isEmpty) {
@@ -76,19 +93,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
 
   // Xato maydoniga scroll qilish funksiyasi
   void _scrollToErrorField() {
-    final List<GlobalKey<FormFieldState>> fieldKeys = [
-      _titleFieldKey,
-      _contentFieldKey,
-      _salaryFromFieldKey,
-      _salaryToFieldKey,
-      _categoryFieldKey,
-      _regionFieldKey,
-      _districtFieldKey,
-      _locationTitleFieldKey, // Yangi kalit qo‘shildi
-      _locationFieldKey,
-      _phoneFieldKey,
-      _emailFieldKey,
-    ];
+    final List<GlobalKey<FormFieldState>> fieldKeys = [_titleFieldKey, _contentFieldKey, _salaryFromFieldKey, _salaryToFieldKey, _categoryFieldKey, _regionFieldKey, _districtFieldKey, _locationTitleFieldKey, _locationFieldKey, _phoneFieldKey, _emailFieldKey];
 
     for (var key in fieldKeys) {
       if (key.currentState != null && !key.currentState!.isValid) {
@@ -97,7 +102,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
           Scrollable.ensureVisible(
             context,
             duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
+            curve: Curves.easeInOut
           );
           break; // Birinchi xato topilganda to'xtatamiz
         }
@@ -247,6 +252,24 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 fieldKey: _locationTitleFieldKey, // Yangi kalit ishlatildi
               ),
               SizedBox(height: AppDimensions.paddingMedium),
+              _buildDropdownJobType<String>(
+                context,
+                'Ish turi',
+                jobTypes,
+                controller.selectedJobType,
+                LucideIcons.briefcase, (value) => controller.selectedJobType.value = value!,
+                fieldKey: _jobTypeFieldKey,
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
+              _buildDropdownJobType<String>(
+                context,
+                'Bandlik turi',
+                employmentTypes,
+                controller.selectedEmploymentType,
+                LucideIcons.clock, (value) => controller.selectedEmploymentType.value = value!,
+                fieldKey: _employmentTypeFieldKey,
+              ),
+              SizedBox(height: AppDimensions.paddingMedium),
               _buildMapPicker(context),
               SizedBox(height: AppDimensions.paddingMedium),
               _buildTextField(
@@ -278,6 +301,57 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
       );
     },
   );
+
+  Widget _buildDropdownJobType<T>(
+      BuildContext context,
+      String label,
+      List<dynamic> items, // RxList o‘rniga List
+      Rx<T?> selectedValue, // Rx<T> o‘rniga Rx<T?>
+      IconData icon,
+      Function(T?) onChanged,
+      {String? Function(T?)? validator, bool isInt = false, GlobalKey<FormFieldState>? fieldKey}
+      ) =>
+      DropdownButtonFormField2<T>(
+          key: fieldKey,
+          value: selectedValue.value,
+          isExpanded: true,
+          validator: validator,
+          decoration: InputDecoration(
+              prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+              labelText: label,
+              labelStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.7)),
+              filled: true,
+              fillColor: AppColors.darkBlue,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5)),
+              contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
+              errorStyle: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context))
+          ),
+          dropdownStyleData: DropdownStyleData(
+              maxHeight: Responsive.scaleHeight(200, context),
+              width: Responsive.scaleWidth(250, context),
+              decoration: BoxDecoration(
+                  color: AppColors.darkBlue,
+                  borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+                  boxShadow: [BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5)]
+              ),
+              elevation: 4
+          ),
+          iconStyleData: IconStyleData(icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context))),
+          style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+          items: items.map((item) {
+            return DropdownMenuItem<T>(
+                value: isInt ? item['id'] as T : item['value'] as T, // id o‘rniga value
+                child: Text(
+                    item['title'] ?? item['name'] ?? 'Noma’lum',
+                    style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
+                    overflow: TextOverflow.ellipsis
+                )
+            );
+          }).toList(),
+          onChanged: onChanged,
+          hint: Text('Tanlang', style: TextStyle(color: AppColors.lightBlue.withOpacity(0.7), fontSize: Responsive.scaleFont(14, context)))
+      );
 
   Widget _buildImagePicker(BuildContext context) => Obx(() => GestureDetector(
     onTap: controller.pickImage,

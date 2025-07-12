@@ -356,18 +356,7 @@ class ApiController extends GetxController {
 
   Future<void> createPost(Map<String, dynamic> postData, String token) async {
     try {
-      final response = await _dio.post(
-        '$_baseUrl/posts',
-        data: json.encode(postData),
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
+      final response = await _dio.post('$_baseUrl/posts', data: json.encode(postData), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('✅ Post muvaffaqiyatli yaratildi: ${response.data}');
       } else {
