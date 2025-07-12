@@ -44,12 +44,12 @@ class PostCard extends StatelessWidget {
                   child: Container(
                     height: Responsive.scaleHeight(isSmallScreen ? 110 : 160, context),
                     width: double.infinity,
-                    decoration: BoxDecoration(color: AppColors.lightGray.withOpacity(0.2)),
+                    decoration: BoxDecoration(color: AppColors.lightGray.withAlpha(50)),
                     child: post.pictureUrl != null && post.pictureUrl.isNotEmpty ? Image.network(
                       post.pictureUrl.startsWith('http') ? post.pictureUrl : 'https://ishtopchi.uz${post.pictureUrl}',
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Center(child: Icon(LucideIcons.imageOff, color: AppColors.lightGray, size: 40))
-                    ) : const Center(child: Icon(LucideIcons.imageOff, color: AppColors.lightGray, size: 40))
+                      errorBuilder: (context, error, stackTrace) => const Center(child: Icon(LucideIcons.imageOff, color: AppColors.darkBlue, size: 40))
+                    ) : const Center(child: Icon(LucideIcons.imageOff, color: AppColors.darkBlue, size: 40))
                   )
                 ),
                 Padding(
@@ -94,7 +94,6 @@ class PostCard extends StatelessWidget {
                             )
                         ]
                       ),
-
                       SizedBox(height: Responsive.scaleHeight(6, context)),
                       // Tavsif
                       Container(
