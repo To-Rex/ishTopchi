@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:ishtopchi/modules/messages/controllers/messages_controller.dart';
@@ -34,6 +35,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ScreenUtilInit(
+        designSize: Size(360, 690),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return GetMaterialApp(
+            title: 'Ishtopchi',
+            theme: AppTheme.theme,
+            darkTheme: AppTheme.theme,
+            initialRoute: AppRoutes.splash,
+            getPages: AppPages.pages,
+            debugShowCheckedModeBanner: false,
+            translations: AppTranslations(),
+            locale: const Locale('uz'),
+            fallbackLocale: const Locale('uz'),
+          );
+        }
+    );
     return GetMaterialApp(
       title: 'Ishtopchi',
       theme: AppTheme.theme,

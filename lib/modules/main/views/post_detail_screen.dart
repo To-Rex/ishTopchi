@@ -101,17 +101,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.symmetric(
-          horizontal: AppDimensions.paddingMedium,
-          vertical: AppDimensions.paddingSmall,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium, vertical: AppDimensions.paddingSmall),
         child: AnimationLimiter(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: AnimationConfiguration.toStaggeredList(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 200),
               childAnimationBuilder: (widget) => SlideAnimation(
-                verticalOffset: 50.0,
+                verticalOffset: 30.0,
                 child: FadeInAnimation(child: widget),
               ),
               children: [
