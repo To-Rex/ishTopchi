@@ -12,6 +12,8 @@ class WishList {
   final bool? isOpen;
   final String? status;
   final int? views;
+  final String? jobType;
+  final String? employmentType;
   final String? createdAt;
   final String? updatedAt;
   final User? user;
@@ -19,25 +21,7 @@ class WishList {
   final Category? category;
   final District? district;
 
-  WishList({
-    this.id,
-    this.title,
-    this.content,
-    this.phoneNumber,
-    this.email,
-    this.pictureUrl,
-    this.salaryFrom,
-    this.salaryTo,
-    this.isOpen,
-    this.status,
-    this.views,
-    this.createdAt,
-    this.updatedAt,
-    this.user,
-    this.location,
-    this.category,
-    this.district,
-  });
+  WishList({this.id, this.title, this.content, this.phoneNumber, this.email, this.pictureUrl, this.salaryFrom, this.salaryTo, this.isOpen, this.status, this.views, this.jobType, this.employmentType, this.createdAt, this.updatedAt, this.user, this.location, this.category, this.district});
 
   factory WishList.fromJson(Map<String, dynamic> json) {
     return WishList(
@@ -52,6 +36,8 @@ class WishList {
       isOpen: json['is_open'],
       status: json['status'],
       views: json['views'],
+      jobType: json['job_type'],
+      employmentType: json['employment_type'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       user: json['user'] != null ? User.fromJson(json['user']) : null,
@@ -74,6 +60,8 @@ class WishList {
     data['is_open'] = isOpen;
     data['status'] = status;
     data['views'] = views;
+    data['job_type'] = jobType;
+    data['employment_type'] = employmentType;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     if (user != null) {

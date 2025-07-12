@@ -308,8 +308,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
             ),
           ),
         ],
-      )
-          : ClipRRect(
+      ) : ClipRRect(
         borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
         child: Image.file(
           controller.selectedImage.value!,
@@ -373,72 +372,47 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                           Obx(() => MarkerLayer(
                             markers: [
                               if (controller.currentLocation.value != null)
-                                Marker(
-                                  width: 40.0,
-                                  height: 40.0,
-                                  point: controller.currentLocation.value!,
-                                  child: const Icon(
-                                    LucideIcons.locateFixed, // Tuzatildi
-                                    color: Colors.blue,
-                                    size: 20.0,
-                                  ),
-                                ),
-                              Marker(
-                                width: 40.0,
-                                height: 40.0,
-                                point: controller.selectedLocation.value,
-                                child: const Icon(
-                                  Icons.location_pin,
-                                  color: Colors.red,
-                                  size: 30.0,
-                                ),
-                              ),
-                            ],
-                          )),
-                        ],
-                      ),
+                                Marker(width: 40.0, height: 40.0, point: controller.currentLocation.value!, child: const Icon(LucideIcons.locateFixed, color: Colors.blue, size: 20.0)),
+                              Marker(width: 40.0, height: 40.0, point: controller.selectedLocation.value, child: const Icon(Icons.location_pin, color: Colors.red, size: 30.0))
+                            ]
+                          ))
+                        ]
+                      )
                     ),
                     if (formFieldState.hasError)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          formFieldState.errorText!,
-                          style: TextStyle(
-                            color: AppColors.red,
-                            fontSize: Responsive.scaleFont(12, context),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
+                      Padding(padding: const EdgeInsets.only(top: 8.0), child: Text(formFieldState.errorText!, style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context))))
+                  ]
+                )
+              )
+            )
           ),
           Positioned(
             right: AppDimensions.paddingSmall,
             top: AppDimensions.paddingSmall,
             child: Column(
               children: [
-                FloatingActionButton(
-                  mini: true,
-                  backgroundColor: AppColors.darkBlue,
-                  onPressed: () => controller.zoomIn(_moveMap),
-                  child: Icon(
-                    LucideIcons.plus,
-                    color: AppColors.lightGray,
-                    size: Responsive.scaleFont(18, context),
+                IconButton(
+                  splashColor: AppColors.darkBlue,
+                  color: AppColors.darkBlue,
+                  splashRadius: 20,
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.darkBlue,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius))
                   ),
+                  icon: Icon(LucideIcons.plus, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+                  onPressed: () => controller.zoomIn(_moveMap),
                 ),
                 SizedBox(height: AppDimensions.paddingSmall),
-                FloatingActionButton(
-                  mini: true,
-                  backgroundColor: AppColors.darkBlue,
-                  onPressed: () => controller.zoomOut(_moveMap),
-                  child: Icon(
-                    LucideIcons.minus,
-                    color: AppColors.lightGray,
-                    size: Responsive.scaleFont(18, context),
+                IconButton(
+                  splashColor: AppColors.darkBlue,
+                  color: AppColors.darkBlue,
+                  splashRadius: 20,
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.darkBlue,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius))
                   ),
+                  icon: Icon(LucideIcons.minus, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+                  onPressed: () => controller.zoomOut(_moveMap),
                 ),
               ],
             ),
@@ -446,34 +420,25 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
           Positioned(
             right: AppDimensions.paddingSmall,
             bottom: AppDimensions.paddingSmall,
-            child: FloatingActionButton(
-              mini: true,
-              backgroundColor: AppColors.darkBlue,
-              onPressed: () => controller.getCurrentLocation(_moveMap),
-              tooltip: 'Joriy joylashuvni aniqlash',
-              child: Icon(
-                LucideIcons.locate,
-                color: Colors.blue,
-                size: Responsive.scaleFont(20, context),
+            child: IconButton(
+              splashColor: AppColors.darkBlue,
+              color: AppColors.darkBlue,
+              splashRadius: 20,
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.darkBlue,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius))
               ),
-            ),
-          ),
-        ],
-      ),
-    ],
+              icon: Icon(LucideIcons.locate, color: Colors.blue, size: Responsive.scaleFont(20, context)),
+              tooltip: 'Joriy joylashuvni aniqlash',
+              onPressed: () => controller.getCurrentLocation(_moveMap),
+            )
+          )
+        ]
+      )
+    ]
   );
 
-  Widget _buildTextField(
-      BuildContext context,
-      TextEditingController controller,
-      String label,
-      String hint, {
-        int maxLines = 1,
-        TextInputType? keyboardType,
-        String? Function(String?)? validator,
-        List<TextInputFormatter>? inputFormatters,
-        GlobalKey<FormFieldState>? fieldKey,
-      }) =>
+  Widget _buildTextField(BuildContext context, TextEditingController controller, String label, String hint, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator, List<TextInputFormatter>? inputFormatters, GlobalKey<FormFieldState>? fieldKey}) =>
       TextFormField(
         key: fieldKey,
         controller: controller,
@@ -489,61 +454,29 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
           hintStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.5)),
           filled: true,
           fillColor: AppColors.darkBlue,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-            borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide.none),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5)),
           contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
-          errorStyle: TextStyle(
-            color: AppColors.red,
-            fontSize: Responsive.scaleFont(12, context),
-          ),
-        ),
+          errorStyle: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context))
+        )
       );
 
-  Widget _buildDropdownField<T>(
-      BuildContext context,
-      String label,
-      RxList<dynamic> items,
-      Rx<T> selectedValue,
-      IconData icon,
-      Function(T?) onChanged, {
-        String? Function(T?)? validator,
-        bool isInt = false,
-        GlobalKey<FormFieldState>? fieldKey,
-      }) =>
+  Widget _buildDropdownField<T>(BuildContext context, String label, RxList<dynamic> items, Rx<T> selectedValue, IconData icon, Function(T?) onChanged, {String? Function(T?)? validator, bool isInt = false, GlobalKey<FormFieldState>? fieldKey}) =>
       DropdownButtonFormField2<T>(
         key: fieldKey,
         value: selectedValue.value,
         isExpanded: true,
         validator: validator,
         decoration: InputDecoration(
-          prefixIcon: Icon(
-            icon,
-            color: AppColors.lightGray,
-            size: Responsive.scaleFont(18, context),
-          ),
+          prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
           labelText: label,
           labelStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.7)),
           filled: true,
           fillColor: AppColors.darkBlue,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-            borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide.none),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5)),
           contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
-          errorStyle: TextStyle(
-            color: AppColors.red,
-            fontSize: Responsive.scaleFont(12, context),
-          ),
+          errorStyle: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context))
         ),
         dropdownStyleData: DropdownStyleData(
           maxHeight: Responsive.scaleHeight(200, context),
@@ -551,41 +484,24 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
           decoration: BoxDecoration(
             color: AppColors.darkBlue,
             borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-            boxShadow: [
-              BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5),
-            ],
+            boxShadow: [BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5)]
           ),
-          elevation: 4,
+          elevation: 4
         ),
-        iconStyleData: IconStyleData(
-          icon: Icon(
-            LucideIcons.chevronDown,
-            color: AppColors.lightGray,
-            size: Responsive.scaleFont(18, context),
-          ),
-        ),
-        style: TextStyle(
-          color: AppColors.lightGray,
-          fontSize: Responsive.scaleFont(14, context),
-        ),
+        iconStyleData: IconStyleData(icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context))),
+        style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         items: items.map((item) {
           return DropdownMenuItem<T>(
             value: isInt ? item['id'] as T : item['id'].toString() as T,
             child: Text(
               item['title'] ?? item['name'] ?? 'Noma’lum',
               style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
-              overflow: TextOverflow.ellipsis,
-            ),
+              overflow: TextOverflow.ellipsis
+            )
           );
         }).toList(),
         onChanged: onChanged,
-        hint: Text(
-          'Tanlang',
-          style: TextStyle(
-            color: AppColors.lightBlue.withOpacity(0.7),
-            fontSize: Responsive.scaleFont(14, context),
-          ),
-        ),
+        hint: Text('Tanlang', style: TextStyle(color: AppColors.lightBlue.withOpacity(0.7), fontSize: Responsive.scaleFont(14, context)))
       );
 
   Widget _buildSubmitButton(BuildContext context) => SizedBox(
@@ -601,18 +517,10 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.red,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        ),
-        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius)),
+        elevation: 2
       ),
-      child: Text(
-        'E’lonni yuborish',
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          fontSize: Responsive.scaleFont(16, context),
-          color: AppColors.white,
-        ),
-      ),
-    ),
+      child: Text('E’lonni yuborish', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.white))
+    )
   );
 }

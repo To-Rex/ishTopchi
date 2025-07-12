@@ -38,6 +38,8 @@ class Data {
   bool? isOpen;
   String? status;
   int? views;
+  String? jobType;
+  String? employmentType;
   String? createdAt;
   String? updatedAt;
   User? user;
@@ -45,24 +47,7 @@ class Data {
   Category? category;
   District? district;
 
-  Data(
-      {this.id,
-        this.title,
-        this.content,
-        this.phoneNumber,
-        this.email,
-        this.pictureUrl,
-        this.salaryFrom,
-        this.salaryTo,
-        this.isOpen,
-        this.status,
-        this.views,
-        this.createdAt,
-        this.updatedAt,
-        this.user,
-        this.location,
-        this.category,
-        this.district});
+  Data({this.id, this.title, this.content, this.phoneNumber, this.email, this.pictureUrl, this.salaryFrom, this.salaryTo, this.isOpen, this.status, this.views, this.jobType, this.employmentType, this.createdAt, this.updatedAt, this.user, this.location, this.category, this.district});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -76,18 +61,14 @@ class Data {
     isOpen = json['is_open'];
     status = json['status'];
     views = json['views'];
+    jobType = json['job_type'];
+    employmentType = json['employment_type'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     user = json['user'] != null ? User.fromJson(json['user']) : null;
-    location = json['location'] != null
-        ? Location.fromJson(json['location'])
-        : null;
-    category = json['category'] != null
-        ? Category.fromJson(json['category'])
-        : null;
-    district = json['district'] != null
-        ? District.fromJson(json['district'])
-        : null;
+    location = json['location'] != null ? Location.fromJson(json['location']) : null;
+    category = json['category'] != null ? Category.fromJson(json['category']) : null;
+    district = json['district'] != null ? District.fromJson(json['district']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -103,6 +84,8 @@ class Data {
     data['is_open'] = isOpen;
     data['status'] = status;
     data['views'] = views;
+    data['job_type'] = jobType;
+    data['employment_type'] = employmentType;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     if (user != null) {
@@ -135,19 +118,7 @@ class User {
   String? updatedAt;
   String? deletedAt;
 
-  User(
-      {this.id,
-        this.firstName,
-        this.lastName,
-        this.profilePicture,
-        this.birthDate,
-        this.gender,
-        this.verified,
-        this.isBlocked,
-        this.role,
-        this.createdAt,
-        this.updatedAt,
-        this.deletedAt});
+  User({this.id, this.firstName, this.lastName, this.profilePicture, this.birthDate, this.gender, this.verified, this.isBlocked, this.role, this.createdAt, this.updatedAt, this.deletedAt});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
