@@ -140,7 +140,6 @@ class AdPostingController extends GetxController {
   }
 
   Future<bool> checkLocationPermission() async {
-    print('Checking location service status...');
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       ShowToast.show('Joylashuv o‘chirilgan', 'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.', 4, 1);
@@ -148,20 +147,16 @@ class AdPostingController extends GetxController {
     }
 
     var status = await Permission.locationWhenInUse.status;
-    print('Current permission status: $status');
-
     if (status.isGranted) {
-      print('✅ Permission GRANTED');
+      debugPrint('✅ Permission GRANTED');
       return true;
     }
 
     if (status.isDenied || status.isRestricted) {
-      print('⚠️ Permission DENIED/RESTRICTED - requesting...');
       final newStatus = await Permission.locationWhenInUse.request();
-      print('Requested permission result: $newStatus');
-
+      debugPrint('Requested permission result: $newStatus');
       if (newStatus.isGranted) {
-        print('✅ Permission NOW GRANTED');
+        debugPrint('✅ Permission NOW GRANTED');
         return true;
       } else {
         ShowToast.show('Ruxsat berilmadi', 'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
@@ -171,17 +166,12 @@ class AdPostingController extends GetxController {
     }
 
     if (status.isPermanentlyDenied) {
-      print('❌ Permission PERMANENTLY_DENIED');
       ShowToast.show('Ruxsat kerak', 'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
       await openAppSettings();
       return false;
     }
 
-    ShowToast.show(
-      'Xato',
-      'Joylashuv ruxsatini aniqlashda muammo yuz berdi.',
-      3, 1,
-    );
+    ShowToast.show('Xato', 'Joylashuv ruxsatini aniqlashda muammo yuz berdi.', 3, 1);
     return false;
   }
 
@@ -211,12 +201,12 @@ class AdPostingController extends GetxController {
     }
 
     try {
-      print('Getting current location...');
+      debugPrint('Getting current location...');
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: Duration(seconds: 10),
       );
-      print('Current location obtained: ${position.latitude}, ${position.longitude}');
+      debugPrint('Current location obtained: ${position.latitude}, ${position.longitude}');
       final newLocation = LatLng(position.latitude, position.longitude);
       currentLocation.value = newLocation;
       selectedLocation.value = newLocation;
@@ -289,19 +279,7 @@ class AdPostingController extends GetxController {
     }
   }
 
-  bool validateForm() {
-    print('Validating form...');
-    print('Title: ${titleController.text}');
-    print('Content: ${contentController.text}');
-    print('Phone Number: ${phoneNumberController.text}');
-    print('Region: ${selectedRegionId.value}');
-    print('District: ${selectedDistrictId.value}');
-    print('Category: ${selectedCategory.value}');
-    print('Latitude: ${latitudeController.text}');
-    print('Longitude: ${longitudeController.text}');
-
-    return titleController.text.isNotEmpty && contentController.text.isNotEmpty && phoneNumberController.text.isNotEmpty && selectedRegionId.value.isNotEmpty && selectedDistrictId.value != '0' && selectedCategory.value != 0 && latitudeController.text.isNotEmpty && longitudeController.text.isNotEmpty;
-  }
+  bool validateForm() => titleController.text.isNotEmpty && contentController.text.isNotEmpty && phoneNumberController.text.isNotEmpty && selectedRegionId.value.isNotEmpty && selectedDistrictId.value != '0' && selectedCategory.value != 0 && latitudeController.text.isNotEmpty && longitudeController.text.isNotEmpty;
 
   Future<void> submitAd() async {
     if (!validateForm()) {
@@ -336,10 +314,8 @@ class AdPostingController extends GetxController {
         'location': {
           'title': locationTitleController.text.isNotEmpty ? locationTitleController.text : 'Default Location',
           'latitude': double.parse(latitudeController.text),
-          'longitude': double.parse(longitudeController.text),
+          'longitude': double.parse(longitudeController.text)
         },
-        //'job_type': selectedJobType.value,
-        //'employment_type': selectedEmploymentType.value,
       };
       if (selectedJobType.value.isNotEmpty) {
         postData['job_type'] = selectedJobType.value;
