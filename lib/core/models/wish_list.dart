@@ -1,24 +1,43 @@
 import 'package:ishtopchi/core/models/post_model.dart';
 
-class WishList {
+class WishList implements PostInterface{
+  @override
   final int? id;
+  @override
   final String? title;
+  @override
   final String? content;
+  @override
   final String? phoneNumber;
+  @override
   final String? email;
+  @override
   final String? pictureUrl;
+  @override
   final String? salaryFrom;
+  @override
   final String? salaryTo;
+  @override
   final bool? isOpen;
+  @override
   final String? status;
+  @override
   final int? views;
+  @override
   final String? jobType;
+  @override
   final String? employmentType;
+  @override
   final String? createdAt;
+  @override
   final String? updatedAt;
+  @override
   final User? user;
+  @override
   final Location? location;
+  @override
   final Category? category;
+  @override
   final District? district;
 
   WishList({this.id, this.title, this.content, this.phoneNumber, this.email, this.pictureUrl, this.salaryFrom, this.salaryTo, this.isOpen, this.status, this.views, this.jobType, this.employmentType, this.createdAt, this.updatedAt, this.user, this.location, this.category, this.district});

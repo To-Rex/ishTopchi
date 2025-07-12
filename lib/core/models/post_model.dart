@@ -26,25 +26,44 @@ class Post {
   }
 }
 
-class Data {
+class Data implements PostInterface {
+  @override
   int? id;
+  @override
   String? title;
+  @override
   String? content;
+  @override
   String? phoneNumber;
+  @override
   String? email;
+  @override
   String? pictureUrl;
+  @override
   String? salaryFrom;
+  @override
   String? salaryTo;
+  @override
   bool? isOpen;
+  @override
   String? status;
+  @override
   int? views;
+  @override
   String? jobType;
+  @override
   String? employmentType;
+  @override
   String? createdAt;
+  @override
   String? updatedAt;
+  @override
   User? user;
+  @override
   Location? location;
+  @override
   Category? category;
+  @override
   District? district;
 
   Data({this.id, this.title, this.content, this.phoneNumber, this.email, this.pictureUrl, this.salaryFrom, this.salaryTo, this.isOpen, this.status, this.views, this.jobType, this.employmentType, this.createdAt, this.updatedAt, this.user, this.location, this.category, this.district});
@@ -267,4 +286,27 @@ class Meta {
     data['totalPages'] = totalPages;
     return data;
   }
+}
+
+abstract class PostInterface {
+  int? get id;
+  String? get title;
+  String? get content;
+  String? get phoneNumber;
+  String? get email;
+  String? get pictureUrl;
+  String? get salaryFrom;
+  String? get salaryTo;
+  bool? get isOpen;
+  String? get status;
+  int? get views;
+  String? get jobType;
+  String? get employmentType;
+  String? get createdAt;
+  String? get updatedAt;
+  User? get user;
+  Location? get location;
+  Category? get category;
+  District? get district;
+  Map<String, dynamic> toJson(); // toJson metodini qo‘shish
 }
