@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:ishtopchi/modules/messages/controllers/messages_controller.dart';
 import 'config/theme/app_theme.dart';
 import 'config/routes/app_pages.dart';
@@ -13,7 +12,6 @@ import 'controllers/funcController.dart';
 import 'firebase_options.dart';
 import 'modules/ad_posting/controllers/ad_posting_controller.dart';
 import 'modules/favorites/controllers/favorites_controller.dart';
-import 'modules/favorites/views/favorites_screen.dart';
 import 'modules/main/controllers/main_controller.dart';
 import 'modules/profile/controllers/profile_controller.dart';
 
