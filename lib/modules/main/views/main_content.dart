@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ishtopchi/modules/main/views/skeleton_post_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -12,6 +13,7 @@ import '../widgets/post_card.dart';
 
 class MainContent extends StatelessWidget {
   const MainContent({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,70 @@ class MainContent extends StatelessWidget {
               refreshController.refreshCompleted();
             },
           ),
+        ),
+        //qo'shimcha sozlamalar masalan filterlar, grid, list, etc va boshqa
+        Container(
+          height: Responsive.scaleHeight(55, context),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(
+            left: Responsive.scaleWidth(16, context),
+            right: Responsive.scaleWidth(16, context),
+            bottom: Responsive.scaleHeight(10, context),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(10, context)),
+                decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
+                child: Row(
+                  children: [
+                    Icon(LucideIcons.mapPin, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+                    SizedBox(width: 6.sp),
+                    Text(funcController.userMe.value!.data!.district!.region!.name.toString(), style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500))
+                  ]
+                )
+              ),
+              Spacer(),
+              GestureDetector(
+                onTap: () {
+                  //_showFilterDialog(context, funcController, apiController);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(10, context)),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkBlue,
+                    borderRadius: BorderRadius.circular(8.sp),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(LucideIcons.listFilter, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+                      SizedBox(width: 6.sp),
+                      Text(
+                        'Filtr'.tr,
+                        style: TextStyle(
+                          color: AppColors.lightGray,
+                          fontSize: Responsive.scaleFont(14, context),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ),
+              SizedBox(width: 10.sp),
+              GestureDetector(
+                onTap: () {
+                  //funcController.isGridView.value = !funcController.isGridView.value;
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(10, context)),
+                  decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
+                  child: Icon(LucideIcons.list, color: AppColors.lightGray, size: Responsive.scaleFont(20, context))
+                )
+              )
+            ]
+          )
         ),
         Expanded(
           child: RefreshComponent(
