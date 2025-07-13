@@ -310,6 +310,7 @@ class ApiController extends GetxController {
     try {
       final response = await _dio.post('$_baseUrl/posts', data: json.encode(postData), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
+        ShowToast.show('Muvaffaqiyat', 'Post muvaffaqiyatli yaratildi', 3, 1);
         print('✅ Post muvaffaqiyatli yaratildi: ${response.data}');
       } else {
         print('❌ createPost xatolik: ${response.statusCode} - ${response.data}');

@@ -24,7 +24,6 @@ class ProfileScreen extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    final double avatarSize = Responsive.scaleWidth(100, context);
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
       body: Obx(() {
