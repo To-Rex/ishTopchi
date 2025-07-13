@@ -274,7 +274,6 @@ class ApiController extends GetxController {
     try {
       funcController.isLoading.value = true;
       final token = funcController.getToken();
-      if (token == null) {throw Exception('Token mavjud emas');}
       if (page == 1) {funcController.hasMore.value = true;}
       String url = '$_baseUrl/posts?page=$page&limit=$limit';
       if (search != null && search.isNotEmpty) {url += '&search=$search';}
