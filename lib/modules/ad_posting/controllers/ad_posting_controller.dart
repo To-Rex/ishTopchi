@@ -59,8 +59,8 @@ class AdPostingController extends GetxController {
   Future<void> _initializeData() async {
     final token = await _waitForToken();
     if (token == null) {
-      ShowToast.show('Xato', 'Token mavjud emas, iltimos login qiling', 3, 1);
-      Get.offNamed('/login');
+      //ShowToast.show('Xato', 'Token mavjud emas, iltimos login qiling', 3, 1);
+      //Get.offNamed('/login');
       return;
     }
     await Future.wait([
@@ -289,8 +289,8 @@ class AdPostingController extends GetxController {
     try {
       final token = apiController.funcController.getToken();
       if (token == null) {
-        ShowToast.show('Xato', 'Token mavjud emas, iltimos login qiling', 3, 1);
-        Get.offNamed('/login');
+        //ShowToast.show('Xato', 'Token mavjud emas, iltimos login qiling', 3, 1);
+        //Get.offNamed('/login');
         return;
       }
       String? imageUrl;

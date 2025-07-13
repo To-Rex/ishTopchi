@@ -1,12 +1,15 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:ishtopchi/controllers/funcController.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../core/utils/responsive.dart';
@@ -21,6 +24,7 @@ class AdPostingScreen extends StatefulWidget {
 
 class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderStateMixin {
   final AdPostingController controller = Get.find<AdPostingController>();
+  final FuncController funcController = Get.find<FuncController>();
   late final AnimatedMapController _animatedMapController;
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
@@ -106,7 +110,10 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(backgroundColor: AppColors.darkNavy, body: _buildBody(context));
+  Widget build(BuildContext context) => Scaffold(backgroundColor: AppColors.darkNavy,
+      //body: _buildBody(context)
+      body: funcController.getToken() != null ? _buildBody(context) : NotLogged()
+  );
 
   Widget _buildBody(BuildContext context) => FutureBuilder<List<List<Map<String, dynamic>>>>(
     future: Future.wait([

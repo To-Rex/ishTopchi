@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ishtopchi/controllers/funcController.dart';
+import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../core/models/post_model.dart';
 import '../../../core/utils/responsive.dart';
@@ -12,23 +13,19 @@ class FavoritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FuncController funcController = Get.find<FuncController>();
-
-    //final wish = funcController.wishList[index];
-    //return PostCard(post: Data.fromJson(wish.toJson()));
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
       body: Obx(() {
         print('WishList uzunligi: ${funcController.wishList.length}');
+        if (funcController.getToken() == null || funcController.getToken() == '') {
+          return NotLogged();
+        }
         return funcController.isLoading.value
             ? const Center(child: CircularProgressIndicator())
             : funcController.wishList.isEmpty
             ? const Center(
-          child: Text(
-            'Saqlangan postlar yo‘q',
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-        )
-            : GridView.builder(
+          child: Text('Saqlangan postlar yo‘q', style: TextStyle(color: Colors.white, fontSize: 18)),
+        ) : GridView.builder(
           padding: const EdgeInsets.all(16),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: Responsive.screenWidth(context) < 300 ? 1 : 2,
