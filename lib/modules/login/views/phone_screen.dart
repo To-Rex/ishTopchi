@@ -110,7 +110,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.midBlue,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
                       ),
                       onPressed: _submit,
                       child: const Text('Kodni yuborish', style: TextStyle(fontSize: 16, color: AppColors.white)),

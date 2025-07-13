@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
+import 'package:ishtopchi/core/services/show_toast.dart';
+
+import '../../../controllers/api_controller.dart';
 
 class OtpController extends GetxController {
   final resendAvailable = false.obs;
@@ -19,7 +22,7 @@ class OtpController extends GetxController {
 
   void startTimer() {
     resendAvailable.value = false;
-    remainingSeconds.value = 5;
+    remainingSeconds.value = 60;
 
     ever(remainingSeconds, (seconds) {
       if (seconds == 0) {
@@ -36,11 +39,11 @@ class OtpController extends GetxController {
     });
   }
 
-  void resendCode() {
+  void resendCode(phone) {
+    print('phone: $phone');
     if (resendAvailable.value) {
-      // TODO: kodni qayta yuborish logikasi
-      Get.snackbar('Kod yuborildi', 'Yangi kod telefoningizga yuborildi',
-          snackPosition: SnackPosition.BOTTOM);
+      ShowToast.show('Kod yuborildi', 'Yangi kod telefoningizga yuborildi', 1, 1);
+      ApiController().generateOtp(phone);
       startTimer();
     }
   }

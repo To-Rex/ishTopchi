@@ -87,11 +87,12 @@ class OtpVerificationScreen extends StatelessWidget {
                  )
                 ),
                 Obx(() => controller.resendAvailable.value ? TextButton(
-                  onPressed: controller.resendAvailable.value ? controller.resendCode : null,
-                  child: Text(
-                    controller.resendAvailable.value ? 'Kodni qayta yuborish' : '',
-                    style: TextStyle(color: controller.resendAvailable.value ? AppColors.lightBlue : Colors.grey.shade600)
-                  ),
+                  onPressed: () {
+                    if (controller.resendAvailable.value) {
+                      controller.resendCode(phone);
+                    }
+                  },
+                  child: Text(controller.resendAvailable.value ? 'Kodni qayta yuborish' : '', style: TextStyle(color: controller.resendAvailable.value ? AppColors.lightBlue : Colors.grey.shade600))
                 ) : TextButton(
                   onPressed: () {},
                   child: Text('Qayta yuborish mumkin: ${controller.remainingSeconds.value}s', style: const TextStyle(color: AppColors.lightBlue))
