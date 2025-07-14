@@ -65,10 +65,6 @@ class ProfileScreen extends GetView<ProfileController> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              /*CircleAvatar(
-                                radius: avatarSize / 1.2,
-                                backgroundImage: NetworkImage(_getProfileUrl(user?.data?.profilePicture)),
-                              ),*/
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(1000),
                                 child: SizedBox(
@@ -77,12 +73,12 @@ class ProfileScreen extends GetView<ProfileController> {
                                   child: CachedNetworkImage(
                                     imageUrl: _getProfileUrl(user?.data?.profilePicture),
                                     fit: BoxFit.cover,
-                                    placeholder: (context, url) => Center(child: CircularProgressIndicator(color: AppColors.lightBlue.withOpacity(0.7), strokeWidth: 2)),
+                                    placeholder: (context, url) => Center(child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2)),
                                     errorWidget: (context, url, error) => Container(
                                       height: Responsive.scaleHeight(200, context),
                                       width: double.infinity,
-                                      decoration: BoxDecoration(color: AppColors.darkBlue.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
-                                      child: Center(child: Icon(LucideIcons.imageOff, size: Responsive.scaleFont(48, context), color: AppColors.lightGray.withOpacity(0.5)))
+                                      decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(12)),
+                                      child: Center(child: Icon(LucideIcons.imageOff, size: Responsive.scaleFont(48, context), color: AppColors.lightGray))
                                     )
                                   )
                                 )

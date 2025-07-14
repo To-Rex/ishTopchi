@@ -242,7 +242,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
       decoration: BoxDecoration(
         color: AppColors.darkBlue,
         borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 6, offset: const Offset(0, 2))]
+        boxShadow: [BoxShadow(color: AppColors.darkBlue, blurRadius: 6, offset: const Offset(0, 2))]
       ),
       child: controller.selectedImage.value == null ? Column(
         mainAxisAlignment: MainAxisAlignment.center,
