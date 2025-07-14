@@ -19,6 +19,20 @@ class FuncController {
   final RxInt totalPages = 1.obs;
   final userMe = Rxn<UserMe>();
 
+  final RxList<Map<String, dynamic>> regions = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> districts = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> categories = <Map<String, dynamic>>[].obs;
+  final RxnInt selectedRegion = RxnInt(); // null boshlang‘ich qiymat
+  final RxnInt selectedDistrict = RxnInt(); // null boshlang‘ich qiymat
+  final RxnInt selectedCategory = RxnInt(); // null boshlang‘ich qiymat
+  final RxnString employmentType = RxnString(); // null boshlang‘ich qiymat
+  final RxnString sortPrice = RxnString(); // null boshlang‘ich qiymat
+  final RxBool isGridView = true.obs;
+  final RxBool isLoadingDistricts = false.obs;
+
+  final RxnString minPrice = RxnString(); // Yangi: Narxdan
+  final RxnString maxPrice = RxnString(); // Yangi: Narxgacha
+
   String getProfileUrl(String? url) {
     const base = 'https://ishtopchi.uz';
     if (url == null || url.trim().isEmpty) {
@@ -71,4 +85,13 @@ class FuncController {
   }
 
   String get tokenBearer => storage.read('token') ?? '';
+
+  void clearFilters() {
+    selectedRegion.value = null;
+    selectedDistrict.value = null;
+    selectedCategory.value = null;
+    employmentType.value = null;
+    sortPrice.value = null;
+    districts.clear();
+  }
 }

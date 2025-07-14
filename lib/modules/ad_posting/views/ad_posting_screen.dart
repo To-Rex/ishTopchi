@@ -237,7 +237,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
     onTap: controller.pickImage,
     child: AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      height: Responsive.scaleHeight(150, context),
+      height: Responsive.scaleHeight(250, context),
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.darkBlue,
@@ -256,7 +256,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
         child: Image.file(
           controller.selectedImage.value!,
           fit: BoxFit.cover,
-          height: Responsive.scaleHeight(150, context),
+          height: Responsive.scaleHeight(250, context),
           width: double.infinity
         )
       )
