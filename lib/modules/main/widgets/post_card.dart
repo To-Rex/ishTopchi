@@ -10,7 +10,7 @@ import '../../../config/theme/app_colors.dart';
 import '../views/post_detail_screen.dart';
 
 class PostCard extends StatelessWidget {
-  final PostInterface post;
+  final post;
   const PostCard({super.key, required this.post});
 
   @override

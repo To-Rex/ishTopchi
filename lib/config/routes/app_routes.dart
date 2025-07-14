@@ -10,5 +10,6 @@ class AppRoutes {
   static const notifications = '/notifications';
   static const register = '/register';
   static const messagesDetail = '/messages_detail';
+  static const myPosts = '/my_posts';
 
 }

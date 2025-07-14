@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:ishtopchi/modules/profile/views/my_posts_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../common/widgets/bottom_sheets.dart';
 import '../../../controllers/api_controller.dart';
@@ -99,7 +100,8 @@ class ProfileController extends GetxController {
   void onEditProfile() => Get.to(() => EditProfileScreen());
 
   void onMyResumesTap() => Get.to(() => MyResumesScreen());
-  void onMyPostsTap() => Get.snackbar('Mening e’lonlarim', 'Mening e’lonlarim sozlamalari ochildi');
+  //void onMyPostsTap() => Get.toNamed('/my_posts');
+  void onMyPostsTap() => Get.to(() => MyPostsScreen());
   void onLanguagesTap() => BottomSheets().showLanguageBottomSheet();
   void onSupportTap() => Get.to(() => SupportScreen());
   void onAboutAppTap() => Get.to(() => AboutAppScreen());

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:ishtopchi/core/services/show_toast.dart';
 import '../config/routes/app_routes.dart';
+import '../core/models/me_post_model.dart';
 import '../core/models/post_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
@@ -295,6 +296,42 @@ class ApiController extends GetxController {
           funcController.posts.value = newPosts;
         } else {
           funcController.posts.addAll(newPosts);
+        }
+      } else {
+        throw Exception('Postlarni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchPosts xatolik (page $page): $e');
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchMyPosts({int page = 1, int limit = 10, String? search}) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (page == 1) {funcController.hasMore.value = true;}
+      String url = '$_baseUrl/posts?page=$page&limit=$limit&user_id=${funcController.userMe.value?.data?.id}';
+      if (search != null && search.isNotEmpty) {url += '&search=$search';}
+      final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      print('API javobi posts (page $page): ${response.data}');
+      print('Status code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data['data'];
+        final meta = MeMeta.fromJson(response.data['meta']);
+        funcController.totalPosts.value = meta.total ?? 0;
+        funcController.totalPages.value = meta.totalPages ?? 1;
+        if (data.isEmpty) {
+          print('Ma’lumotlar tugadi');
+          funcController.hasMore.value = false;
+          return;
+        }
+        final newPosts = data.map((json) => MeData.fromJson(json)).toList();
+        if (page == 1) {
+          funcController.mePosts.value = newPosts;
+        } else {
+          funcController.mePosts.addAll(newPosts);
         }
       } else {
         throw Exception('Postlarni olishda xatolik: ${response.statusCode}');

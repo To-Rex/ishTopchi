@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart' hide Data;
+import '../core/models/me_post_model.dart';
 import '../core/models/post_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
@@ -10,6 +11,7 @@ class FuncController {
   final RxString otpToken = ''.obs;
   final RxString otpPhone = ''.obs;
   final RxList<Data> posts = <Data>[].obs;
+  final RxList<MeData> mePosts = <MeData>[].obs;
   final RxList<WishList> wishList = <WishList>[].obs;
   final RxBool isLoading = false.obs;
   final RxString searchQuery = ''.obs;
