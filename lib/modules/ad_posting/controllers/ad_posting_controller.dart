@@ -288,18 +288,11 @@ class AdPostingController extends GetxController {
     }
     try {
       final token = apiController.funcController.getToken();
-      if (token == null) {
-        //ShowToast.show('Xato', 'Token mavjud emas, iltimos login qiling', 3, 1);
-        //Get.offNamed('/login');
-        return;
-      }
+      if (token == null) {return;}
       String? imageUrl;
       if (selectedImage.value != null) {
         imageUrl = await apiController.uploadImage(selectedImage.value!, token);
-        if (imageUrl == null) {
-          ShowToast.show('Xato', 'Rasm yuklashda xato yuz berdi', 3, 1);
-          return;
-        }
+        if (imageUrl == null) {ShowToast.show('Xato', 'Rasm yuklashda xato yuz berdi', 3, 1);return;}
       }
       final Map<String, dynamic> postData = {
         'title': titleController.text,
@@ -327,13 +320,29 @@ class AdPostingController extends GetxController {
         postData['picture_url'] = imageUrl;
       }
       print('Yuborilayotgan ma\'lumotlar: ${jsonEncode(postData)}');
-      await apiController.createPost(postData, token);
+      await apiController.createPost(postData, token).then((value) => clearForm());
       ShowToast.show('Muvaffaqiyat', 'E’lon muvaffaqiyatli yuborildi', 1, 1);
       Get.back();
     } catch (e) {
       print('submitAd xatolik: $e');
       ShowToast.show('Xato', 'E\'lon yuborishda xato yuz berdi: $e', 3, 1);
     }
+  }
+
+  Future<void> clearForm() async {
+    titleController.clear();
+    contentController.clear();
+    phoneNumberController.clear();
+    emailController.clear();
+    salaryFromController.clear();
+    salaryToController.clear();
+    locationTitleController.clear();
+    latitudeController.clear();
+    longitudeController.clear();
+    selectedCategory.value = 0;
+    selectedJobType.value = '';
+    selectedEmploymentType.value = '';
+    selectedImage.value = null;
   }
 
   @override

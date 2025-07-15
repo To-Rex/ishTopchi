@@ -4,6 +4,7 @@ import '../core/models/me_post_model.dart';
 import '../core/models/post_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
+import '../modules/ad_posting/controllers/ad_posting_controller.dart';
 
 class FuncController {
   final GetStorage storage = GetStorage();
@@ -100,4 +101,5 @@ class FuncController {
     jobType.value = null;
     districts.clear();
   }
+
 }

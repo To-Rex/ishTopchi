@@ -8,6 +8,7 @@ import '../core/models/me_post_model.dart';
 import '../core/models/post_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
+import '../modules/ad_posting/controllers/ad_posting_controller.dart';
 import '../modules/login/views/otp_verification_screen.dart';
 import 'funcController.dart';
 
@@ -349,9 +350,10 @@ class ApiController extends GetxController {
         funcController.hasMore.value = true;
       }
       String url = '$_baseUrl/posts?page=$page&limit=$limit';
-      //https://ishtopchi.uz/api/posts?page=1&limit=10&salary_from=1000&salary_to=2000&district_id=1&job_type=FULL_TIME&employment_type=FULL_TIME
       if (funcController.selectedDistrict.value != null) {
         url += '&district_id=${funcController.selectedDistrict.value}';
+      } else if (funcController.userMe.value?.data?.district?.id != null) {
+        //url += '&district_id=${funcController.userMe.value?.data?.district?.id}';
       }
       if (funcController.jobType.value != null) {
         url += '&job_type=${funcController.jobType.value}';
