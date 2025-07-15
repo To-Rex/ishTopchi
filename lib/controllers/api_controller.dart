@@ -13,7 +13,12 @@ import 'funcController.dart';
 
 class ApiController extends GetxController {
   static const String _baseUrl = 'https://ishtopchi.uz/api';
-  final Dio _dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10)));
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 
   final FuncController funcController = Get.put(FuncController());
 
@@ -23,8 +28,20 @@ class ApiController extends GetxController {
     try {
       if (token == null) throw Exception('Token mavjud emas');
       final String fileName = image.path.split('/').last;
-      final formData = FormData.fromMap({'file': await MultipartFile.fromFile(image.path, filename: fileName)});
-      final response = await _dio.post('$_baseUrl/upload/image', data: formData, options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'}),);
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(image.path, filename: fileName),
+      });
+      final response = await _dio.post(
+        '$_baseUrl/upload/image',
+        data: formData,
+        options: Options(
+          headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         final String url = response.data['data']['url'];
         print('✅ Rasm serverga yuklandi: $url');
@@ -77,7 +94,11 @@ class ApiController extends GetxController {
     print('ID Token: $idToken');
     print('Platform: $platform');
     try {
-      final response = await _dio.post('$_baseUrl/oauth/google', options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}), data: {'idToken': idToken, 'platform': platform});
+      final response = await _dio.post(
+        '$_baseUrl/oauth/google',
+        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}),
+        data: {'idToken': idToken, 'platform': platform},
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('API javobi: ${response.data}');
         final accessToken = response.data['data']['token']['access_token'];
@@ -102,7 +123,10 @@ class ApiController extends GetxController {
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
-      final response = await _dio.get('$_baseUrl/user/me', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token'}));
+      final response = await _dio.get(
+        '$_baseUrl/user/me',
+        options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token'}),
+      );
       if (response.statusCode == 200) {
         final data = response.data;
         print('User ME: $data');
@@ -123,7 +147,10 @@ class ApiController extends GetxController {
   Future generateOtp(String phoneNumber) async {
     print('Phone number: $phoneNumber');
     try {
-      final response = await _dio.post('$_baseUrl/otp-based-auth/generate-otp', data: {'phoneNumber': '+998$phoneNumber'}, options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'})
+      final response = await _dio.post(
+        '$_baseUrl/otp-based-auth/generate-otp',
+        data: {'phoneNumber': '+998$phoneNumber'},
+        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('API javobi: ${response.data}');
@@ -131,7 +158,10 @@ class ApiController extends GetxController {
         print('OTP yuborildi. Encrypted OTP: $encryptedOtp');
         funcController.setOtpTokenOnly(encryptedOtp);
         funcController.setOtpPhone(phoneNumber);
-        Get.to(() => OtpVerificationScreen(phone: phoneNumber.trim()), transition: Transition.fadeIn);
+        Get.to(
+          () => OtpVerificationScreen(phone: phoneNumber.trim()),
+          transition: Transition.fadeIn,
+        );
       } else {
         print('OTP yuborishda xatolik: ${response.statusCode}');
       }
@@ -147,7 +177,13 @@ class ApiController extends GetxController {
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/login',
         data: json.encode({"phone_number": phone, "otp": otp, "fingerprint": fingerprint}),
-        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json', 'Authorization': 'Bearer $fingerprint'}),
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $fingerprint',
+          },
+        ),
       );
       print('✅ Javob: ${response.data}');
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -171,7 +207,14 @@ class ApiController extends GetxController {
     }
   }
 
-  Future completeRegistration({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, required File? image}) async {
+  Future completeRegistration({
+    required String firstName,
+    required String lastName,
+    required int districtId,
+    required String birthDate,
+    required String gender,
+    required File? image,
+  }) async {
     try {
       String? imageUrl;
       if (image != null) {
@@ -186,7 +229,7 @@ class ApiController extends GetxController {
         'last_name': lastName,
         'district_id': districtId,
         'birth_date': birthDate,
-        'gender': gender == '1' ? 'MALE' : 'FEMALE'
+        'gender': gender == '1' ? 'MALE' : 'FEMALE',
       };
       if (imageUrl != null) {
         data['profile_picture'] = imageUrl;
@@ -195,7 +238,13 @@ class ApiController extends GetxController {
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/complete-registration',
         data: data,
-        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.getToken()}', 'Content-Type': 'application/json'})
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ${funcController.getToken()}',
+            'Content-Type': 'application/json',
+          },
+        ),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -209,10 +258,15 @@ class ApiController extends GetxController {
     }
   }
 
-
-
   // Profilni yangilash
-  Future<bool> updateProfile({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, File? image}) async {
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required int districtId,
+    required String birthDate,
+    required String gender,
+    File? image,
+  }) async {
     try {
       final token = funcController.getToken();
       if (token == null) throw Exception('Token mavjud emas');
@@ -226,13 +280,29 @@ class ApiController extends GetxController {
         }
       }
 
-      final Map<String, dynamic> data = {'first_name': firstName, 'last_name': lastName, 'birth_date': birthDate, 'gender': gender, 'district_id': districtId};
+      final Map<String, dynamic> data = {
+        'first_name': firstName,
+        'last_name': lastName,
+        'birth_date': birthDate,
+        'gender': gender,
+        'district_id': districtId,
+      };
       if (imageUrl != null) {
         data['profile_picture'] = imageUrl;
       }
 
       final userId = funcController.userMe.value?.data?.id ?? 0; // Foydalanuvchi ID sini olish
-      final response = await _dio.patch('$_baseUrl/user/$userId', data: json.encode(data), options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
+      final response = await _dio.patch(
+        '$_baseUrl/user/$userId',
+        data: json.encode(data),
+        options: Options(
+          headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
 
       if (response.statusCode == 200) {
         print('✅ Profil yangilandi: ${response.data}');
@@ -249,14 +319,15 @@ class ApiController extends GetxController {
     }
   }
 
-
-
   // Kategoriyalarni olish
   Future<List<Map<String, dynamic>>> fetchCategories() async {
     try {
       final token = funcController.getToken();
       if (token == null) throw Exception('Token mavjud emas');
-      final response = await _dio.get('$_baseUrl/category?page=1&limit=1000', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      final response = await _dio.get(
+        '$_baseUrl/category?page=1&limit=1000',
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
+      );
       if (response.statusCode == 200) {
         final data = response.data['data'] as List<dynamic>;
         return data.cast<Map<String, dynamic>>();
@@ -269,16 +340,39 @@ class ApiController extends GetxController {
     }
   }
 
-
   // Posts
   Future<void> fetchPosts({int page = 1, int limit = 10, String? search}) async {
     try {
       funcController.isLoading.value = true;
       final token = funcController.getToken();
-      if (page == 1) {funcController.hasMore.value = true;}
+      if (page == 1) {
+        funcController.hasMore.value = true;
+      }
       String url = '$_baseUrl/posts?page=$page&limit=$limit';
-      if (search != null && search.isNotEmpty) {url += '&search=$search';}
-      final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      //https://ishtopchi.uz/api/posts?page=1&limit=10&salary_from=1000&salary_to=2000&district_id=1&job_type=FULL_TIME&employment_type=FULL_TIME
+      if (funcController.selectedDistrict.value != null) {
+        url += '&district_id=${funcController.selectedDistrict.value}';
+      }
+      if (funcController.jobType.value != null) {
+        url += '&job_type=${funcController.jobType.value}';
+      }
+      if (funcController.employmentType.value != null) {
+        url += '&employment_type=${funcController.employmentType.value}';
+      }
+      if (funcController.minPrice.value != null) {
+        url += '&salary_from=${funcController.minPrice.value}';
+      }
+      if (funcController.maxPrice.value != null) {
+        url += '&salary_to=${funcController.maxPrice.value}';
+      }
+
+      if (search != null && search.isNotEmpty) {
+        url += '&search=$search';
+      }
+      final response = await _dio.get(
+        url,
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
+      );
       print('API javobi posts (page $page): ${response.data}');
       print('Status code: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -311,10 +405,18 @@ class ApiController extends GetxController {
     try {
       funcController.isLoading.value = true;
       final token = funcController.getToken();
-      if (page == 1) {funcController.hasMore.value = true;}
-      String url = '$_baseUrl/posts?page=$page&limit=$limit&user_id=${funcController.userMe.value?.data?.id}';
-      if (search != null && search.isNotEmpty) {url += '&search=$search';}
-      final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      if (page == 1) {
+        funcController.hasMore.value = true;
+      }
+      String url =
+          '$_baseUrl/posts?page=$page&limit=$limit&user_id=${funcController.userMe.value?.data?.id}';
+      if (search != null && search.isNotEmpty) {
+        url += '&search=$search';
+      }
+      final response = await _dio.get(
+        url,
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
+      );
       print('API javobi posts (page $page): ${response.data}');
       print('Status code: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -345,7 +447,17 @@ class ApiController extends GetxController {
 
   Future<void> createPost(Map<String, dynamic> postData, String token) async {
     try {
-      final response = await _dio.post('$_baseUrl/posts', data: json.encode(postData), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
+      final response = await _dio.post(
+        '$_baseUrl/posts',
+        data: json.encode(postData),
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         ShowToast.show('Muvaffaqiyat', 'Post muvaffaqiyatli yaratildi', 3, 1);
         print('✅ Post muvaffaqiyatli yaratildi: ${response.data}');
@@ -359,7 +471,6 @@ class ApiController extends GetxController {
     }
   }
 
-
   // Wishlistni olish
   Future<void> fetchWishlist() async {
     try {
@@ -367,11 +478,18 @@ class ApiController extends GetxController {
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
-      final response = await _dio.get('$_baseUrl/wishlist', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),);
+      final response = await _dio.get(
+        '$_baseUrl/wishlist',
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
+      );
       print('API javobi wishlist: ${response.data}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
-        funcController.wishList.value = data.where((json) => json != null).map((json) => WishList.fromJson(json as Map<String, dynamic>)).toList();
+        funcController.wishList.value =
+            data
+                .where((json) => json != null)
+                .map((json) => WishList.fromJson(json as Map<String, dynamic>))
+                .toList();
         print('WishList uzunligi: ${funcController.wishList.length}');
       } else if (response.statusCode == 404) {
         funcController.clearWishList();
@@ -393,7 +511,17 @@ class ApiController extends GetxController {
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
-      final response = await _dio.post('$_baseUrl/wishlist', data: {'post_id': postId}, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
+      final response = await _dio.post(
+        '$_baseUrl/wishlist',
+        data: {'post_id': postId},
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('Post wishlistga qo‘shildi: $postId');
         fetchWishlist(); // Wishlistni yangilash
@@ -412,7 +540,10 @@ class ApiController extends GetxController {
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
-      final response = await _dio.delete('$_baseUrl/wishlist/$wishlistId', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      final response = await _dio.delete(
+        '$_baseUrl/wishlist/$wishlistId',
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
+      );
       if (response.statusCode == 200 || response.statusCode == 204 || response.statusCode == 201) {
         fetchWishlist(); // Wishlistni yangilash
       } else {

@@ -27,6 +27,7 @@ class FuncController {
   final RxnInt selectedRegion = RxnInt(); // null boshlang‘ich qiymat
   final RxnInt selectedDistrict = RxnInt(); // null boshlang‘ich qiymat
   final RxnInt selectedCategory = RxnInt(); // null boshlang‘ich qiymat
+  final RxnString jobType = RxnString(); // null boshlang‘ich qiymat
   final RxnString employmentType = RxnString(); // null boshlang‘ich qiymat
   final RxnString sortPrice = RxnString(); // null boshlang‘ich qiymat
   final RxBool isGridView = true.obs;

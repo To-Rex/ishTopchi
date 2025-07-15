@@ -426,7 +426,7 @@ class MainContent extends StatelessWidget {
                         SizedBox(height: 16.sp),
                         // Ish turi tanlash
                         DropdownButtonFormField2<String>(
-                          value: funcController.employmentType.value,
+                          value: funcController.jobType.value,
                           isExpanded: true,
                           decoration: InputDecoration(
                             label: Container(
@@ -490,22 +490,16 @@ class MainContent extends StatelessWidget {
                             fontSize: Responsive.scaleFont(14, context),
                           ),
                           items: [
-                            DropdownMenuItem(value: 'FULL_TIME', child: Text('To‘liq kunlik'.tr)),
-                            DropdownMenuItem(value: 'PART_TIME', child: Text('Yarim kunlik'.tr)),
+                            DropdownMenuItem(value: 'FULL_TIME', child: Text('kunlik'.tr)),
+                            DropdownMenuItem(value: 'TEMPORARY', child: Text('Yarim kunlik'.tr)),
                             DropdownMenuItem(value: 'REMOTE', child: Text('Masofaviy'.tr)),
                             DropdownMenuItem(value: 'DAILY', child: Text('Kunlik ish'.tr)),
-                            DropdownMenuItem(
-                              value: 'PROJECT_BASED',
-                              child: Text('Loyihaviy asosda'.tr),
-                            ),
-                            DropdownMenuItem(
-                              value: 'INTERNSHIP',
-                              child: Text('Amaliyot (stajirovka)'.tr),
-                            ),
+                            DropdownMenuItem(value: 'PROJECT_BASED', child: Text('Loyihaviy'.tr)),
+                            DropdownMenuItem(value: 'INTERNSHIP', child: Text('Amaliyot'.tr)),
                           ],
                           onChanged: (value) {
                             if (value != null) {
-                              funcController.employmentType.value = value;
+                              funcController.jobType.value = value;
                             }
                           },
                           hint: Text(
@@ -583,18 +577,11 @@ class MainContent extends StatelessWidget {
                             fontSize: Responsive.scaleFont(14, context),
                           ),
                           items: [
-                            DropdownMenuItem(value: 'FULL_TIME', child: Text('To‘liq kunlik'.tr)),
+                            DropdownMenuItem(value: 'FULL_TIME', child: Text('kunlik'.tr)),
                             DropdownMenuItem(value: 'PART_TIME', child: Text('Yarim kunlik'.tr)),
-                            DropdownMenuItem(value: 'REMOTE', child: Text('Masofaviy'.tr)),
-                            DropdownMenuItem(value: 'DAILY', child: Text('Kunlik ish'.tr)),
-                            DropdownMenuItem(
-                              value: 'PROJECT_BASED',
-                              child: Text('Loyihaviy asosda'.tr),
-                            ),
-                            DropdownMenuItem(
-                              value: 'INTERNSHIP',
-                              child: Text('Amaliyot (stajirovka)'.tr),
-                            ),
+                            DropdownMenuItem(value: 'SHIFT_BASED', child: Text('Smenali ish'.tr)),
+                            DropdownMenuItem(value: 'FLEXIBLE', child: Text('Moslashuvchan'.tr)),
+                            DropdownMenuItem(value: 'REGULAR_SCHEDULE', child: Text('Doimiy jadval'.tr),),
                           ],
                           onChanged: (value) {
                             if (value != null) {
@@ -616,6 +603,14 @@ class MainContent extends StatelessWidget {
                 actions: [
                   TextButton(
                     onPressed: () {
+                      funcController.maxPrice.value = null;
+                      funcController.minPrice.value = null;
+                      funcController.selectedRegion.value = null;
+                      funcController.selectedDistrict.value = null;
+                      funcController.selectedCategory.value = null;
+                      funcController.jobType.value = null;
+                      funcController.employmentType.value = null;
+                      funcController.sortPrice.value = null;
                       funcController.clearFilters();
                       funcController.currentPage.value = 1;
                       funcController.posts.clear();
@@ -637,6 +632,10 @@ class MainContent extends StatelessWidget {
                       funcController.currentPage.value = 1;
                       funcController.posts.clear();
                       funcController.hasMore.value = true;
+                      await apiController.fetchPosts(
+                        page: 1,
+                        search: funcController.searchQuery.value,
+                      );
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
