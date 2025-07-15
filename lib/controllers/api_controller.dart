@@ -6,6 +6,7 @@ import 'package:ishtopchi/core/services/show_toast.dart';
 import '../config/routes/app_routes.dart';
 import '../core/models/me_post_model.dart';
 import '../core/models/post_model.dart';
+import '../core/models/resumes_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
 import '../modules/ad_posting/controllers/ad_posting_controller.dart';
@@ -14,6 +15,7 @@ import 'funcController.dart';
 
 class ApiController extends GetxController {
   static const String _baseUrl = 'https://ishtopchi.uz/api';
+
   final Dio _dio = Dio(
     BaseOptions(
       connectTimeout: const Duration(seconds: 10),
@@ -208,14 +210,7 @@ class ApiController extends GetxController {
     }
   }
 
-  Future completeRegistration({
-    required String firstName,
-    required String lastName,
-    required int districtId,
-    required String birthDate,
-    required String gender,
-    required File? image,
-  }) async {
+  Future completeRegistration({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, required File? image}) async {
     try {
       String? imageUrl;
       if (image != null) {
@@ -260,14 +255,7 @@ class ApiController extends GetxController {
   }
 
   // Profilni yangilash
-  Future<bool> updateProfile({
-    required String firstName,
-    required String lastName,
-    required int districtId,
-    required String birthDate,
-    required String gender,
-    File? image,
-  }) async {
+  Future<bool> updateProfile({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, File? image}) async {
     try {
       final token = funcController.getToken();
       if (token == null) throw Exception('Token mavjud emas');
@@ -549,4 +537,175 @@ class ApiController extends GetxController {
       print('removeFromWishlist xatolik: $e');
     }
   }
+
+
+// Resumelarni olish ====================================================================================
+  Future<void> fetchMeResumes({int page = 1, int limit = 10}) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      final userId = funcController.userMe.value?.data?.id;
+      if (token == null || userId == null) {
+        throw Exception('Token yoki foydalanuvchi ID si mavjud emas');
+      }
+
+      String url = '$_baseUrl/resumes?user_id=$userId&page=$page&limit=$limit';
+      final response = await _dio.get(
+        url,
+        options: Options(headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      print('API javobi resumes (page $page): ${response.data}');
+      print('Status code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final jsonData = response.data;
+        final resumes = Resumes.fromJson(jsonData);
+        funcController.resumes.value = resumes.data ?? [];
+        funcController.totalResumes.value = resumes.meta?.total ?? 0;
+        if (resumes.data == null || resumes.data!.isEmpty) {
+          print('Ma’lumotlar tugadi');
+          funcController.hasMore.value = false;
+        } else {
+          funcController.hasMore.value = (resumes.meta?.total ?? 0) > funcController.resumes.length;
+        }
+      } else {
+        throw Exception('Resumelarni olishda xatolik: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('fetchResumes xatolik (page $page): $e');
+      ShowToast.show('Xatolik', 'Resumelarni olishda xato yuz berdi', 3, 1);
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
+  // Resume yaratish
+  Future<void> createResume({required String title, required String content, required List<Map<String, dynamic>> education, required List<Map<String, dynamic>> experience, File? file}) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+
+      String? fileUrl;
+      if (file != null) {
+        fileUrl = await uploadImage(file, token);
+        if (fileUrl == null) {
+          ShowToast.show('Xatolik', 'Fayl yuklashda xato yuz berdi', 3, 1);
+          return;
+        }
+      }
+
+      final data = {
+        'title': title,
+        'content': content,
+        'education': education,
+        'experience': experience,
+        if (fileUrl != null) 'file_url': fileUrl
+      };
+
+      final response = await _dio.post(
+        '$_baseUrl/resumes',
+        data: json.encode(data),
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'})
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli yaratildi', 3, 1);
+        await fetchMeResumes(page: 1); // Ro'yxatni yangilash
+      } else {
+        ShowToast.show('Xatolik', 'Resume yaratishda xato: ${response.statusCode}', 3, 1);
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Resume yaratishda xato: $e', 3, 1);
+      print('createResume xatolik: $e');
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
+  // Resume o'chirish
+  Future<void> deleteResume(int resumeId) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+
+      final response = await _dio.delete(
+        '$_baseUrl/resumes/$resumeId',
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli o‘chirildi', 3, 1);
+        await fetchMeResumes(page: 1); // Ro'yxatni yangilash
+      } else {
+        ShowToast.show('Xatolik', 'Resume o‘chirishda xato: ${response.statusCode}', 3, 1);
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Resume o‘chirishda xato: $e', 3, 1);
+      print('deleteResume xatolik: $e');
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
+  // Resume yangilash
+  Future<void> updateResume({required int resumeId, required String title, required String content, required List<Map<String, dynamic>> education, required List<Map<String, dynamic>> experience, File? file}) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+
+      String? fileUrl;
+      if (file != null) {
+        fileUrl = await uploadImage(file, token);
+        if (fileUrl == null) {
+          ShowToast.show('Xatolik', 'Fayl yuklashda xato yuz berdi', 3, 1);
+          return;
+        }
+      }
+
+      final data = {
+        'title': title,
+        'content': content,
+        'education': education,
+        'experience': experience,
+        if (fileUrl != null) 'file_url': fileUrl,
+      };
+
+      final response = await _dio.patch(
+        '$_baseUrl/resumes/$resumeId',
+        data: json.encode(data),
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli yangilandi', 3, 1);
+        await fetchMeResumes(page: 1); // Ro'yxatni yangilash
+      } else {
+        ShowToast.show('Xatolik', 'Resume yangilashda xato: ${response.statusCode}', 3, 1);
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Resume yangilashda xato: $e', 3, 1);
+      print('updateResume xatolik: $e');
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
 }

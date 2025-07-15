@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/funcController.dart';
+import '../../../controllers/api_controller.dart';
+import '../../../core/models/resumes_model.dart';
 import '../../../core/utils/responsive.dart';
-import '../controllers/profile_controller.dart';
+import 'create_resume_screen.dart';
+import '../controllers/create_resume_controller.dart';
 
 class MyResumesScreen extends StatefulWidget {
   const MyResumesScreen({super.key});
@@ -13,20 +16,31 @@ class MyResumesScreen extends StatefulWidget {
 }
 
 class MyResumesScreenState extends State<MyResumesScreen> {
-  final ProfileController profileController = Get.find<ProfileController>();
   final FuncController funcController = Get.find<FuncController>();
+  final ApiController apiController = Get.find<ApiController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // CreateResumeController ni yaratish
+    Get.put(CreateResumeController());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      apiController.fetchMeResumes(page: 1, limit: 10);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mening Rezumelarim', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
         backgroundColor: AppColors.darkNavy,
+        centerTitle: true,
+        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+          icon: Icon(Icons.arrow_back, color: AppColors.lightGray, size: Responsive.scaleFont(25, context)),
           onPressed: () => Get.back(),
         ),
-        elevation: 0,
+        title: Text('Mening Rezumelarim', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(20, context), fontWeight: FontWeight.bold)),
       ),
       backgroundColor: AppColors.darkNavy,
       body: Padding(
@@ -36,7 +50,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
           children: [
             // Qo'shish tugmasi
             ElevatedButton(
-              onPressed: () => _showAddResumeDialog(context),
+              onPressed: () => Get.to(() => CreateResumeScreen()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.lightBlue,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context))),
@@ -57,12 +71,25 @@ class MyResumesScreenState extends State<MyResumesScreen> {
             SizedBox(height: Responsive.scaleHeight(20, context)),
             // Resume ro'yxati
             Expanded(
-              child: ListView.builder(
-                itemCount: 3, // Masalan, 3 ta resume, real ma'lumotlar uchun funcController dan oling
-                itemBuilder: (context, index) {
-                  return _buildResumeItem(context, index);
-                },
-              ),
+              child: Obx(() {
+                if (funcController.isLoading.value) {
+                  return Center(child: CircularProgressIndicator(color: AppColors.lightBlue));
+                } else if (funcController.resumes.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'Rezumelar mavjud emas',
+                      style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w500),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: funcController.resumes.length,
+                  itemBuilder: (context, index) {
+                    final resume = funcController.resumes[index];
+                    return _buildResumeItem(context, resume, index);
+                  },
+                );
+              }),
             ),
           ],
         ),
@@ -70,108 +97,45 @@ class MyResumesScreenState extends State<MyResumesScreen> {
     );
   }
 
-  Widget _buildResumeItem(BuildContext context, int index) {
+  Widget _buildResumeItem(BuildContext context, ResumesData resume, int index) {
     return Padding(
       padding: EdgeInsets.only(bottom: Responsive.scaleHeight(12, context)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.darkBlue,
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.darkNavy.withAlpha(50),
-              blurRadius: 4,
-              offset: Offset(0, 2),
+      child: GestureDetector(
+        onTap: () => Get.to(() => CreateResumeScreen(resume: resume)),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.darkBlue,
+            borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.darkNavy.withAlpha(50),
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(8, context)),
+            leading: Icon(Icons.description, color: AppColors.lightBlue, size: Responsive.scaleFont(35, context)),
+            title: Text(
+              resume.title ?? 'Noma’lum',
+              style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500),
             ),
-          ],
-        ),
-        child: ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(8, context)),
-          leading: Icon(Icons.description, color: AppColors.lightBlue, size: Responsive.scaleFont(20, context)),
-          title: Text(
-            'Resume ${index + 1}',
-            style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500),
-          ),
-          subtitle: Text(
-            'Yaratilgan sana: 2025-06-01',
-            style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.delete, color: Colors.redAccent, size: Responsive.scaleFont(18, context)),
-            onPressed: () => _confirmDelete(index),
+            subtitle: Text(
+              'Yaratilgan sana: ${resume.createdAt?.substring(0, 10) ?? 'Noma’lum'}',
+              style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.delete, color: Colors.redAccent, size: Responsive.scaleFont(25, context)),
+              onPressed: () => _confirmDelete(resume.id, index),
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _showAddResumeDialog(BuildContext context) {
-    final TextEditingController titleController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: AppColors.darkBlue,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context))),
-          child: Padding(
-            padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Yangi Resume',
-                  style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600),
-                ),
-                SizedBox(height: Responsive.scaleHeight(16, context)),
-                TextField(
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    labelText: 'Sarlavha',
-                    labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
-                    filled: true,
-                    fillColor: AppColors.lightBlue.withAlpha(50),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)),
-                ),
-                SizedBox(height: Responsive.scaleHeight(20, context)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('Bekor qilish', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
-                    ),
-                    SizedBox(width: Responsive.scaleWidth(10, context)),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (titleController.text.isNotEmpty) {
-                          // Yangi resume qo'shish logikasi bu yerga qo'shiladi
-                          Navigator.pop(context);
-                          Get.snackbar('Muvaffaqiyat', 'Resume qo‘shildi', backgroundColor: AppColors.darkBlue, colorText: AppColors.white);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.lightBlue,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context))),
-                        padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(8, context)),
-                      ),
-                      child: Text('Saqlash', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context))),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _confirmDelete(int index) {
+  void _confirmDelete(int? resumeId, int index) {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.darkBlue,
@@ -184,10 +148,11 @@ class MyResumesScreenState extends State<MyResumesScreen> {
             child: Text('Yo‘q', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
           ),
           ElevatedButton(
-            onPressed: () {
-              // O'chirish logikasi bu yerga qo'shiladi
-              Get.back();
-              Get.snackbar('Muvaffaqiyat', 'Resume o‘chirildi', backgroundColor: AppColors.red, colorText: AppColors.white);
+            onPressed: () async {
+              if (resumeId != null) {
+                await apiController.deleteResume(resumeId);
+                Get.back();
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,

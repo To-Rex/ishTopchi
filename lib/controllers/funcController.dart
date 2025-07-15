@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart' hide Data;
 import '../core/models/me_post_model.dart';
 import '../core/models/post_model.dart';
+import '../core/models/resumes_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
 import '../modules/ad_posting/controllers/ad_posting_controller.dart';
@@ -14,6 +15,8 @@ class FuncController {
   final RxList<Data> posts = <Data>[].obs;
   final RxList<MeData> mePosts = <MeData>[].obs;
   final RxList<WishList> wishList = <WishList>[].obs;
+  final resumes = <ResumesData>[].obs; // Resumelarni saqlash uchun
+  final totalResumes = 0.obs; // Umumiy resumelar soni
   final RxBool isLoading = false.obs;
   final RxString searchQuery = ''.obs;
   final RxInt currentPage = 1.obs;
