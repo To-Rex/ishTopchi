@@ -5,7 +5,7 @@ import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../core/models/post_model.dart';
 import '../../../core/utils/responsive.dart';
-import '../../main/widgets/post_card.dart';
+import '../../../common/widgets/post_card.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -25,18 +25,29 @@ class FavoritesScreen extends StatelessWidget {
             : funcController.wishList.isEmpty
             ? const Center(
           child: Text('Saqlangan postlar yo‘q', style: TextStyle(color: Colors.white, fontSize: 18)),
-        ) : GridView.builder(
+        ) : funcController.isGridView.value ? GridView.builder(
           padding: const EdgeInsets.all(16),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: Responsive.screenWidth(context) < 300 ? 1 : 2,
             crossAxisSpacing: Responsive.scaleWidth(16, context),
             mainAxisSpacing: Responsive.scaleHeight(16, context),
-            childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.6,
+            childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.59,
           ),
           itemCount: funcController.wishList.length,
           itemBuilder: (context, index) {
-            //final wish = funcController.wishList[index];
-            //return PostCard(post: wish);
+            final wish = funcController.wishList[index];
+            return PostCard(post: Data.fromJson(wish.toJson()));
+          },
+        ) : ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.only(
+            left: Responsive.scaleWidth(16, context),
+            right: Responsive.scaleWidth(16, context),
+            bottom: Responsive.scaleHeight(16, context),
+          ),
+          itemCount: funcController.wishList.length,
+          itemBuilder: (context, index) {
             final wish = funcController.wishList[index];
             return PostCard(post: Data.fromJson(wish.toJson()));
           },

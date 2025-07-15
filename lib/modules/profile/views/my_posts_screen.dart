@@ -12,7 +12,7 @@ import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../../../core/utils/responsive.dart';
 import '../../main/views/skeleton_post_card.dart';
-import '../../main/widgets/post_card.dart';
+import '../../../common/widgets/post_card.dart';
 
 class MyPostsScreen extends StatefulWidget {
   MyPostsScreen({super.key});
@@ -213,9 +213,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
               child: Obx(() {
                 final posts = funcController.mePosts;
                 final isLoading = funcController.isLoading.value;
-
                 if (isLoading && posts.isEmpty) {
-                  // Skeleton ko‘rsatish
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -234,7 +232,6 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                     itemBuilder: (context, index) => const SkeletonPostCard(),
                   );
                 } else if (posts.isEmpty) {
-                  // Bo‘sh sahifa
                   return SizedBox.expand(
                     child: Center(
                       child: Column(
@@ -308,20 +305,27 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                   );
                 }
                 // E‘lonlar ro‘yxati
-                return GridView.builder(
+                return funcController.isGridView.value
+                    ?  GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(
-                    left: Responsive.scaleWidth(16, context),
-                    right: Responsive.scaleWidth(16, context),
-                    bottom: Responsive.scaleHeight(16, context),
-                  ),
+                  padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: _getCrossAxisCount(context),
                     crossAxisSpacing: Responsive.scaleWidth(16, context),
                     mainAxisSpacing: Responsive.scaleHeight(16, context),
                     childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.6,
                   ),
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
+                    return PostCard(post: post);
+                  },
+                )
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
                   itemCount: posts.length,
                   itemBuilder: (context, index) {
                     final post = posts[index];
