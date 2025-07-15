@@ -184,7 +184,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                         children: [
                           Icon(LucideIcons.megaphone, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
                           SizedBox(width: 6.sp),
-                          Text('${funcController.totalPosts} ${'ta e’lon'.tr}', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context), fontWeight: FontWeight.w500))
+                          Text('${funcController.totalMePosts} ${'ta e’lon'.tr}', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context), fontWeight: FontWeight.w500))
                         ]
                     )
                 )),
