@@ -177,7 +177,17 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                     ],
                   ),
                 ),
-                Spacer(),
+                Obx(() => Expanded(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.megaphone, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+                          SizedBox(width: 6.sp),
+                          Text('${funcController.totalPosts} ${'ta e’lon'.tr}', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context), fontWeight: FontWeight.w500))
+                        ]
+                    )
+                )),
                 GestureDetector(
                   onTap: () {
                     funcController.isGridView.value = !funcController.isGridView.value;
@@ -192,7 +202,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                       borderRadius: BorderRadius.circular(8.sp),
                     ),
                     child: Obx(() => Icon(
-                      funcController.isGridView.value ? LucideIcons.grid2x2 : LucideIcons.list,
+                      !funcController.isGridView.value ? LucideIcons.grid2x2 : LucideIcons.list,
                       color: AppColors.lightGray,
                       size: Responsive.scaleFont(20, context),
                     )),

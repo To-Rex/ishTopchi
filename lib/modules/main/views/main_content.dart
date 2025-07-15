@@ -45,11 +45,7 @@ class MainContent extends StatelessWidget {
       refreshController.loadComplete();
     }
 
-    void showFilterDialog(
-      BuildContext context,
-      FuncController funcController,
-      ApiController apiController,
-    ) {
+    void showFilterDialog(BuildContext context, FuncController funcController, ApiController apiController) {
       // Viloyat va kategoriyalarni oldindan yuklash
       if (funcController.regions.isEmpty) {
         apiController.fetchRegions().then((regions) {
@@ -754,7 +750,17 @@ class MainContent extends StatelessWidget {
                   ],
                 ),
               ),
-              Spacer(),
+              Obx(() => Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(LucideIcons.megaphone, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+                      SizedBox(width: 6.sp),
+                      Text('${funcController.totalPosts} ${'ta e’lon'.tr}', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context), fontWeight: FontWeight.w500))
+                    ]
+                  )
+              )),
               GestureDetector(
                 onTap: () {
                   showFilterDialog(context, funcController, apiController);

@@ -19,7 +19,7 @@ class FuncController {
   final RxInt currentPage = 1.obs;
   final RxBool hasMore = true.obs;
   final RxInt totalPosts = 0.obs;
-  final RxInt totalPages = 1.obs;
+  final RxInt totalMePosts = 0.obs;
   final userMe = Rxn<UserMe>();
 
   final RxList<Map<String, dynamic>> regions = <Map<String, dynamic>>[].obs;

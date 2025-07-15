@@ -381,7 +381,6 @@ class ApiController extends GetxController {
         final List<dynamic> data = response.data['data'];
         final meta = Meta.fromJson(response.data['meta']);
         funcController.totalPosts.value = meta.total ?? 0;
-        funcController.totalPages.value = meta.totalPages ?? 1;
         if (data.isEmpty) {
           print('Ma’lumotlar tugadi');
           funcController.hasMore.value = false;
@@ -410,22 +409,17 @@ class ApiController extends GetxController {
       if (page == 1) {
         funcController.hasMore.value = true;
       }
-      String url =
-          '$_baseUrl/posts?page=$page&limit=$limit&user_id=${funcController.userMe.value?.data?.id}';
+      String url = '$_baseUrl/posts?page=$page&limit=$limit&user_id=${funcController.userMe.value?.data?.id}';
       if (search != null && search.isNotEmpty) {
         url += '&search=$search';
       }
-      final response = await _dio.get(
-        url,
-        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
-      );
+      final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),);
       print('API javobi posts (page $page): ${response.data}');
       print('Status code: ${response.statusCode}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
         final meta = MeMeta.fromJson(response.data['meta']);
-        funcController.totalPosts.value = meta.total ?? 0;
-        funcController.totalPages.value = meta.totalPages ?? 1;
+        funcController.totalMePosts.value = meta.total ?? 0;
         if (data.isEmpty) {
           print('Ma’lumotlar tugadi');
           funcController.hasMore.value = false;
