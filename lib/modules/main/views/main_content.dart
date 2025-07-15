@@ -603,14 +603,6 @@ class MainContent extends StatelessWidget {
                 actions: [
                   TextButton(
                     onPressed: () {
-                      funcController.maxPrice.value = null;
-                      funcController.minPrice.value = null;
-                      funcController.selectedRegion.value = null;
-                      funcController.selectedDistrict.value = null;
-                      funcController.selectedCategory.value = null;
-                      funcController.jobType.value = null;
-                      funcController.employmentType.value = null;
-                      funcController.sortPrice.value = null;
                       funcController.clearFilters();
                       funcController.currentPage.value = 1;
                       funcController.posts.clear();

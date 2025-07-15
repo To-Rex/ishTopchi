@@ -95,6 +95,9 @@ class FuncController {
     selectedCategory.value = null;
     employmentType.value = null;
     sortPrice.value = null;
+    minPrice.value = null;
+    maxPrice.value = null;
+    jobType.value = null;
     districts.clear();
   }
 }
