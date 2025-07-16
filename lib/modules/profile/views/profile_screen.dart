@@ -39,11 +39,9 @@ class ProfileScreen extends GetView<ProfileController> {
               flexibleSpace: LayoutBuilder(
                 builder: (context, constraints) {
                   final isCollapsed = constraints.maxHeight <= 80;
-
                   return FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    title: hasToken && isCollapsed
-                        ? Row(
+                    title: hasToken && isCollapsed ? Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -54,8 +52,7 @@ class ProfileScreen extends GetView<ProfileController> {
                           style: const TextStyle(fontSize: 14, color: Colors.white),
                         ),
                       ],
-                    )
-                        : null,
+                    ) : null,
                     background: Stack(
                       alignment: Alignment.topRight,
                       children: [
