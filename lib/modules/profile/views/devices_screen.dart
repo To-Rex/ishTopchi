@@ -184,41 +184,19 @@ class DevicesScreen extends StatelessWidget {
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.darkNavy, AppColors.darkBlue],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        decoration: BoxDecoration(gradient: LinearGradient(colors: [AppColors.darkNavy, AppColors.darkBlue], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
         child: Obx(() {
           if (funcController.isLoading.value) {
             return Center(
-              child: CircularProgressIndicator(
-                color: AppColors.lightBlue,
-                strokeWidth: 2,
-              ),
+              child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2)
             );
           }
-          if (funcController.devicesModel.value.data == null ||
-              funcController.devicesModel.value.data!.isEmpty) {
-            return Center(
-              child: Text(
-                'Qurilmalar topilmadi',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: Responsive.scaleFont(14, context),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            );
+          if (funcController.devicesModel.value.data == null || funcController.devicesModel.value.data!.isEmpty) {
+            return Center(child: Text('Qurilmalar topilmadi', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500)));
           }
           return AnimationLimiter(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.scaleWidth(16, context),
-                vertical: Responsive.scaleHeight(16, context),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(16, context)),
               itemCount: funcController.devicesModel.value.data!.length,
               itemBuilder: (context, index) {
                 final device = funcController.devicesModel.value.data![index];
@@ -229,15 +207,15 @@ class DevicesScreen extends StatelessWidget {
                     verticalOffset: 20.0,
                     curve: Curves.easeOutBack,
                     child: FadeInAnimation(
-                      child: _buildDeviceCard(context, device, apiController),
-                    ),
-                  ),
+                      child: _buildDeviceCard(context, device, apiController)
+                    )
+                  )
                 );
-              },
-            ),
+              }
+            )
           );
-        }),
-      ),
+        })
+      )
     );
   }
 
@@ -249,135 +227,53 @@ class DevicesScreen extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: Responsive.scaleHeight(8, context)),
         padding: EdgeInsets.all(Responsive.scaleWidth(14, context)),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.darkBlue.withOpacity(0.5), AppColors.darkBlue.withOpacity(0.2)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
+        decoration: BoxDecoration(gradient: LinearGradient(colors: [AppColors.darkBlue, AppColors.darkBlue], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(12)),
         child: Row(
           children: [
             AnimatedScale(
               scale: 1.0,
               duration: const Duration(milliseconds: 300),
-              child: Icon(
-                device.platform == 'Android' ? LucideIcons.tablet : LucideIcons.apple,
-                color: AppColors.lightBlue,
-                size: Responsive.scaleFont(20, context),
-              ),
+              child: Icon(device.platform == 'Android' ? LucideIcons.tablet : LucideIcons.apple, color: AppColors.lightBlue, size: Responsive.scaleFont(25, context))
             ),
-            SizedBox(width: Responsive.scaleWidth(12, context)),
+            SizedBox(width: Responsive.scaleWidth(15, context)),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    device.deviceName ?? 'Noma’lum qurilma',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: Responsive.scaleFont(16, context),
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(device.deviceName ?? 'Noma’lum qurilma', style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
                   SizedBox(height: Responsive.scaleHeight(4, context)),
-                  Text(
-                    device.deviceModel ?? 'Noma’lum model',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: Responsive.scaleFont(14, context),
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(device.deviceModel ?? 'Noma’lum model', style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
                   SizedBox(height: Responsive.scaleHeight(4, context)),
                   Row(
                     children: [
-                      Text(
-                        'Faol: ${device.isActive == true ? 'Ha' : 'Yo‘q'}',
-                        style: TextStyle(
-                          color: device.isActive == true ? Colors.green : Colors.redAccent,
-                          fontSize: Responsive.scaleFont(13, context),
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
+                      Text('Faol: ${device.isActive == true ? 'Ha' : 'Yo‘q'}', style: TextStyle(color: device.isActive == true ? Colors.green : Colors.redAccent, fontSize: Responsive.scaleFont(13, context), fontStyle: FontStyle.italic)),
                       SizedBox(width: Responsive.scaleWidth(8, context)),
-                      Text(
-                        device.lastLogin?.split('T')[0] ?? 'Noma’lum',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: Responsive.scaleFont(13, context),
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                      Text(device.lastLogin?.split('T')[0] ?? 'Noma’lum', style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(13, context), fontStyle: FontStyle.italic))
+                    ]
+                  )
+                ]
+              )
             ),
             IconButton(
               onPressed: () {
                 showDeleteDialog(context, device, apiController, device.id!);
               },
-              icon: Icon(
-                LucideIcons.trash2,
-                color: AppColors.red,
-                size: Responsive.scaleFont(22, context),
-              ),
-            ),
-          ],
-        ),
-      ),
+              icon: Icon(LucideIcons.trash2, color: AppColors.red, size: Responsive.scaleFont(22, context))
+            )
+          ]
+        )
+      )
     );
   }
 
-  Widget _buildInfoRow(
-      BuildContext context, {
-        required IconData icon,
-        required String label,
-        required String value,
-        Color? valueColor,
-      }) {
+  Widget _buildInfoRow(BuildContext context, {required IconData icon, required String label, required String value, Color? valueColor}) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: AppColors.lightBlue,
-          size: Responsive.scaleFont(18, context),
-        ),
+        Icon(icon, color: AppColors.lightBlue, size: Responsive.scaleFont(18, context)),
         SizedBox(width: Responsive.scaleWidth(8, context)),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: Responsive.scaleFont(14, context),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              color: valueColor ?? Colors.white,
-              fontSize: Responsive.scaleFont(14, context),
-              fontWeight: FontWeight.w600,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
+        Text('$label: ', style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500)),
+        Expanded(child: Text(value, style: TextStyle(color: valueColor ?? Colors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis))
+      ]
     );
   }
 }
