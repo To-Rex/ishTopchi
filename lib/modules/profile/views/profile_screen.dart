@@ -132,7 +132,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   children: [
                     const SizedBox(height: 10),
                     if (controller.hasToken.value)
-                      _buildMenuItem(LucideIcons.userRound, 'Mening Profilim', controller.onMyPostsTap),
+                      _buildMenuItem(LucideIcons.userRound, 'Mening Profilim', controller.onMyProfileTap),
                     if (controller.hasToken.value)
                       _buildMenuItem(LucideIcons.squareLibrary, 'Mening Rezumelarim', controller.onMyResumesTap),
                     if (controller.hasToken.value)

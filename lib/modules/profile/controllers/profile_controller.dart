@@ -9,6 +9,7 @@ import '../../../controllers/funcController.dart';
 import '../views/about_app_screen.dart';
 import '../views/edit_profile_screen.dart';
 import '../views/help_center_screen.dart';
+import '../views/my_profile_screen.dart';
 import '../views/my_resumes_screen.dart';
 import '../views/notifications_screen.dart';
 import '../views/privacy_screen.dart';
@@ -99,6 +100,7 @@ class ProfileController extends GetxController {
 
   void onEditProfile() => Get.to(() => EditProfileScreen());
 
+  void onMyProfileTap() => Get.to(() => MyProfileScreen());
   void onMyResumesTap() => Get.to(() => MyResumesScreen());
   //void onMyPostsTap() => Get.toNamed('/my_posts');
   void onMyPostsTap() => Get.to(() => MyPostsScreen());

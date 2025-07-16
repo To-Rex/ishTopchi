@@ -1,3 +1,5 @@
+import 'package:ishtopchi/core/models/resumes_model.dart';
+
 class UserMe {
   Data? data;
 
@@ -27,12 +29,28 @@ class Data {
   bool? isBlocked;
   String? role;
   District? district;
+  List<Resumes>? resumes;
   List<AuthProviders>? authProviders;
   String? createdAt;
   String? updatedAt;
   String? deletedAt;
 
-  Data({this.id, this.firstName, this.lastName, this.profilePicture, this.birthDate, this.gender, this.verified, this.isBlocked, this.role, this.district, this.authProviders, this.createdAt, this.updatedAt, this.deletedAt});
+  Data(
+      {this.id,
+        this.firstName,
+        this.lastName,
+        this.profilePicture,
+        this.birthDate,
+        this.gender,
+        this.verified,
+        this.isBlocked,
+        this.role,
+        this.district,
+        this.resumes,
+        this.authProviders,
+        this.createdAt,
+        this.updatedAt,
+        this.deletedAt});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -47,6 +65,12 @@ class Data {
     district = json['district'] != null
         ? District.fromJson(json['district'])
         : null;
+    if (json['resumes'] != null) {
+      resumes = <Resumes>[];
+      json['resumes'].forEach((v) {
+        resumes!.add(Resumes.fromJson(v));
+      });
+    }
     if (json['auth_providers'] != null) {
       authProviders = <AuthProviders>[];
       json['auth_providers'].forEach((v) {
@@ -71,6 +95,9 @@ class Data {
     data['role'] = role;
     if (district != null) {
       data['district'] = district!.toJson();
+    }
+    if (resumes != null) {
+      data['resumes'] = resumes!.map((v) => v.toJson()).toList();
     }
     if (authProviders != null) {
       data['auth_providers'] =
@@ -130,6 +157,56 @@ class Region {
   }
 }
 
+class Education {
+  String? degree;
+  String? field;
+  String? institution;
+  String? period;
+
+  Education({this.degree, this.field, this.institution, this.period});
+
+  Education.fromJson(Map<String, dynamic> json) {
+    degree = json['degree'];
+    field = json['field'];
+    institution = json['institution'];
+    period = json['period'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['degree'] = degree;
+    data['field'] = field;
+    data['institution'] = institution;
+    data['period'] = period;
+    return data;
+  }
+}
+
+class Experience {
+  String? position;
+  String? company;
+  String? period;
+  String? description;
+
+  Experience({this.position, this.company, this.period, this.description});
+
+  Experience.fromJson(Map<String, dynamic> json) {
+    position = json['position'];
+    company = json['company'];
+    period = json['period'];
+    description = json['description'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['position'] = position;
+    data['company'] = company;
+    data['period'] = period;
+    data['description'] = description;
+    return data;
+  }
+}
+
 class AuthProviders {
   int? id;
   String? useType;
@@ -143,7 +220,18 @@ class AuthProviders {
   String? refreshToken;
   String? passwordHash;
 
-  AuthProviders({this.id, this.useType, this.providerType, this.providersUserId, this.email, this.fullName, this.profilePicture, this.inUse, this.accessToken, this.refreshToken, this.passwordHash});
+  AuthProviders(
+      {this.id,
+        this.useType,
+        this.providerType,
+        this.providersUserId,
+        this.email,
+        this.fullName,
+        this.profilePicture,
+        this.inUse,
+        this.accessToken,
+        this.refreshToken,
+        this.passwordHash});
 
   AuthProviders.fromJson(Map<String, dynamic> json) {
     id = json['id'];

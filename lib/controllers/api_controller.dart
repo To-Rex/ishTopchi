@@ -5,6 +5,7 @@ import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:ishtopchi/core/services/show_toast.dart';
 import '../config/routes/app_routes.dart';
 import '../core/models/me_post_model.dart';
+import '../core/models/me_stats.dart';
 import '../core/models/post_model.dart';
 import '../core/models/resumes_model.dart';
 import '../core/models/user_me.dart' hide Data;
@@ -389,6 +390,38 @@ class ApiController extends GetxController {
       funcController.isLoading.value = false;
     }
   }
+
+  Future<void> fetchPostById(int postId) async {
+    try {
+      final token = funcController.getToken();
+      await _dio.get('$_baseUrl/posts/$postId', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+    } catch (e) {
+      return;
+    }
+  }
+
+  Future<void> fetchUserStats() async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+      final response = await _dio.get('$_baseUrl/posts/my-stats', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200 && response.data['data'] != null) {
+        final data = response.data;
+        print('User stats: $data');
+        funcController.meStats.value = MeStats.fromJson(data);
+      } else {
+        //ShowToast.show('Xatolik', 'Foydalanuvchining statistikasi olishda xatolik yuz berdi', 3, 1);
+        print('❌ fetchUserStats xatolik: ${response.statusCode} - ${response.data}');
+      }
+    } catch (e) {
+      print('fetchUserStats xatolik: $e');
+
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
 
   Future<void> fetchMyPosts({int page = 1, int limit = 10, String? search}) async {
     try {
