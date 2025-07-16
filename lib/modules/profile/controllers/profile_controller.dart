@@ -7,6 +7,7 @@ import '../../../common/widgets/bottom_sheets.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../views/about_app_screen.dart';
+import '../views/devices_screen.dart';
 import '../views/edit_profile_screen.dart';
 import '../views/help_center_screen.dart';
 import '../views/my_profile_screen.dart';
@@ -105,6 +106,8 @@ class ProfileController extends GetxController {
   //void onMyPostsTap() => Get.toNamed('/my_posts');
   void onMyPostsTap() => Get.to(() => MyPostsScreen());
   void onLanguagesTap() => BottomSheets().showLanguageBottomSheet();
+  //qurilmalar DevicesScreen
+  void onDevicesTap() => Get.to(() => DevicesScreen());
   void onSupportTap() => Get.to(() => SupportScreen());
   void onAboutAppTap() => Get.to(() => AboutAppScreen());
   void onPrivacyTap() => Get.to(() => PrivacyScreen());

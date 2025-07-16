@@ -1,5 +1,7 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart' hide Data;
+import '../core/models/devices_model.dart';
 import '../core/models/me_post_model.dart';
 import '../core/models/me_stats.dart';
 import '../core/models/post_model.dart';
@@ -17,6 +19,7 @@ class FuncController {
   final RxList<MeData> mePosts = <MeData>[].obs;
   final RxList<WishList> wishList = <WishList>[].obs;
   var meStats = MeStats().obs;
+  var devicesModel = DevicesModel().obs;
   final resumes = <ResumesData>[].obs; // Resumelarni saqlash uchun
   final totalResumes = 0.obs; // Umumiy resumelar soni
   final RxBool isLoading = false.obs;
@@ -26,6 +29,14 @@ class FuncController {
   final RxInt totalPosts = 0.obs;
   final RxInt totalMePosts = 0.obs;
   final userMe = Rxn<UserMe>();
+
+  final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  final RxString deviceName = ''.obs;
+  final RxString deviceModel = ''.obs;
+  final RxString deviceId = ''.obs;
+  final RxString platform = ''.obs;
+
+
 
   final RxList<Map<String, dynamic>> regions = <Map<String, dynamic>>[].obs;
   final RxList<Map<String, dynamic>> districts = <Map<String, dynamic>>[].obs;
@@ -42,6 +53,34 @@ class FuncController {
   final RxnString minPrice = RxnString(); // Yangi: Narxdan
   final RxnString maxPrice = RxnString(); // Yangi: Narxgacha
 
+  Future<void> fetchDeviceInfo() async {
+    try {
+      if (GetPlatform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceName.value = androidInfo.model ?? 'Noma’lum';
+        deviceModel.value = androidInfo.model ?? 'Noma’lum';
+        deviceId.value = androidInfo.id ?? 'Noma’lum';
+        platform.value = 'Android';
+        print('Android deviceName: $deviceName');
+        print('Android deviceModel: $deviceModel');
+        print('Android deviceId: $deviceId');
+        print('Android platform: $platform');
+      } else if (GetPlatform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceName.value = iosInfo.name ?? 'Noma’lum';
+        deviceModel.value = iosInfo.model ?? 'Noma’lum';
+        deviceId.value = iosInfo.identifierForVendor ?? 'Noma’lum';
+        platform.value = 'iOS';
+        print('iOS deviceName: $deviceName');
+        print('iOS deviceModel: $deviceModel');
+        print('iOS deviceId: $deviceId');
+        print('iOS platform: $platform');
+      }
+    } catch (e) {
+      print('Qurilma ma’lumotlarini olishda xato: $e');
+    }
+  }
+
   String getProfileUrl(String? url) {
     const base = 'https://ishtopchi.uz';
     if (url == null || url.trim().isEmpty) {
@@ -51,26 +90,18 @@ class FuncController {
     return url.startsWith('http') ? url : '$base/${url.replaceAll(RegExp(r'^(file://)?/+'), '')}';
   }
 
-  void clearWishList() {
-    wishList.clear();
-  }
+  void clearWishList() => wishList.clear();
 
-  void setUserMe(UserMe userModel) {
-    userMe.value = userModel;
-  }
+  void setUserMe(UserMe userModel) => userMe.value = userModel;
 
   void setOtpToken(String token, String phone) {
     otpToken.value = token;
     otpPhone.value = phone;
   }
 
-  void setOtpPhone(String phone) {
-    otpPhone.value = phone;
-  }
+  void setOtpPhone(String phone) => otpPhone.value = phone;
 
-  void setOtpTokenOnly(String token) {
-    otpToken.value = token;
-  }
+  void setOtpTokenOnly(String token) => otpToken.value = token;
 
   void clearOtp() {
     otpToken.value = '';
@@ -81,17 +112,11 @@ class FuncController {
 
   String getOtpPhone() => '+998${otpPhone.value}';
 
-  Future<void> saveToken(String token) async {
-    await storage.write('token', token);
-  }
+  Future<void> saveToken(String token) async => await storage.write('token', token);
 
-  String? getToken() {
-    return storage.read('token');
-  }
+  String? getToken() => storage.read('token');
 
-  Future<void> deleteToken() async {
-    await storage.remove('token');
-  }
+  Future<void> deleteToken() async => await storage.remove('token');
 
   String get tokenBearer => storage.read('token') ?? '';
 

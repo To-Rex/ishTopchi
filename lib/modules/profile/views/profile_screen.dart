@@ -135,6 +135,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     if (controller.hasToken.value)
                       _buildMenuItem(LucideIcons.megaphone, 'Mening e’lonlarim', controller.onMyPostsTap),
                     _buildMenuItem(LucideIcons.globe, 'Tillar', controller.onLanguagesTap, lang: true),
+                    _buildMenuItem(LucideIcons.smartphone, 'Qurilmalar', controller.onDevicesTap),
                     _buildMenuItem(LucideIcons.headset, 'Qo‘llab-quvvatlash', controller.onSupportTap),
                     _buildMenuItem(LucideIcons.badgeInfo, 'Ilova haqida', controller.onAboutAppTap),
                     _buildMenuItem(LucideIcons.shieldAlert, 'Xavfsizlik va Maxfiylik', controller.onPrivacyTap),

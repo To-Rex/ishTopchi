@@ -156,14 +156,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             childAnimationBuilder: (widget) => SlideAnimation(verticalOffset: 20.0, child: FadeInAnimation(child: widget)),
             children: [
               SizedBox(height: Responsive.scaleHeight(70, context)),
-              Text(
-                'ID: ${user?.data?.id.toString() ?? 'Kiritilmagan'}',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: Responsive.scaleFont(15, context),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Text('ID: ${user?.data?.id.toString() ?? 'Kiritilmagan'}', style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(15, context), fontWeight: FontWeight.w500)),
               SizedBox(height: Responsive.scaleHeight(25, context)),
               GestureDetector(
                 onTap: () {

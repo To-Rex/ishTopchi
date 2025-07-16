@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:ishtopchi/core/services/show_toast.dart';
 import '../config/routes/app_routes.dart';
+import '../core/models/devices_model.dart';
 import '../core/models/me_post_model.dart';
 import '../core/models/me_stats.dart';
 import '../core/models/post_model.dart';
@@ -27,28 +28,13 @@ class ApiController extends GetxController {
   final FuncController funcController = Get.put(FuncController());
 
   Future<String?> uploadImage(File image, String? token) async {
-    print('uploadImage: ${image.path}');
-    print('Token: $token');
     try {
       if (token == null) throw Exception('Token mavjud emas');
       final String fileName = image.path.split('/').last;
-      final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(image.path, filename: fileName),
-      });
-      final response = await _dio.post(
-        '$_baseUrl/upload/image',
-        data: formData,
-        options: Options(
-          headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'multipart/form-data',
-          },
-        ),
-      );
+      final formData = FormData.fromMap({'file': await MultipartFile.fromFile(image.path, filename: fileName)});
+      final response = await _dio.post('$_baseUrl/upload/image', data: formData, options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token', 'Content-Type': 'multipart/form-data'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         final String url = response.data['data']['url'];
-        print('✅ Rasm serverga yuklandi: $url');
         return url;
       } else {
         ShowToast.show('Xatolik', 'Rasm serverga yuklashda xatolik yuz berdi', 3, 1);
@@ -127,10 +113,7 @@ class ApiController extends GetxController {
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
-      final response = await _dio.get(
-        '$_baseUrl/user/me',
-        options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token'}),
-      );
+      final response = await _dio.get('$_baseUrl/user/me', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token'}));
       if (response.statusCode == 200) {
         final data = response.data;
         print('User ME: $data');
@@ -151,21 +134,14 @@ class ApiController extends GetxController {
   Future generateOtp(String phoneNumber) async {
     print('Phone number: $phoneNumber');
     try {
-      final response = await _dio.post(
-        '$_baseUrl/otp-based-auth/generate-otp',
-        data: {'phoneNumber': '+998$phoneNumber'},
-        options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}),
-      );
+      final response = await _dio.post('$_baseUrl/otp-based-auth/generate-otp', data: {'phoneNumber': '+998$phoneNumber'}, options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('API javobi: ${response.data}');
         final encryptedOtp = response.data['data'];
         print('OTP yuborildi. Encrypted OTP: $encryptedOtp');
         funcController.setOtpTokenOnly(encryptedOtp);
         funcController.setOtpPhone(phoneNumber);
-        Get.to(
-          () => OtpVerificationScreen(phone: phoneNumber.trim()),
-          transition: Transition.fadeIn,
-        );
+        Get.to(() => OtpVerificationScreen(phone: phoneNumber.trim()), transition: Transition.fadeIn);
       } else {
         print('OTP yuborishda xatolik: ${response.statusCode}');
       }
@@ -178,17 +154,7 @@ class ApiController extends GetxController {
     final fingerprint = funcController.getOtpToken();
     final phone = funcController.getOtpPhone();
     try {
-      final response = await _dio.post(
-        '$_baseUrl/otp-based-auth/login',
-        data: json.encode({"phone_number": phone, "otp": otp, "fingerprint": fingerprint}),
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $fingerprint',
-          },
-        ),
-      );
+      final response = await _dio.post('$_baseUrl/otp-based-auth/login', data: json.encode({"phone_number": phone, "otp": otp, "fingerprint": fingerprint}), options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json', 'Authorization': 'Bearer $fingerprint'}));
       print('✅ Javob: ${response.data}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.data['meta']['is_first_login'] == true) {
@@ -221,28 +187,12 @@ class ApiController extends GetxController {
           return;
         }
       }
-      final Map<String, dynamic> data = {
-        'first_name': firstName,
-        'last_name': lastName,
-        'district_id': districtId,
-        'birth_date': birthDate,
-        'gender': gender == '1' ? 'MALE' : 'FEMALE',
-      };
+      final Map<String, dynamic> data = {'first_name': firstName, 'last_name': lastName, 'district_id': districtId, 'birth_date': birthDate, 'gender': gender == '1' ? 'MALE' : 'FEMALE'};
       if (imageUrl != null) {
         data['profile_picture'] = imageUrl;
       }
       print('➡️ Registration body: $data');
-      final response = await _dio.post(
-        '$_baseUrl/otp-based-auth/complete-registration',
-        data: data,
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Authorization': 'Bearer ${funcController.getToken()}',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
+      final response = await _dio.post('$_baseUrl/otp-based-auth/complete-registration', data: data, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.getToken()}', 'Content-Type': 'application/json'}));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('✅ Ro‘yxatdan o‘tish yakunlandi.');
@@ -260,7 +210,6 @@ class ApiController extends GetxController {
     try {
       final token = funcController.getToken();
       if (token == null) throw Exception('Token mavjud emas');
-
       String? imageUrl;
       if (image != null) {
         imageUrl = await uploadImage(image, token);
@@ -270,33 +219,12 @@ class ApiController extends GetxController {
         }
       }
 
-      final Map<String, dynamic> data = {
-        'first_name': firstName,
-        'last_name': lastName,
-        'birth_date': birthDate,
-        'gender': gender,
-        'district_id': districtId,
-      };
-      if (imageUrl != null) {
-        data['profile_picture'] = imageUrl;
-      }
-
+      final Map<String, dynamic> data = {'first_name': firstName, 'last_name': lastName, 'birth_date': birthDate, 'gender': gender, 'district_id': districtId};
+      if (imageUrl != null) {data['profile_picture'] = imageUrl;}
       final userId = funcController.userMe.value?.data?.id ?? 0; // Foydalanuvchi ID sini olish
-      final response = await _dio.patch(
-        '$_baseUrl/user/$userId',
-        data: json.encode(data),
-        options: Options(
-          headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
+      final response = await _dio.patch('$_baseUrl/user/$userId', data: json.encode(data), options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200) {
         print('✅ Profil yangilandi: ${response.data}');
-        // Yangilangan ma'lumotlarni yuklash
         await getMe();
         return true;
       } else {
@@ -314,10 +242,7 @@ class ApiController extends GetxController {
     try {
       final token = funcController.getToken();
       if (token == null) throw Exception('Token mavjud emas');
-      final response = await _dio.get(
-        '$_baseUrl/category?page=1&limit=1000',
-        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
-      );
+      final response = await _dio.get('$_baseUrl/category?page=1&limit=1000', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
       if (response.statusCode == 200) {
         final data = response.data['data'] as List<dynamic>;
         return data.cast<Map<String, dynamic>>();
@@ -411,7 +336,7 @@ class ApiController extends GetxController {
         print('User stats: $data');
         funcController.meStats.value = MeStats.fromJson(data);
       } else {
-        //ShowToast.show('Xatolik', 'Foydalanuvchining statistikasi olishda xatolik yuz berdi', 3, 1);
+        ShowToast.show('Xatolik', 'Foydalanuvchining statistikasi olishda xatolik yuz berdi', 3, 1);
         print('❌ fetchUserStats xatolik: ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
@@ -427,13 +352,9 @@ class ApiController extends GetxController {
     try {
       funcController.isLoading.value = true;
       final token = funcController.getToken();
-      if (page == 1) {
-        funcController.hasMore.value = true;
-      }
+      if (page == 1) {funcController.hasMore.value = true;}
       String url = '$_baseUrl/posts?page=$page&limit=$limit&user_id=${funcController.userMe.value?.data?.id}';
-      if (search != null && search.isNotEmpty) {
-        url += '&search=$search';
-      }
+      if (search != null && search.isNotEmpty) {url += '&search=$search';}
       final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),);
       print('API javobi posts (page $page): ${response.data}');
       print('Status code: ${response.statusCode}');
@@ -464,17 +385,7 @@ class ApiController extends GetxController {
 
   Future<void> createPost(Map<String, dynamic> postData, String token) async {
     try {
-      final response = await _dio.post(
-        '$_baseUrl/posts',
-        data: json.encode(postData),
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
+      final response = await _dio.post('$_baseUrl/posts', data: json.encode(postData), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         ShowToast.show('Muvaffaqiyat', 'Post muvaffaqiyatli yaratildi', 3, 1);
         print('✅ Post muvaffaqiyatli yaratildi: ${response.data}');
@@ -495,18 +406,11 @@ class ApiController extends GetxController {
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
-      final response = await _dio.get(
-        '$_baseUrl/wishlist',
-        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
-      );
+      final response = await _dio.get('$_baseUrl/wishlist', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
       print('API javobi wishlist: ${response.data}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
-        funcController.wishList.value =
-            data
-                .where((json) => json != null)
-                .map((json) => WishList.fromJson(json as Map<String, dynamic>))
-                .toList();
+        funcController.wishList.value = data.where((json) => json != null).map((json) => WishList.fromJson(json as Map<String, dynamic>)).toList();
         print('WishList uzunligi: ${funcController.wishList.length}');
       } else if (response.statusCode == 404) {
         funcController.clearWishList();
@@ -528,17 +432,7 @@ class ApiController extends GetxController {
       if (token == null) {
         throw Exception('Token mavjud emas');
       }
-      final response = await _dio.post(
-        '$_baseUrl/wishlist',
-        data: {'post_id': postId},
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
+      final response = await _dio.post('$_baseUrl/wishlist', data: {'post_id': postId}, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('Post wishlistga qo‘shildi: $postId');
         fetchWishlist(); // Wishlistni yangilash
@@ -554,13 +448,8 @@ class ApiController extends GetxController {
     print('wishlistId: $wishlistId');
     try {
       final token = funcController.getToken();
-      if (token == null) {
-        throw Exception('Token mavjud emas');
-      }
-      final response = await _dio.delete(
-        '$_baseUrl/wishlist/$wishlistId',
-        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}),
-      );
+      if (token == null) {throw Exception('Token mavjud emas');}
+      final response = await _dio.delete('$_baseUrl/wishlist/$wishlistId', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
       if (response.statusCode == 200 || response.statusCode == 204 || response.statusCode == 201) {
         fetchWishlist(); // Wishlistni yangilash
       } else {
@@ -583,14 +472,7 @@ class ApiController extends GetxController {
       }
 
       String url = '$_baseUrl/resumes?user_id=$userId&page=$page&limit=$limit';
-      final response = await _dio.get(
-        url,
-        options: Options(headers: {
-          'accept': '*/*',
-          'Authorization': 'Bearer $token',
-        }),
-      );
-
+      final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
       print('API javobi resumes (page $page): ${response.data}');
       print('Status code: ${response.statusCode}');
 
@@ -632,19 +514,9 @@ class ApiController extends GetxController {
         }
       }
 
-      final data = {
-        'title': title,
-        'content': content,
-        'education': education,
-        'experience': experience,
-        if (fileUrl != null) 'file_url': fileUrl
-      };
+      final data = {'title': title, 'content': content, 'education': education, 'experience': experience, if (fileUrl != null) 'file_url': fileUrl};
 
-      final response = await _dio.post(
-        '$_baseUrl/resumes',
-        data: json.encode(data),
-        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'})
-      );
+      final response = await _dio.post('$_baseUrl/resumes', data: json.encode(data), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli yaratildi', 3, 1);
@@ -667,15 +539,7 @@ class ApiController extends GetxController {
       final token = funcController.getToken();
       if (token == null) throw Exception('Token mavjud emas');
 
-      final response = await _dio.delete(
-        '$_baseUrl/resumes/$resumeId',
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
+      final response = await _dio.delete('$_baseUrl/resumes/$resumeId', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli o‘chirildi', 3, 1);
@@ -707,26 +571,8 @@ class ApiController extends GetxController {
         }
       }
 
-      final data = {
-        'title': title,
-        'content': content,
-        'education': education,
-        'experience': experience,
-        if (fileUrl != null) 'file_url': fileUrl,
-      };
-
-      final response = await _dio.patch(
-        '$_baseUrl/resumes/$resumeId',
-        data: json.encode(data),
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
+      final data = {'title': title, 'content': content, 'education': education, 'experience': experience, if (fileUrl != null) 'file_url': fileUrl};
+      final response = await _dio.patch('$_baseUrl/resumes/$resumeId', data: json.encode(data), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200) {
         ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli yangilandi', 3, 1);
         await fetchMeResumes(page: 1); // Ro'yxatni yangilash
@@ -741,4 +587,90 @@ class ApiController extends GetxController {
     }
   }
 
+
+// Qurilmalarni olish ====================================================================================
+
+  Future<void> fetchDevices() async {
+    try {
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+      final response = await _dio.get('$_baseUrl/devices', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      print('Devices: ${response.data}');
+      if (response.statusCode == 200) {
+        funcController.devicesModel.value = DevicesModel.fromJson(response.data);
+      } else {
+        ShowToast.show('Xatolik', 'Qurilmalarni yuklashda xato yuz berdi', 3, 1);
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Qurilmalarni yuklashda xato yuz berdi', 3, 1);
+      print('fetchDevices xatolik: $e');
+    }
+  }
+
+  Future<void> deleteDevice(int deviceId) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+      final response = await _dio.delete('$_baseUrl/devices/$deviceId', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        ShowToast.show('Muvaffaqiyat', 'Qurilma muvaffaqiyatli o‘chirildi', 3, 1);
+        await fetchDevices(); // Ro'yxatni yangilash
+      } else {
+        ShowToast.show('Xatolik', 'Qurilma o‘chirishda xato: ${response.statusCode}', 3, 1);
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Qurilma o‘chirishda xato: $e', 3, 1);
+      print('deleteDevice xatolik: $e');
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
+  Future<void> loginDevice(String deviceId) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+      final response = await _dio.post('$_baseUrl/devices/$deviceId/login', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200) {
+        ShowToast.show('Muvaffaqiyat', 'Qurilma muvaffaqiyatli kiritildi', 3, 1);
+        await fetchDevices(); // Ro'yxatni yangilash
+      } else {
+        ShowToast.show('Xatolik', 'Qurilma kiritishda xato: ${response.statusCode}', 3, 1);
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Qurilma kiritishda xato: $e', 3, 1);
+      print('loginDevice xatolik: $e');
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
+
+  Future<void> createDevice(String deviceId) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+      final response = await _dio.post('$_baseUrl/devices', data: {
+        'deviceId': deviceId,
+        'fcmToken': 'jhbkjhbkjhbkhjbkjhvghjvghvhgvghghvhvgjjvhggvhjkvjkkjhbkkjlnmlkmkbgjvvghvgjhjghvjhgcrdsxtes6726786287tgvhvhjbjnklq',
+        'deviceName': 'IPhone 12',
+        'deviceModel': 'IPhone 12',
+        'platform': 'IOS',
+        'isActive': true
+      }, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200) {
+        ShowToast.show('Muvaffaqiyat', 'Qurilma muvaffaqiyatli kiritildi', 3, 1);
+        await fetchDevices(); // Ro'yxatni yangilash
+      } else {
+        ShowToast.show('Xatolik', 'Qurilma kiritishda xato: ${response.statusCode}', 3, 1);
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Qurilma kiritishda xato: $e', 3, 1);
+      print('loginDevice xatolik: $e');
+    } finally {
+      funcController.isLoading.value = false;
+    }
+  }
 }
