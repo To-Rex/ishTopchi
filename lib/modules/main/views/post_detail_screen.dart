@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:ishtopchi/core/services/show_toast.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -49,6 +50,132 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
     super.dispose();
   }
 
+  void _showApplicationDialog(BuildContext context, ApiController apiController, int postId) {
+    final FuncController funcController = Get.find<FuncController>();
+    final TextEditingController messageController = TextEditingController();
+    final RxInt selectedResumeId = (-1).obs; // Tanlangan resume IDsi
+
+    // Resumelarni olish
+    apiController.fetchMeResumes(page: 1, limit: 100);
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: AppColors.darkNavy,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 600),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [AppColors.darkBlue, AppColors.darkNavy], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 1, offset: Offset(0, 3))]
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(AppDimensions.paddingMedium),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Sarlavha
+                Text('Murojaat qilish', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w800)),
+                SizedBox(height: AppDimensions.paddingSmall),
+                // Resume tanlash
+                Obx(() {
+                  if (funcController.isLoading.value) {
+                    return Center(child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2));
+                  }
+                  if (funcController.resumes.isEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Rezumelar mavjud emas', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
+                        SizedBox(height: AppDimensions.paddingSmall),
+                        TextButton(
+                          onPressed: () {
+                            Get.back();
+                            Get.toNamed('/create_resume'); // CreateResumeScreen ga yo'naltirish
+                          },
+                          child: Text('Yangi resume qo‘shish', style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context)))
+                        )
+                      ]
+                    );
+                  }
+                  return DropdownButtonFormField<int>(
+                    decoration: InputDecoration(
+                      labelText: 'Resume tanlang',
+                      labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide(color: AppColors.lightBlue)),
+                      filled: true,
+                      fillColor: AppColors.darkNavy,
+                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5)),
+                    ),
+                    dropdownColor: AppColors.darkNavy,
+                    value: selectedResumeId.value == -1 ? null : selectedResumeId.value,
+                    items: funcController.resumes.map((resume) => DropdownMenuItem<int>(value: resume.id, child: Text(resume.title ?? 'Noma’lum', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)), overflow: TextOverflow.ellipsis))).toList(),
+                    onChanged: (value) {
+                      selectedResumeId.value = value ?? -1;
+                    }
+                  );
+                }),
+                SizedBox(height: AppDimensions.paddingSmall),
+                // Xabar yozish
+                TextField(
+                  controller: messageController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: 'Xabar',
+                    labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+                    hintText: 'Murojaat xabarini kiriting',
+                    hintStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide(color: AppColors.lightBlue)),
+                    filled: true,
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5)),
+                    fillColor: AppColors.darkNavy
+                  ),
+                  style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context))
+                ),
+                SizedBox(height: AppDimensions.paddingMedium),
+                // Tugmalar
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      child: Text('Bekor qilish', style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(14, context)))
+                    ),
+                    SizedBox(width: AppDimensions.paddingSmall),
+                    TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: AppColors.lightBlue,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius)),
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            alignment: Alignment.center,
+                            fixedSize: Size(Responsive.scaleWidth(100, context), Responsive.scaleHeight(40, context))
+                        ),
+                        onPressed: () async {
+                          if (selectedResumeId.value == -1) {
+                            ShowToast.show('Xatolik', 'Iltimos, resume tanlang', 1, 1);
+                            return;
+                          }
+                          if (messageController.text.trim().isEmpty) {
+                            ShowToast.show('Xatolik', 'Iltimos, xabar kiriting', 1, 1);
+                            return;
+                          }
+                          Get.back();
+                          await apiController.createApplication(postId, messageController.text.trim(), selectedResumeId.value);
+                        },
+                        child: Text('Yuborish', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600))
+                    )
+                  ]
+                )
+              ]
+            )
+          )
+        )
+      )
+    );
+  }
+
   void _moveMap(LatLng point, double zoom) => mapController.animateTo(
     dest: point,
     zoom: zoom,
@@ -62,42 +189,24 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
       appBar: AppBar(
         backgroundColor: AppColors.darkNavy,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            LucideIcons.arrowLeft,
-            color: AppColors.white,
-            size: Responsive.scaleFont(22, context),
-          ),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'E‘lon tafsilotlari',
-          style: TextStyle(
-            color: AppColors.white,
-            fontSize: Responsive.scaleFont(18, context),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        leading: IconButton(icon: Icon(LucideIcons.arrowLeft, color: AppColors.white, size: Responsive.scaleFont(22, context)),onPressed: () => Get.back(),),
+        title: Text('E‘lon tafsilotlari',style: TextStyle(color: AppColors.white,fontSize: Responsive.scaleFont(18, context),fontWeight: FontWeight.w600)),
         centerTitle: true,
         actions: [
           Obx(() {
             final isFavorite = funcController.wishList.any((w) => w.id == widget.post.id);
             return IconButton(
-              icon: Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? AppColors.red : AppColors.lightGray,
-                size: Responsive.scaleFont(22, context),
-              ),
+              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,color: isFavorite ? AppColors.red : AppColors.lightGray,size: Responsive.scaleFont(22, context)),
               onPressed: () async {
                 if (isFavorite) {
                   await apiController.removeFromWishlist(widget.post.id!.toInt());
                 } else {
                   await apiController.addToWishlist(widget.post.id!.toInt());
                 }
-              },
+              }
             );
-          }),
-        ],
+          })
+        ]
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -107,10 +216,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
             crossAxisAlignment: CrossAxisAlignment.start,
             children: AnimationConfiguration.toStaggeredList(
               duration: const Duration(milliseconds: 200),
-              childAnimationBuilder: (widget) => SlideAnimation(
-                verticalOffset: 30.0,
-                child: FadeInAnimation(child: widget),
-              ),
+              childAnimationBuilder: (widget) => SlideAnimation(verticalOffset: 30.0,child: FadeInAnimation(child: widget)),
               children: [
                 // 1. Surat
                 if (widget.post.pictureUrl != null && widget.post.pictureUrl!.isNotEmpty)
@@ -147,8 +253,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                     children: [
                       Icon(LucideIcons.briefcaseBusiness, size: Responsive.scaleFont(16, context), color: AppColors.lightBlue),
                       SizedBox(width: Responsive.scaleWidth(6, context)),
-                      Text(widget.post.jobType == 'FULL_TIME' ? 'To‘liq ish kuni' : widget.post.jobType == 'TEMPORARY' ? 'Vaqtinchalik ish' : widget.post.jobType == 'REMOTE' ? 'Masofaviy ish' : widget.post.jobType == 'DAILY' ? 'Kunlik ish' : widget.post.jobType == 'PROJECT_BASED' ? 'Loyihaviy ish' : widget.post.jobType == 'INTERNSHIP' ? 'Amaliyot' : 'Noma’lum',
-                          style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.white))
+                      Text(widget.post.jobType == 'FULL_TIME' ? 'To‘liq ish kuni' : widget.post.jobType == 'TEMPORARY' ? 'Vaqtinchalik ish' : widget.post.jobType == 'REMOTE' ? 'Masofaviy ish' : widget.post.jobType == 'DAILY' ? 'Kunlik ish' : widget.post.jobType == 'PROJECT_BASED' ? 'Loyihaviy ish' : widget.post.jobType == 'INTERNSHIP' ? 'Amaliyot' : 'Noma’lum',style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.white))
                     ]
                   ),
                 if (widget.post.jobType != null)
@@ -159,8 +264,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                     children: [
                       Icon(LucideIcons.briefcase, size: Responsive.scaleFont(16, context), color: AppColors.lightBlue),
                       SizedBox(width: Responsive.scaleWidth(6, context)),
-                      Text(widget.post.employmentType == 'FULL_TIME' ? 'To‘liq ish kuni' : widget.post.employmentType == 'PART_TIME' ? 'Yarim stavka' : widget.post.employmentType == 'SHIFT_BASED' ? 'Smenali ish' : widget.post.employmentType == 'FLEXIBLE' ? 'Moslashuvchan ish' : widget.post.employmentType == 'REGULAR_SCHEDULE' ? 'Doimiy jadval' : 'Noma’lum',
-                          style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.white))
+                      Text(widget.post.employmentType == 'FULL_TIME' ? 'To‘liq ish kuni' : widget.post.employmentType == 'PART_TIME' ? 'Yarim stavka' : widget.post.employmentType == 'SHIFT_BASED' ? 'Smenali ish' : widget.post.employmentType == 'FLEXIBLE' ? 'Moslashuvchan ish' : widget.post.employmentType == 'REGULAR_SCHEDULE' ? 'Doimiy jadval' : 'Noma’lum', style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.white))
                     ]
                 ),
                 if (widget.post.employmentType != null)
@@ -266,6 +370,28 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                     )
                   )
                 ],
+                SizedBox(height: AppDimensions.paddingMedium),
+                AnimationConfiguration.staggeredList(
+                  position: 10, // Mos index
+                  duration: const Duration(milliseconds: 200),
+                  child: SlideAnimation(
+                    verticalOffset: 30.0,
+                    child: FadeInAnimation(
+                      child: Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(horizontal: AppDimensions.paddingSmall),
+                        child: Container(
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), color: AppColors.lightBlue),
+                          child: ElevatedButton(
+                              onPressed: () => _showApplicationDialog(context, apiController, widget.post.id!),
+                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.lightBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius))),
+                              child: Text('Murojaat qilish', textAlign: TextAlign.center, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600))
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
                 SizedBox(height: AppDimensions.paddingMedium),
                 // 8. Foydalanuvchi ismi
                 Row(
