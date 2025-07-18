@@ -673,4 +673,26 @@ class ApiController extends GetxController {
       funcController.isLoading.value = false;
     }
   }
+
+
+
+//murojaat qilish ===============================================================================
+  Future<void> createApplication(int postId, String message, int resumeId) async {
+    try {
+      funcController.isLoading.value = true;
+      final token = funcController.getToken();
+      if (token == null) throw Exception('Token mavjud emas');
+      final response = await _dio.post('$_baseUrl/applications', data: {'post_id': postId, 'message': message, 'resume_id': resumeId}, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200) {
+        ShowToast.show('Muvaffaqiyat', 'Murojaat muvaffaqiyatli yuborildi', 3, 1);
+      } else {
+        ShowToast.show('Xatolik', 'Murojaat yuborishda xato: ${response.statusCode}', 3, 1);
+      }
+    } catch (e) {
+      ShowToast.show('Xatolik', 'Murojaat yuborishda xato: $e', 3, 1);
+      print('createApplication xatolik: $e');
+    }
+  }
+
+
 }
