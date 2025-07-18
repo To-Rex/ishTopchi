@@ -62,16 +62,7 @@ class PostCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        post.title ?? 'Noma’lum',
-                        maxLines: isSmallScreen ? 1 : 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: Responsive.scaleFont(isSmallScreen ? 14 : 16, context),
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
-                      ),
+                      Text(post.title ?? 'Noma’lum', maxLines: isSmallScreen ? 1 : 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 14 : 16, context), fontWeight: FontWeight.bold, color: AppColors.white)),
                       SizedBox(height: Responsive.scaleHeight(6, context)),
                       // Kategoriya va ish turi
                       Row(
@@ -80,88 +71,31 @@ class PostCard extends StatelessWidget {
                             Flexible(
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(2, context)),
-                                decoration: BoxDecoration(
-                                  color: AppColors.darkNavy,
-                                  borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
-                                  border: Border.all(color: AppColors.lightBlue),
-                                ),
-                                child: Text(
-                                  post.category!.title ?? 'Noma’lum',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context),
-                                    color: AppColors.lightBlue,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
+                                decoration: BoxDecoration(color: AppColors.darkNavy, borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)), border: Border.all(color: AppColors.lightBlue)),
+                                child: Text(post.category!.title ?? 'Noma’lum', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.lightBlue, fontWeight: FontWeight.w600))
+                              )
                             )
                           else
                             Flexible(
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(2, context)),
-                                decoration: BoxDecoration(
-                                  color: AppColors.darkNavy,
-                                  borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
-                                  border: Border.all(color: AppColors.lightBlue),
-                                ),
-                                child: Text(
-                                  'Noma’lum',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context),
-                                    color: AppColors.lightBlue,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
+                                decoration: BoxDecoration(color: AppColors.darkNavy, borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)), border: Border.all(color: AppColors.lightBlue)),
+                                child: Text('Noma’lum', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.lightBlue, fontWeight: FontWeight.w600))
+                              )
                             ),
                           if (post.jobType != null) SizedBox(width: Responsive.scaleWidth(8, context)),
                           if (post.jobType != null)
-                            Expanded(
-                              child: Text(
-                                post.jobType == 'FULL_TIME'
-                                    ? 'To‘liq ish kuni'
-                                    : post.jobType == 'TEMPORARY'
-                                    ? 'Vaqtinchalik ish'
-                                    : post.jobType == 'REMOTE'
-                                    ? 'Masofaviy ish'
-                                    : post.jobType == 'DAILY'
-                                    ? 'Kunlik ish'
-                                    : post.jobType == 'PROJECT_BASED'
-                                    ? 'Loyihaviy ish'
-                                    : post.jobType == 'INTERNSHIP'
-                                    ? 'Amaliyot'
-                                    : 'Noma’lum',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 11, context), color: AppColors.lightGray),
-                              ),
-                            ),
-                        ],
+                            Expanded(child: Text(post.jobType == 'FULL_TIME' ? 'To‘liq ish kuni' : post.jobType == 'TEMPORARY' ? 'Vaqtinchalik ish' : post.jobType == 'REMOTE' ? 'Masofaviy ish' : post.jobType == 'DAILY' ? 'Kunlik ish' : post.jobType == 'PROJECT_BASED' ? 'Loyihaviy ish' : post.jobType == 'INTERNSHIP' ? 'Amaliyot' : 'Noma’lum', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 11, context), color: AppColors.lightGray)))
+                        ]
                       ),
                       SizedBox(height: Responsive.scaleHeight(6, context)),
                       // Tavsif
                       Container(
                         height: Responsive.scaleHeight(isSmallScreen ? 40 : 50, context),
                         width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: AppColors.darkNavy,
-                          borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
-                        ),
+                        decoration: BoxDecoration(color: AppColors.darkNavy, borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context))),
                         padding: EdgeInsets.all(Responsive.scaleWidth(8, context)),
-                        child: Text(
-                          post.content ?? 'Tavsif yo‘q',
-                          maxLines: isSmallScreen ? 2 : 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context),
-                            color: AppColors.lightGray,
-                            height: 1.3,
-                          ),
-                        ),
+                        child: Text(post.content ?? 'Tavsif yo‘q', maxLines: isSmallScreen ? 2 : 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightGray, height: 1.3))
                       ),
                       SizedBox(height: Responsive.scaleHeight(6, context)),
                       // Maosh
@@ -169,19 +103,8 @@ class PostCard extends StatelessWidget {
                         children: [
                           Icon(LucideIcons.wallet, size: Responsive.scaleFont(isSmallScreen ? 12 : 14, context), color: AppColors.lightBlue),
                           SizedBox(width: Responsive.scaleWidth(4, context)),
-                          Expanded(
-                            child: Text(
-                              '${post.salaryFrom ?? 'Noma’lum'} - ${post.salaryTo ?? 'Noma’lum'} UZS',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context),
-                                color: AppColors.lightBlue,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
+                          Expanded(child: Text('${post.salaryFrom ?? 'Noma’lum'} - ${post.salaryTo ?? 'Noma’lum'} UZS', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightBlue, fontWeight: FontWeight.w600)))
+                        ]
                       ),
                       SizedBox(height: Responsive.scaleHeight(6, context)),
                       // Tuman
@@ -189,18 +112,8 @@ class PostCard extends StatelessWidget {
                         children: [
                           Icon(LucideIcons.mapPin, size: Responsive.scaleFont(isSmallScreen ? 12 : 14, context), color: AppColors.lightBlue),
                           SizedBox(width: Responsive.scaleWidth(4, context)),
-                          Expanded(
-                            child: Text(
-                              post.district?.name ?? 'Noma’lum',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context),
-                                color: AppColors.lightBlue,
-                              ),
-                            ),
-                          ),
-                        ],
+                          Expanded(child: Text(post.district?.name ?? 'Noma’lum', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightBlue)))
+                        ]
                       ),
                       SizedBox(height: Responsive.scaleHeight(6, context)),
                       // Foydalanuvchi
@@ -210,57 +123,23 @@ class PostCard extends StatelessWidget {
                             radius: Responsive.scaleWidth(isSmallScreen ? 10 : 12, context),
                             backgroundImage: NetworkImage(funcController.getProfileUrl(post.user?.profilePicture)),
                             backgroundColor: AppColors.darkBlue,
-                            child: post.user?.profilePicture == null
-                                ? Icon(LucideIcons.user, size: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightGray)
-                                : null,
+                            child: post.user?.profilePicture == null ? Icon(LucideIcons.user, size: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightGray) : null
                           ),
                           SizedBox(width: Responsive.scaleWidth(4, context)),
-                          Flexible(
-                            child: Text(
-                              '${post.user?.firstName ?? ''} ${post.user?.lastName ?? ''}'.trim(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context),
-                                color: AppColors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
+                          Flexible(child: Text('${post.user?.firstName ?? ''} ${post.user?.lastName ?? ''}'.trim(), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.white, fontWeight: FontWeight.w500)))
+                        ]
                       ),
                       SizedBox(height: Responsive.scaleHeight(6, context)),
                       // Yaratilgan sana va ko'rishlar
                       Row(
                         children: [
-                          Expanded(
-                            child: Text(
-                              post.createdAt != null
-                                  ? DateFormat('yyyy-MM-dd').format(DateTime.parse(post.createdAt!)).toString()
-                                  : 'Noma’lum',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: Responsive.scaleFont(isSmallScreen ? 8 : 10, context),
-                                color: AppColors.lightGray,
-                              ),
-                            ),
-                          ),
+                          Expanded(child: Text(post.createdAt != null ? DateFormat('yyyy-MM-dd').format(DateTime.parse(post.createdAt!)).toString() : 'Noma’lum', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 8 : 10, context), color: AppColors.lightGray))),
                           SizedBox(width: Responsive.scaleWidth(4, context)),
                           Icon(LucideIcons.eye, size: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightGray),
                           SizedBox(width: Responsive.scaleWidth(4, context)),
-                          Text(
-                            '${post.views ?? 0} ko‘rish',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.end,
-                            style: TextStyle(
-                              fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context),
-                              color: AppColors.lightGray,
-                            ),
-                          ),
-                        ],
-                      ),
+                          Text('${post.views ?? 0} ko‘rish', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.lightGray))
+                        ]
+                      )
                     ]
                   )
                 )
@@ -276,25 +155,21 @@ class PostCard extends StatelessWidget {
                   radius: Responsive.scaleWidth(isSmallScreen ? 18 : 20, context),
                   backgroundColor: AppColors.darkBlue,
                   child: IconButton(
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? AppColors.red : AppColors.white,
-                      size: Responsive.scaleFont(isSmallScreen ? 18 : 20, context),
-                    ),
+                    icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: isFavorite ? AppColors.red : AppColors.white, size: Responsive.scaleFont(isSmallScreen ? 18 : 20, context)),
                     onPressed: () async {
                       if (isFavorite) {
                         await apiController.removeFromWishlist(post.id!.toInt());
                       } else {
                         await apiController.addToWishlist(post.id!.toInt());
                       }
-                    },
-                  ),
+                    }
+                  )
                 );
-              }),
-            ),
-          ],
-        ),
-      ),
+              })
+            )
+          ]
+        )
+      )
     );
   }
 
@@ -323,14 +198,12 @@ class PostCard extends StatelessWidget {
                     width: Responsive.scaleWidth(isSmallScreen ? 160 : 180, context),
                     height: Responsive.scaleHeight(isSmallScreen ? 200 : 220, context),
                     decoration: BoxDecoration(color: AppColors.lightGray.withAlpha(50)),
-                    child: post.pictureUrl != null && post.pictureUrl!.isNotEmpty
-                        ? Image.network(
+                    child: post.pictureUrl != null && post.pictureUrl!.isNotEmpty ? Image.network(
                       post.pictureUrl!.startsWith('http') ? post.pictureUrl! : 'https://ishtopchi.uz${post.pictureUrl}',
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => const Center(child: Icon(LucideIcons.imageOff, color: AppColors.darkBlue, size: 40)),
-                    )
-                        : const Center(child: Icon(LucideIcons.imageOff, color: AppColors.darkBlue, size: 40)),
-                  ),
+                    ) : const Center(child: Icon(LucideIcons.imageOff, color: AppColors.darkBlue, size: 40))
+                  )
                 ),
                 SizedBox(width: Responsive.scaleWidth(8, context)),
                 // Ma'lumotlar
@@ -341,12 +214,7 @@ class PostCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Sarlavha
-                        Text(
-                          post.title ?? 'Noma’lum',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 14 : 16, context), fontWeight: FontWeight.bold, color: AppColors.white)
-                        ),
+                        Text(post.title ?? 'Noma’lum', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 14 : 16, context), fontWeight: FontWeight.bold, color: AppColors.white)),
                         SizedBox(height: Responsive.scaleHeight(6, context)),
                         // Kategoriya va ish turi
                         Row(
@@ -373,31 +241,14 @@ class PostCard extends StatelessWidget {
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(2, context)),
                                   decoration: BoxDecoration(color: AppColors.darkNavy, borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)), border: Border.all(color: AppColors.lightBlue)),
-                                  child: Text(
-                                    'Noma’lum',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.lightBlue, fontWeight: FontWeight.w600)
-                                  )
+                                  child: Text('Noma’lum', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.lightBlue, fontWeight: FontWeight.w600))
                                 )
                               ),
                             if (post.jobType != null) SizedBox(width: Responsive.scaleWidth(8, context)),
                             if (post.jobType != null)
                               Expanded(
                                 child: Text(
-                                  post.jobType == 'FULL_TIME'
-                                      ? 'To‘liq ish kuni'
-                                      : post.jobType == 'TEMPORARY'
-                                      ? 'Vaqtinchalik ish'
-                                      : post.jobType == 'REMOTE'
-                                      ? 'Masofaviy ish'
-                                      : post.jobType == 'DAILY'
-                                      ? 'Kunlik ish'
-                                      : post.jobType == 'PROJECT_BASED'
-                                      ? 'Loyihaviy ish'
-                                      : post.jobType == 'INTERNSHIP'
-                                      ? 'Amaliyot'
-                                      : 'Noma’lum',
+                                  post.jobType == 'FULL_TIME' ? 'To‘liq ish kuni' : post.jobType == 'TEMPORARY' ? 'Vaqtinchalik ish' : post.jobType == 'REMOTE' ? 'Masofaviy ish' : post.jobType == 'DAILY' ? 'Kunlik ish' : post.jobType == 'PROJECT_BASED' ? 'Loyihaviy ish' : post.jobType == 'INTERNSHIP' ? 'Amaliyot' : 'Noma’lum',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 11, context), color: AppColors.lightGray)
@@ -424,19 +275,8 @@ class PostCard extends StatelessWidget {
                           children: [
                             Icon(LucideIcons.wallet, size: Responsive.scaleFont(isSmallScreen ? 12 : 14, context), color: AppColors.lightBlue),
                             SizedBox(width: Responsive.scaleWidth(4, context)),
-                            Expanded(
-                              child: Text(
-                                '${post.salaryFrom ?? 'Noma’lum'} - ${post.salaryTo ?? 'Noma’lum'} UZS',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context),
-                                  color: AppColors.lightBlue,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
+                            Expanded(child: Text('${post.salaryFrom ?? 'Noma’lum'} - ${post.salaryTo ?? 'Noma’lum'} UZS', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightBlue, fontWeight: FontWeight.w600)))
+                          ]
                         ),
                         SizedBox(height: Responsive.scaleHeight(6, context)),
                         // Tuman
@@ -444,18 +284,8 @@ class PostCard extends StatelessWidget {
                           children: [
                             Icon(LucideIcons.mapPin, size: Responsive.scaleFont(isSmallScreen ? 12 : 14, context), color: AppColors.lightBlue),
                             SizedBox(width: Responsive.scaleWidth(4, context)),
-                            Expanded(
-                              child: Text(
-                                post.district?.name ?? 'Noma’lum',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context),
-                                  color: AppColors.lightBlue,
-                                ),
-                              ),
-                            ),
-                          ],
+                            Expanded(child: Text(post.district?.name ?? 'Noma’lum', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightBlue)))
+                          ]
                         ),
                         SizedBox(height: Responsive.scaleHeight(6, context)),
                         // Foydalanuvchi
@@ -468,19 +298,8 @@ class PostCard extends StatelessWidget {
                               child: post.user?.profilePicture == null ? Icon(LucideIcons.user, size: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightGray) : null
                             ),
                             SizedBox(width: Responsive.scaleWidth(4, context)),
-                            Expanded(
-                              child: Text(
-                                '${post.user?.firstName ?? ''} ${post.user?.lastName ?? ''}'.trim(),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context),
-                                  color: AppColors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
+                            Expanded(child: Text('${post.user?.firstName ?? ''} ${post.user?.lastName ?? ''}'.trim(), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.white, fontWeight: FontWeight.w500)))
+                          ]
                         ),
                         SizedBox(height: Responsive.scaleHeight(6, context)),
                         // Yaratilgan sana va ko'rishlar
@@ -488,37 +307,23 @@ class PostCard extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                post.createdAt != null
-                                    ? DateFormat('yyyy-MM-dd').format(DateTime.parse(post.createdAt!)).toString()
-                                    : 'Noma’lum',
+                                post.createdAt != null ? DateFormat('yyyy-MM-dd').format(DateTime.parse(post.createdAt!)).toString() : 'Noma’lum',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: Responsive.scaleFont(isSmallScreen ? 8 : 10, context),
-                                  color: AppColors.lightGray,
-                                ),
-                              ),
+                                style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 8 : 10, context), color: AppColors.lightGray)
+                              )
                             ),
                             SizedBox(width: Responsive.scaleWidth(4, context)),
                             Icon(LucideIcons.eye, size: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.lightGray),
                             SizedBox(width: Responsive.scaleWidth(4, context)),
-                            Text(
-                              '${post.views ?? 0} ko‘rish',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context),
-                                color: AppColors.lightGray,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                            Text('${post.views ?? 0} ko‘rish', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.lightGray))
+                          ]
+                        )
+                      ]
+                    )
+                  )
+                )
+              ]
             ),
             // Like tugmasi surat ustida
             Positioned(
@@ -530,25 +335,21 @@ class PostCard extends StatelessWidget {
                   radius: Responsive.scaleWidth(isSmallScreen ? 18 : 20, context),
                   backgroundColor: AppColors.darkBlue,
                   child: IconButton(
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? AppColors.red : AppColors.white,
-                      size: Responsive.scaleFont(isSmallScreen ? 18 : 20, context),
-                    ),
+                    icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: isFavorite ? AppColors.red : AppColors.white, size: Responsive.scaleFont(isSmallScreen ? 18 : 20, context)),
                     onPressed: () async {
                       if (isFavorite) {
                         await apiController.removeFromWishlist(post.id!.toInt());
                       } else {
                         await apiController.addToWishlist(post.id!.toInt());
                       }
-                    },
-                  ),
+                    }
+                  )
                 );
-              }),
-            ),
-          ],
-        ),
-      ),
+              })
+            )
+          ]
+        )
+      )
     );
   }
 }
