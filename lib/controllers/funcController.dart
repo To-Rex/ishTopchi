@@ -8,11 +8,13 @@ import '../core/models/post_model.dart';
 import '../core/models/resumes_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
-import '../modules/ad_posting/controllers/ad_posting_controller.dart';
+import '../core/services/show_toast.dart';
+import 'api_controller.dart';
 
 class FuncController {
   final GetStorage storage = GetStorage();
 
+  final RxString globalToken = ''.obs;
   final RxString otpToken = ''.obs;
   final RxString otpPhone = ''.obs;
   final RxList<Data> posts = <Data>[].obs;
@@ -81,6 +83,35 @@ class FuncController {
     }
   }
 
+  Future<void> checkAndHandleDevice() async {
+    try {
+      await fetchDeviceInfo();
+      if (deviceId.value.isEmpty) {
+        print('Qurilma ID topilmadi');
+        ShowToast.show('Xatolik', 'Qurilma ID sini olishda xato yuz berdi', 3, 1);
+        return;
+      }
+      // 2. Serverdagi qurilmalarni olish
+      final apiController = Get.find<ApiController>();
+      await apiController.fetchDevices();
+
+      // 3. Qurilma deviceId sini tekshirish
+      final devices = devicesModel.value.data ?? [];
+      final matchingDevice = devices.firstWhereOrNull((device) => device.deviceId == deviceId.value);
+
+      if (matchingDevice != null && matchingDevice.id != null) {
+        print('Qurilma topildi: deviceId=${matchingDevice.deviceId}, id=${matchingDevice.id}, login amali bajarilmoqda');
+        await apiController.loginDevice(matchingDevice.id!);
+      } else {
+        print('Qurilma topilmadi, yangi qurilma yaratilmoqda');
+        await apiController.createDevice();
+      }
+    } catch (e) {
+      print('Qurilma tekshirishda xato: $e');
+      ShowToast.show('Xatolik', 'Qurilma tekshirishda xato: $e', 3, 1);
+    }
+  }
+
   String getProfileUrl(String? url) {
     const base = 'https://ishtopchi.uz';
     if (url == null || url.trim().isEmpty) {
@@ -114,7 +145,8 @@ class FuncController {
 
   Future<void> saveToken(String token) async => await storage.write('token', token);
 
-  String? getToken() => storage.read('token');
+  //String? getToken() => storage.read('token');
+  String? getToken() => globalToken.value = storage.read('token') ?? '';
 
   Future<void> deleteToken() async => await storage.remove('token');
 

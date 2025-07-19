@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 import '../../../controllers/api_controller.dart';
+import '../../../controllers/funcController.dart';
 
 class MainController extends GetxController {
-  final ApiController apiController = Get.find<ApiController>();
+/*  final ApiController apiController = Get.find<ApiController>();
+  final FuncController funcController = Get.find<FuncController>();
 
   @override
   void onInit() {
@@ -13,5 +15,5 @@ class MainController extends GetxController {
     } else {
       print('Token mavjud emas, iltimos login qiling');
     }
-  }
+  }*/
 }

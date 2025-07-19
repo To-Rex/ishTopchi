@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../config/routes/app_routes.dart';
 import '../../config/theme/app_colors.dart';
+import '../../controllers/api_controller.dart';
 import '../../controllers/funcController.dart';
 import '../onboarding/views/onboarding_screen.dart';
 
@@ -24,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
 
+    funcController.checkAndHandleDevice();
     _controller = AnimationController(duration: const Duration(seconds: 2), vsync: this);
     _opacityAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
     _controller.forward();

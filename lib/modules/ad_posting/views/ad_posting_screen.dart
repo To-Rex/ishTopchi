@@ -393,7 +393,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
       );
 
   Widget _buildDropdownField<T>(BuildContext context, String label, RxList<dynamic> items, Rx<T> selectedValue, IconData icon, Function(T?) onChanged, {String? Function(T?)? validator, bool isInt = false, GlobalKey<FormFieldState>? fieldKey}) =>
-      DropdownButtonFormField2<T>(
+  isInt ? DropdownButtonFormField2<T>(
         key: fieldKey,
         value: selectedValue.value,
         isExpanded: true,
@@ -433,7 +433,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
         }).toList(),
         onChanged: onChanged,
         hint: Text('Tanlang', style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context)))
-      );
+      ) : SizedBox();
 
   Widget _buildSubmitButton(BuildContext context) => SizedBox(
     width: double.infinity,
