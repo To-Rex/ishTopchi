@@ -11,7 +11,14 @@ import '../../../core/services/show_toast.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/profile_controller.dart';
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+
+  @override
+  _EditProfileScreenState createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
   final ProfileController profileController = Get.find<ProfileController>();
   final FuncController funcController = Get.find<FuncController>();
   final ApiController apiController = Get.find<ApiController>();
@@ -23,7 +30,29 @@ class EditProfileScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
 
-  EditProfileScreen({super.key});
+  @override
+  void initState() {
+    super.initState();
+    final user = funcController.userMe.value?.data;
+    if (user != null) {
+      firstNameController.text = user.firstName ?? '';
+      lastNameController.text = user.lastName ?? '';
+      birthDateController.text = user.birthDate?.split('T')[0] ?? '';
+      profileController.selectedGender.value = user.gender == 'MALE' ? '1' : '2';
+      if (user.district != null && user.district!.region != null) {
+        profileController.selectedRegionId.value = user.district!.region!.id.toString();
+        profileController.selectedDistrictId.value = user.district!.id.toString();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    birthDateController.dispose();
+    super.dispose();
+  }
 
   String _getProfileUrl(String? url) {
     const base = 'https://ishtopchi.uz';
@@ -38,14 +67,33 @@ class EditProfileScreen extends StatelessWidget {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       profileController.selectedImage.value = File(image.path);
+      ShowToast.show('Muvaffaqiyat', 'Surat tanlandi', 1, 1);
     }
   }
 
   Future<void> _saveProfile() async {
     final token = funcController.getToken();
-    if (token == null) {return;}
+    if (token == null) {
+      ShowToast.show('Xatolik', 'Tizimga kirish talab qilinadi', 2, 1);
+      return;
+    }
     if (_formKey.currentState!.validate()) {
+      if (profileController.selectedGender.value.isEmpty) {
+        ShowToast.show('Xatolik', 'Jins tanlanishi shart', 2, 1);
+        return;
+      }
+      if (profileController.selectedRegionId.value.isEmpty ||
+          profileController.isLoadingRegions.value) {
+        ShowToast.show('Xatolik', 'Viloyat tanlanishi shart', 2, 1);
+        return;
+      }
+      if (profileController.selectedDistrictId.value == '0' ||
+          profileController.isLoadingDistricts.value) {
+        ShowToast.show('Xatolik', 'Tuman tanlanishi shart', 2, 1);
+        return;
+      }
       try {
+        profileController.isUpdatingProfile.value = true;
         final success = await apiController.updateProfile(
           firstName: firstNameController.text,
           lastName: lastNameController.text,
@@ -57,183 +105,248 @@ class EditProfileScreen extends StatelessWidget {
         if (success) {
           await profileController.loadUser();
           Get.back();
+          ShowToast.show('Muvaffaqiyat', 'Profil muvaffaqiyatli yangilandi', 1, 1);
         } else {
-          ShowToast.show('Xatolik', 'Profilni yangilashda muammo yuz berdi', 3, 1);
+          ShowToast.show('Xatolik', 'Profilni yangilashda muammo yuz berdi', 2, 1);
         }
       } catch (e) {
-        ShowToast.show('Xatolik', 'Exxx nimadir xato ketdi', 3, 1);
+        print('saveProfile xatolik: $e');
+        ShowToast.show('Xatolik', 'Profil yangilashda xato yuz berdi', 2, 1);
+      } finally {
+        profileController.isUpdatingProfile.value = false;
       }
+    } else {
+      ShowToast.show('Xatolik', 'Iltimos, barcha maydonlarni to‘ldiring', 2, 1);
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     final user = funcController.userMe.value?.data;
-    if (user != null) {
-      firstNameController.text = user.firstName ?? '';
-      lastNameController.text = user.lastName ?? '';
-      birthDateController.text = user.birthDate?.split('T')[0] ?? '';
-      profileController.selectedGender.value = user.gender == 'MALE' ? '1' : '2';
-
-      // Viloyat va tuman ID larini UserMe dan olish
-      if (user.district != null && user.district!.region != null) {
-        profileController.selectedRegionId.value = user.district!.region!.id.toString();
-        profileController.selectedDistrictId.value = user.district!.id.toString();
-      } else {
-        profileController.selectedRegionId.value = '';
-        profileController.selectedDistrictId.value = '0';
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tahrirlash', style: TextStyle(color: AppColors.lightGray, fontWeight: FontWeight.bold, fontSize: Responsive.scaleFont(19, context))),
+        title: Text(
+          'Tahrirlash',
+          style: TextStyle(
+            color: AppColors.lightGray,
+            fontWeight: FontWeight.bold,
+            fontSize: Responsive.scaleFont(19, context),
+          ),
+        ),
         backgroundColor: AppColors.darkNavy,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
-          onPressed: () => Get.back()
+          icon: Icon(
+            LucideIcons.arrowLeft,
+            color: AppColors.lightGray,
+            size: Responsive.scaleFont(20, context),
+          ),
+          onPressed: () => Get.back(),
         ),
-        elevation: 0
+        elevation: 0,
       ),
       backgroundColor: AppColors.darkNavy,
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: apiController.fetchRegions(),
-        builder: (context, regionSnapshot) {
-          if (regionSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(color: AppColors.lightBlue));
-          }
-          if (regionSnapshot.hasError || !regionSnapshot.hasData || regionSnapshot.data!.isEmpty) {
-            ShowToast.show('Xatolik', 'Viloyatlar yuklanmadi', 2, 1);
-            return Center(child: Text('Viloyatlar yuklanmadi', style: TextStyle(color: AppColors.lightGray)));
-          }
-
-          final regions = regionSnapshot.data!;
-          if (profileController.regions.isEmpty) {
-            profileController.regions.value = regions;
-          }
-
-          // Tanlangan viloyatga mos tumanlarni yuklash
-          if (profileController.selectedRegionId.value.isNotEmpty && profileController.districts.isEmpty) {
-            profileController.loadDistricts(int.parse(profileController.selectedRegionId.value));
-          }
-
-          return FutureBuilder<List<Map<String, dynamic>>>(
-            future: profileController.selectedRegionId.value.isNotEmpty
-                ? apiController.fetchDistricts(int.parse(profileController.selectedRegionId.value))
-                : Future.value(<Map<String, dynamic>>[]),
-            builder: (context, districtSnapshot) {
-              if (districtSnapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator(color: AppColors.lightBlue));
-              }
-              final districts = districtSnapshot.data ?? [];
-              if (districts.isEmpty && profileController.selectedRegionId.value.isNotEmpty) {
-                profileController.loadDistricts(int.parse(profileController.selectedRegionId.value));
-              }
-
-              return SingleChildScrollView(
-                padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(height: Responsive.scaleHeight(24, context)),
-                      Center(
-                        child: Obx(() => ClipOval(
-                          child: Container(
-                            width: Responsive.scaleWidth(120, context),
-                            height: Responsive.scaleWidth(120, context),
-                            color: AppColors.lightBlue.withAlpha(150),
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                profileController.selectedImage.value != null
-                                    ? Image.file(profileController.selectedImage.value!, fit: BoxFit.cover)
-                                    : (user?.profilePicture != null
-                                    ? Image.network(_getProfileUrl(user!.profilePicture), fit: BoxFit.cover)
-                                    : Icon(LucideIcons.user, color: AppColors.lightGray, size: Responsive.scaleFont(50, context))),
-                                Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Container(
-                                    height: Responsive.scaleHeight(35, context),
-                                    color: AppColors.darkBlue.withAlpha(150),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: IconButton(
-                                    icon: Icon(LucideIcons.camera, color: AppColors.white, size: Responsive.scaleFont(20, context)),
-                                    onPressed: _pickImage,
-                                  ),
-                                ),
-                              ],
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: Responsive.scaleHeight(24, context)),
+              Center(
+                child: Obx(() => ClipOval(
+                    child: Container(
+                      width: Responsive.scaleWidth(120, context),
+                      height: Responsive.scaleWidth(120, context),
+                      color: AppColors.lightBlue.withAlpha(150),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          profileController.selectedImage.value != null
+                              ? Image.file(
+                            profileController.selectedImage.value!,
+                            fit: BoxFit.cover,
+                          )
+                              : (user?.profilePicture != null
+                              ? Image.network(
+                            _getProfileUrl(user!.profilePicture),
+                            fit: BoxFit.cover,
+                          )
+                              : Icon(
+                            LucideIcons.user,
+                            color: AppColors.lightGray,
+                            size: Responsive.scaleFont(50, context),
+                          )),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              height: Responsive.scaleHeight(35, context),
+                              color: AppColors.darkBlue.withAlpha(150),
                             ),
                           ),
-                        )),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: IconButton(
+                              icon: Icon(
+                                LucideIcons.camera,
+                                color: AppColors.white,
+                                size: Responsive.scaleFont(20, context),
+                              ),
+                              onPressed: _pickImage,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: Responsive.scaleHeight(24, context)),
-                      _buildTextField(context, firstNameController, 'Ism', LucideIcons.user),
-                      SizedBox(height: Responsive.scaleHeight(16, context)),
-                      _buildTextField(context, lastNameController, 'Familiya', LucideIcons.user),
-                      SizedBox(height: Responsive.scaleHeight(16, context)),
-                      _buildGenderSelection(context),
-                      SizedBox(height: Responsive.scaleHeight(16, context)),
-                      _buildDateField(context, birthDateController, 'Tug‘ilgan sana', LucideIcons.calendar),
-                      SizedBox(height: Responsive.scaleHeight(16, context)),
-                      Obx(() => _buildDropdown(
-                        context,
-                        profileController.regions,
-                        profileController.selectedRegionId.value,
-                            (newValue) {
-                          if (newValue != null) {
-                            profileController.selectedRegionId.value = newValue;
-                            profileController.loadDistricts(int.parse(newValue));
-                          }
-                        },
-                        'Viloyat',
-                        LucideIcons.map,
-                      )),
-                      SizedBox(height: Responsive.scaleHeight(16, context)),
-                      Obx(() => _buildDropdown(
-                        context,
-                        profileController.districts,
-                        profileController.selectedDistrictId.value,
-                            (newValue) => profileController.selectedDistrictId.value = newValue ?? '0',
-                        'Tuman',
-                        LucideIcons.mapPin,
-                      )),
-                      SizedBox(height: Responsive.scaleHeight(24, context)),
-                      ElevatedButton(
-                        onPressed: _saveProfile,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.lightBlue,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context))),
-                          padding: EdgeInsets.symmetric(vertical: Responsive.scaleHeight(12, context), horizontal: Responsive.scaleWidth(24, context)),
-                          elevation: 2,
-                        ),
-                        child: Text('Saqlash', style: TextStyle(fontSize: Responsive.scaleFont(16, context), color: AppColors.white, fontWeight: FontWeight.w600)),
-                      ),
-                    ],
-                  ),
+                    )),
                 ),
-              );
-            },
-          );
-        },
+              ),
+              SizedBox(height: Responsive.scaleHeight(24, context)),
+              _buildTextField(context, firstNameController, 'Ism', LucideIcons.user),
+              SizedBox(height: Responsive.scaleHeight(16, context)),
+              _buildTextField(context, lastNameController, 'Familiya', LucideIcons.user),
+              SizedBox(height: Responsive.scaleHeight(16, context)),
+              _buildGenderSelection(context),
+              SizedBox(height: Responsive.scaleHeight(16, context)),
+              _buildDateField(context, birthDateController, 'Tug‘ilgan sana',
+                  LucideIcons.calendar),
+              SizedBox(height: Responsive.scaleHeight(16, context)),
+              Obx(() => Stack(
+                children: [
+                  _buildDropdown(
+                    context,
+                    profileController.regions,
+                    profileController.selectedRegionId.value,
+                        (newValue) {
+                      if (newValue != null &&
+                          newValue != profileController.selectedRegionId.value) {
+                        profileController.selectedRegionId.value = newValue;
+                        profileController.districts.clear();
+                        profileController.selectedDistrictId.value = '0';
+                      }
+                    },
+                    'Viloyat',
+                    LucideIcons.map,
+                  ),
+                  if (profileController.isLoadingRegions.value)
+                    Positioned(
+                      right: Responsive.scaleWidth(10, context),
+                      top: Responsive.scaleHeight(10, context),
+                      child: SizedBox(
+                        width: Responsive.scaleWidth(20, context),
+                        height: Responsive.scaleHeight(20, context),
+                        child: CircularProgressIndicator(
+                          color: AppColors.lightBlue,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  if (profileController.regions.isEmpty &&
+                      !profileController.isLoadingRegions.value)
+                    Positioned(
+                      child: Text(
+                        'Viloyatlar topilmadi',
+                        style: TextStyle(
+                          color: AppColors.red,
+                          fontSize: Responsive.scaleFont(12, context),
+                        ),
+                      ),
+                    ),
+                ],
+              )),
+              SizedBox(height: Responsive.scaleHeight(16, context)),
+              Obx(() => Stack(
+                children: [
+                  _buildDropdown(
+                    context,
+                    profileController.districts,
+                    profileController.selectedDistrictId.value,
+                        (newValue) {
+                      if (newValue != null) {
+                        profileController.selectedDistrictId.value = newValue;
+                      }
+                    },
+                    'Tuman',
+                    LucideIcons.mapPin,
+                  ),
+                  if (profileController.isLoadingDistricts.value)
+                    Positioned(
+                      right: Responsive.scaleWidth(10, context),
+                      top: Responsive.scaleHeight(10, context),
+                      child: SizedBox(
+                        width: Responsive.scaleWidth(20, context),
+                        height: Responsive.scaleHeight(20, context),
+                        child: CircularProgressIndicator(
+                          color: AppColors.lightBlue,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  if (profileController.districts.isEmpty &&
+                      !profileController.isLoadingDistricts.value &&
+                      profileController.selectedRegionId.value.isNotEmpty)
+                    Positioned(
+                      child: Text(
+                        'Tumanlar topilmadi',
+                        style: TextStyle(
+                          color: AppColors.red,
+                          fontSize: Responsive.scaleFont(12, context),
+                        ),
+                      ),
+                    ),
+                ],
+              )),
+              SizedBox(height: Responsive.scaleHeight(24, context)),
+              Obx(() => ElevatedButton(
+                onPressed: profileController.isUpdatingProfile.value
+                    ? null
+                    : _saveProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.lightBlue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.circular(Responsive.scaleWidth(12, context))),
+                  padding: EdgeInsets.symmetric(
+                      vertical: Responsive.scaleHeight(12, context),
+                      horizontal: Responsive.scaleWidth(24, context)),
+                  elevation: 2,
+                ),
+                child: profileController.isUpdatingProfile.value
+                    ? SizedBox(
+                  width: Responsive.scaleWidth(20, context),
+                  height: Responsive.scaleHeight(20, context),
+                  child: CircularProgressIndicator(
+                    color: AppColors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+                    : Text(
+                  'Saqlash',
+                  style: TextStyle(
+                      fontSize: Responsive.scaleFont(16, context),
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w600),
+                ),
+              )),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildTextField(BuildContext context, TextEditingController controller, String label, IconData icon) {
+  Widget _buildTextField(
+      BuildContext context, TextEditingController controller, String label, IconData icon) {
     return TextFormField(
       controller: controller,
-      validator: (value) => value == null || value.trim().isEmpty ? '$label to‘ldirilishi shart' : null,
+      validator: (value) =>
+      value == null || value.trim().isEmpty ? '$label to‘ldirilishi shart' : null,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+        prefixIcon: Icon(icon,
+            color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
         labelText: label,
-        labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+        labelStyle:
+        TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
         fillColor: AppColors.darkBlue,
         border: OutlineInputBorder(
@@ -249,15 +362,18 @@ class EditProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDateField(BuildContext context, TextEditingController controller, String label, IconData icon) {
+  Widget _buildDateField(BuildContext context, TextEditingController controller,
+      String label, IconData icon) {
     return TextFormField(
       controller: controller,
       readOnly: true,
-      validator: (value) => value == null || value.trim().isEmpty ? '$label tanlanishi shart' : null,
+      validator: (value) =>
+      value == null || value.trim().isEmpty ? '$label tanlanishi shart' : null,
       onTap: () async {
         DateTime? pickedDate = await showDatePicker(
           context: context,
-          initialDate: DateTime.parse(controller.text.isNotEmpty ? controller.text : '1990-01-01'),
+          initialDate:
+          DateTime.parse(controller.text.isNotEmpty ? controller.text : '1990-01-01'),
           firstDate: DateTime(1900),
           lastDate: DateTime(2100),
           builder: (context, child) {
@@ -278,9 +394,11 @@ class EditProfileScreen extends StatelessWidget {
         }
       },
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+        prefixIcon: Icon(icon,
+            color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
         labelText: label,
-        labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+        labelStyle:
+        TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
         fillColor: AppColors.darkBlue,
         border: OutlineInputBorder(
@@ -302,16 +420,20 @@ class EditProfileScreen extends StatelessWidget {
       String value,
       Function(String?) onChanged,
       String label,
-      IconData icon,
-      ) {
+      IconData icon) {
     return DropdownButtonFormField2<String>(
-      value: value.isNotEmpty && items.any((item) => item['id'].toString() == value) ? value : null,
+      value: value.isNotEmpty && items.any((item) => item['id'].toString() == value)
+          ? value
+          : null,
       isExpanded: true,
-      validator: (val) => val == null || val.isEmpty || val == '0' ? '$label tanlanishi shart' : null,
+      validator: (val) =>
+      val == null || val.isEmpty || val == '0' ? '$label tanlanishi shart' : null,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+        prefixIcon: Icon(icon,
+            color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
         labelText: label,
-        labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+        labelStyle:
+        TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
         filled: true,
         fillColor: AppColors.darkBlue,
         border: OutlineInputBorder(
@@ -334,17 +456,24 @@ class EditProfileScreen extends StatelessWidget {
         elevation: 4,
       ),
       iconStyleData: IconStyleData(
-        icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+        icon: Icon(LucideIcons.chevronDown,
+            color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
       ),
       style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)),
       items: items.map<DropdownMenuItem<String>>((item) {
         return DropdownMenuItem<String>(
           value: item['id'].toString(),
-          child: Text(item['name'] ?? 'Noma’lum', style: TextStyle(fontSize: Responsive.scaleFont(14, context)), overflow: TextOverflow.ellipsis),
+          child: Text(item['name'] ?? 'Noma’lum',
+              style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
+              overflow: TextOverflow.ellipsis),
         );
       }).toList(),
-      onChanged: onChanged,
-      hint: Text('Tanlang', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
+      onChanged: items.isEmpty ? null : onChanged,
+      hint: Text(
+        items.isEmpty ? 'Ma’lumot topilmadi' : 'Tanlang',
+        style: TextStyle(
+            color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+      ),
     );
   }
 
@@ -365,10 +494,14 @@ class EditProfileScreen extends StatelessWidget {
           children: [
             Expanded(
               child: RadioListTile<String>(
-                title: Text('Erkak', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context))),
+                title: Text('Erkak',
+                    style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: Responsive.scaleFont(14, context))),
                 value: '1',
                 groupValue: profileController.selectedGender.value,
-                onChanged: (value) => profileController.selectedGender.value = value ?? '',
+                onChanged: (value) =>
+                profileController.selectedGender.value = value ?? '',
                 activeColor: AppColors.lightBlue,
                 contentPadding: EdgeInsets.zero,
                 dense: true,
@@ -377,10 +510,14 @@ class EditProfileScreen extends StatelessWidget {
             SizedBox(width: Responsive.scaleWidth(16, context)),
             Expanded(
               child: RadioListTile<String>(
-                title: Text('Ayol', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context))),
+                title: Text('Ayol',
+                    style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: Responsive.scaleFont(14, context))),
                 value: '2',
                 groupValue: profileController.selectedGender.value,
-                onChanged: (value) => profileController.selectedGender.value = value ?? '',
+                onChanged: (value) =>
+                profileController.selectedGender.value = value ?? '',
                 activeColor: AppColors.lightBlue,
                 contentPadding: EdgeInsets.zero,
                 dense: true,
