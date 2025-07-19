@@ -833,7 +833,7 @@ class MainContent extends StatelessWidget {
                     itemCount: funcController.posts.length,
                     itemBuilder: (context, index) {
                       final post = funcController.posts[index];
-                      return PostCard(post: post);
+                      return PostCard(post: post, mePost: false);
                     },
                   )
                   : ListView.builder(
@@ -847,7 +847,7 @@ class MainContent extends StatelessWidget {
                     itemCount: funcController.posts.length,
                     itemBuilder: (context, index) {
                       final post = funcController.posts[index];
-                      return PostCard(post: post);
+                      return PostCard(post: post, mePost: false);
                     },
                   );
             }),

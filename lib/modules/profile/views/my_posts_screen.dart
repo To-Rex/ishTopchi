@@ -280,12 +280,12 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                     crossAxisCount: _getCrossAxisCount(context),
                     crossAxisSpacing: Responsive.scaleWidth(16, context),
                     mainAxisSpacing: Responsive.scaleHeight(16, context),
-                    childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.6,
+                    childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.535,
                   ),
                   itemCount: posts.length,
                   itemBuilder: (context, index) {
                     final post = posts[index];
-                    return PostCard(post: post);
+                    return PostCard(post: post, mePost: true);
                   }
                 ) : ListView.builder(
                   shrinkWrap: true,
@@ -294,7 +294,7 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                   itemCount: posts.length,
                   itemBuilder: (context, index) {
                     final post = posts[index];
-                    return PostCard(post: post);
+                    return PostCard(post: post,mePost: true);
                   }
                 );
               })

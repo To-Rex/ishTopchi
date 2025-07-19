@@ -36,7 +36,7 @@ class FavoritesScreen extends StatelessWidget {
           itemCount: funcController.wishList.length,
           itemBuilder: (context, index) {
             final wish = funcController.wishList[index];
-            return PostCard(post: Data.fromJson(wish.toJson()));
+            return PostCard(post: Data.fromJson(wish.toJson()), mePost: false);
           },
         ) : ListView.builder(
           shrinkWrap: true,
@@ -49,7 +49,7 @@ class FavoritesScreen extends StatelessWidget {
           itemCount: funcController.wishList.length,
           itemBuilder: (context, index) {
             final wish = funcController.wishList[index];
-            return PostCard(post: Data.fromJson(wish.toJson()));
+            return PostCard(post: Data.fromJson(wish.toJson()), mePost: false);
           },
         );
       }),

@@ -11,7 +11,8 @@ import '../../modules/main/views/post_detail_screen.dart';
 
 class PostCard extends StatelessWidget {
   final post;
-  const PostCard({super.key, required this.post});
+  final bool mePost;
+  const PostCard({super.key, required this.post, required this.mePost});
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +140,24 @@ class PostCard extends StatelessWidget {
                           SizedBox(width: Responsive.scaleWidth(4, context)),
                           Text('${post.views ?? 0} ko‘rish', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.lightGray))
                         ]
-                      )
+                      ),
+                      //taxrirlash tugmasi
+                      if (mePost)
+                        SizedBox(height: Responsive.scaleHeight(6, context)),
+                      if (mePost)
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: AppColors.lightBlue,
+                            minimumSize: Size(double.infinity, Responsive.scaleHeight(isSmallScreen ? 25 : 30, context)),
+                            padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(8, context), vertical: Responsive.scaleHeight(13, context)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)))
+                          ),
+                          child: Text('Tahrirlash'.tr, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.white)),
+                          onPressed: () {
+                            Get.back();
+
+                          }
+                        )
                     ]
                   )
                 )
@@ -149,22 +167,31 @@ class PostCard extends StatelessWidget {
             Positioned(
               top: Responsive.scaleHeight(8, context),
               right: Responsive.scaleWidth(8, context),
-              child: Obx(() {
-                final isFavorite = funcController.wishList.any((w) => w.id == post.id);
-                return CircleAvatar(
+              child: mePost ?  CircleAvatar(
                   radius: Responsive.scaleWidth(isSmallScreen ? 18 : 20, context),
                   backgroundColor: AppColors.darkBlue,
                   child: IconButton(
-                    icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: isFavorite ? AppColors.red : AppColors.white, size: Responsive.scaleFont(isSmallScreen ? 18 : 20, context)),
-                    onPressed: () async {
-                      if (isFavorite) {
-                        await apiController.removeFromWishlist(post.id!.toInt());
-                      } else {
-                        await apiController.addToWishlist(post.id!.toInt());
+                      icon: Icon(Icons.delete, color: AppColors.red, size: Responsive.scaleFont(isSmallScreen ? 18 : 20, context)),
+                      onPressed: () async {
+                        //await apiController.deletePost(post.id!.toInt());
                       }
-                    }
                   )
-                );
+              ) : Obx(() {
+                  final isFavorite = funcController.wishList.any((w) => w.id == post.id);
+                  return CircleAvatar(
+                      radius: Responsive.scaleWidth(isSmallScreen ? 18 : 20, context),
+                      backgroundColor: AppColors.darkBlue,
+                      child: IconButton(
+                          icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: isFavorite ? AppColors.red : AppColors.white, size: Responsive.scaleFont(isSmallScreen ? 18 : 20, context)),
+                          onPressed: () async {
+                            if (isFavorite) {
+                              await apiController.removeFromWishlist(post.id!.toInt());
+                            } else {
+                              await apiController.addToWishlist(post.id!.toInt());
+                            }
+                          }
+                      )
+                  );
               })
             )
           ]
@@ -331,7 +358,19 @@ class PostCard extends StatelessWidget {
               right: Responsive.scaleWidth(8, context),
               child: Obx(() {
                 final isFavorite = funcController.wishList.any((w) => w.id == post.id);
-                return CircleAvatar(
+                if (mePost){
+                  return CircleAvatar(
+                    radius: Responsive.scaleWidth(isSmallScreen ? 18 : 20, context),
+                    backgroundColor: AppColors.darkBlue,
+                    child: IconButton(
+                      icon: Icon(Icons.delete, color: AppColors.red, size: Responsive.scaleFont(isSmallScreen ? 18 : 20, context)),
+                      onPressed: () async {
+                        //await apiController.deletePost(post.id!.toInt());
+                      }
+                    )
+                  );
+                } else {
+                  return CircleAvatar(
                   radius: Responsive.scaleWidth(isSmallScreen ? 18 : 20, context),
                   backgroundColor: AppColors.darkBlue,
                   child: IconButton(
@@ -345,6 +384,7 @@ class PostCard extends StatelessWidget {
                     }
                   )
                 );
+                }
               })
             )
           ]
