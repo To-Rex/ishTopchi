@@ -144,8 +144,6 @@ class ApiController extends GetxController {
       int? statusCode;
       if (e is DioException && e.response != null) {
         statusCode = e.response?.statusCode;
-        errorMessage = e.response?.data['message'] ?? 'Server xatosi: $statusCode';
-        print('getMe DioException: $statusCode - ${e.response?.data}');
         if (statusCode == 404) {
           errorMessage = 'Foydalanuvchi topilmadi';
           await funcController.deleteToken();
