@@ -12,17 +12,7 @@ class RefreshComponent extends StatelessWidget {
   final ScrollPhysics? physics;
   final bool? enablePullUp;
 
-  const RefreshComponent({
-    super.key,
-    this.enablePullUp,
-    required this.child,
-    required this.refreshController,
-    required this.scrollController,
-    this.onLoading,
-    this.onRefresh,
-    this.color,
-    this.physics = const AlwaysScrollableScrollPhysics(),
-  });
+  const RefreshComponent({super.key, this.enablePullUp, required this.child, required this.refreshController, required this.scrollController, this.onLoading, this.onRefresh, this.color, this.physics = const AlwaysScrollableScrollPhysics()});
 
   void _getData() {
     refreshController.refreshCompleted();
@@ -40,8 +30,6 @@ class RefreshComponent extends StatelessWidget {
       enableLoadingWhenFailed: true,
       hideFooterWhenNotFull: false,
       enableBallisticLoad: true,
-      enableRefreshVibrate: true,
-      enableLoadMoreVibrate: true,
       child: SmartRefresher(
         enablePullDown: true,
         enablePullUp: enablePullUp ?? true,
