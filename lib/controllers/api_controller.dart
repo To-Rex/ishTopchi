@@ -13,6 +13,7 @@ import '../core/models/resumes_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
 import '../modules/login/views/otp_verification_screen.dart';
+import '../modules/main/views/blocked_screen.dart';
 import '../modules/profile/views/edit_profile_screen.dart';
 import 'funcController.dart';
 
@@ -101,7 +102,7 @@ class ApiController extends GetxController {
     debugPrint('getMe token: ${funcController.globalToken.value}');
     try {
       final response = await _dio.get('$_baseUrl/user/me', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final data = response.data;
         print('User ME: $data');
         fetchPosts();
@@ -111,13 +112,45 @@ class ApiController extends GetxController {
           print('DEFAULT_NAME');
           Get.to(() => EditProfileScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
         }
+        if (funcController.userMe.value?.data?.isBlocked == true){
+          print('BLOCKED');
+          Get.to(() => const BlockedScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
+        }
         return UserMe.fromJson(data);
       } else {
-        print('Xatolik: ${response.statusCode} - ${response.data}');
+        String errorMessage;
+        switch (response.statusCode) {
+          case 400:
+            errorMessage = 'Tizimga kirishda xato: ruxsat yo‘q';
+            break;
+          case 401:
+            errorMessage = 'Tizimga kirishda xato: ruxsat yo‘q';
+            break;
+          case 404:
+            errorMessage = 'Foydalanuvchi topilmadi';
+            break;
+          case 500:
+            errorMessage = 'Serverda xato yuz berdi';
+            break;
+          default:
+            errorMessage = 'Noma’lum xato: ${response.statusCode}';
+        }
+        print('getMe xatosi: ${response.statusCode} - ${response.data}');
+        ShowToast.show('Xatolik', errorMessage, 2, 1);
         return null;
       }
     } catch (e) {
-      print('getMe xatosi: $e');
+      String errorMessage = 'Noma’lum xato yuz berdi';
+      int? statusCode;
+      if (e is DioException && e.response != null) {
+        statusCode = e.response?.statusCode;
+        errorMessage = e.response?.data['message'] ?? 'Server xatosi: $statusCode';
+        print('getMe DioException: $statusCode - ${e.response?.data}');
+        Get.offAll(() => BlockedScreen());
+      } else {
+        print('getMe umumiy xatosi: $e');
+      }
+      ShowToast.show('Xatolik', errorMessage, 2, 1);
       return null;
     }
   }
@@ -552,10 +585,11 @@ class ApiController extends GetxController {
         funcController.devicesModel.value = DevicesModel.fromJson(response.data);
         funcController.fetchDeviceInfo();
       } else {
-        ShowToast.show('Xatolik', 'Qurilmalarni yuklashda xato yuz berdi', 3, 1);
+        print('Qurilmalarni yuklashda xato yuz berdi');
+       // ShowToast.show('Xatolik', 'Qurilmalarni yuklashda xato yuz berdi', 3, 1);
       }
     } catch (e) {
-      ShowToast.show('Xatolik', 'Qurilmalarni yuklashda xato yuz berdi', 3, 1);
+      //ShowToast.show('Xatolik', 'Qurilmalarni yuklashda xato yuz berdi', 3, 1);
       print('fetchDevices xatolik: $e');
     }
   }
@@ -583,7 +617,6 @@ class ApiController extends GetxController {
       funcController.isLoading.value = true;
       await _dio.post('$_baseUrl/devices/$id/login', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
     } catch (e) {
-      ShowToast.show('Xatolik', 'Qurilma kiritishda xato: $e', 3, 1);
       print('loginDevice xatolik: $e');
     } finally {
       funcController.isLoading.value = false;
@@ -605,10 +638,9 @@ class ApiController extends GetxController {
         ShowToast.show('Muvaffaqiyat', 'Qurilma muvaffaqiyatli kiritildi', 3, 1);
         await fetchDevices(); // Ro'yxatni yangilash
       } else {
-        ShowToast.show('Xatolik', 'Qurilma kiritishda xato: ${response.statusCode}', 3, 1);
+        //ShowToast.show('Xatolik', 'Qurilma kiritishda xato: ${response.statusCode}', 3, 1);
       }
     } catch (e) {
-      ShowToast.show('Xatolik', 'Qurilma kiritishda xato: $e', 3, 1);
       print('loginDevice xatolik: $e');
     } finally {
       funcController.isLoading.value = false;

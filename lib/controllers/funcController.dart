@@ -63,20 +63,12 @@ class FuncController {
         deviceModel.value = androidInfo.model ?? 'Noma’lum';
         deviceId.value = androidInfo.id ?? 'Noma’lum';
         platform.value = 'Android';
-        print('Android deviceName: $deviceName');
-        print('Android deviceModel: $deviceModel');
-        print('Android deviceId: $deviceId');
-        print('Android platform: $platform');
       } else if (GetPlatform.isIOS) {
         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
         deviceName.value = iosInfo.name ?? 'Noma’lum';
         deviceModel.value = iosInfo.model ?? 'Noma’lum';
         deviceId.value = iosInfo.identifierForVendor ?? 'Noma’lum';
         platform.value = 'iOS';
-        print('iOS deviceName: $deviceName');
-        print('iOS deviceModel: $deviceModel');
-        print('iOS deviceId: $deviceId');
-        print('iOS platform: $platform');
       }
     } catch (e) {
       print('Qurilma ma’lumotlarini olishda xato: $e');
