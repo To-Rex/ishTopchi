@@ -14,6 +14,7 @@ import 'api_controller.dart';
 class FuncController {
   final GetStorage storage = GetStorage();
 
+  final barIndex = 0.obs;
   final RxString globalToken = ''.obs;
   final RxString otpToken = ''.obs;
   final RxString otpPhone = ''.obs;
@@ -54,6 +55,15 @@ class FuncController {
 
   final RxnString minPrice = RxnString(); // Yangi: Narxdan
   final RxnString maxPrice = RxnString(); // Yangi: Narxgacha
+
+  void setBarIndex(int index) {
+    if (index >= 0 && index < 5) { // 5 ta sahifa bor
+      barIndex.value = index;
+    } else {
+      print('Noto‘g‘ri index: $index');
+      ShowToast.show('Xatolik', 'Noto‘g‘ri sahifa indeksi', 3, 1);
+    }
+  }
 
   Future<void> fetchDeviceInfo() async {
     try {

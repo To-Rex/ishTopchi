@@ -12,43 +12,45 @@ import '../../profile/views/edit_profile_screen.dart';
 import '../../profile/views/profile_screen.dart';
 import 'main_content.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => MainScreenState();
-}
-
-class MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
-  final List<Widget> _pages = [
-    const MainContent(), // Asosiy sahifa uchun placeholder
-    const FavoritesScreen(),
-    const AdPostingScreen(),
-    MessagesScreen(),
-    ProfileScreen(),
-  ];
-
-  @override
   Widget build(BuildContext context) {
-    ApiController().getMe();
+    final FuncController funcController = Get.find<FuncController>();
+    final ApiController apiController = Get.find<ApiController>();
+
+    // Ilova ochilganda foydalanuvchi ma'lumotlarini yuklash
+    if (funcController.globalToken.value.isNotEmpty) {
+      apiController.getMe();
+    }
+
+    // Sahifalar ro'yxati
+    final List<Widget> pages = [
+      const MainContent(),
+      const FavoritesScreen(),
+      const AdPostingScreen(),
+      const MessagesScreen(),
+      ProfileScreen(),
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray)),
+        title: const Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray)),
         backgroundColor: AppColors.darkNavy,
-        leading: Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray),
+        leading: const Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray),
         actions: [
           IconButton(
-            icon: Icon(LucideIcons.bell, color: AppColors.lightGray),
+            icon: const Icon(LucideIcons.bell, color: AppColors.lightGray),
             onPressed: () => Get.toNamed('/notifications'),
           ),
         ],
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
+      body: Obx(() => IndexedStack(
+        index: funcController.barIndex.value,
+        children: pages,
+      )),
+      bottomNavigationBar: Obx(() => BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Asosiy'),
           BottomNavigationBarItem(icon: Icon(LucideIcons.heart), label: 'Saqlanganlar'),
@@ -56,24 +58,20 @@ class MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(LucideIcons.messageCircle), label: 'Xabarlar'),
           BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profil'),
         ],
-
         selectedFontSize: Responsive.scaleFont(12, context),
         unselectedFontSize: Responsive.scaleFont(12, context),
         selectedIconTheme: IconThemeData(size: Responsive.scaleWidth(28, context)),
         unselectedIconTheme: IconThemeData(size: Responsive.scaleWidth(28, context)),
-
-        currentIndex: _currentIndex,
+        currentIndex: funcController.barIndex.value,
         selectedItemColor: AppColors.selectedItem,
         unselectedItemColor: AppColors.lightGray,
         backgroundColor: AppColors.darkNavy,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          funcController.setBarIndex(index);
         },
-      ),
+      )),
     );
   }
 }

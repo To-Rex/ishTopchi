@@ -10,16 +10,19 @@ import '../controllers/profile_controller.dart';
 class ProfileScreen extends GetView<ProfileController> {
   ProfileScreen({super.key});
 
-  final FuncController funcController = Get.put(FuncController());
-
+  final FuncController funcController = Get.find<FuncController>();
 
   String _getProfileUrl(String? url) {
     const base = 'https://ishtopchi.uz';
+    const defaultImage = 'https://help.tithe.ly/hc/article_attachments/18804144460951';
     if (url == null || url.trim().isEmpty) {
-      return 'https://help.tithe.ly/hc/article_attachments/18804144460951';
+      return defaultImage;
     }
     url = url.trim();
-    return url.startsWith('http') ? url : '$base/${url.replaceAll(RegExp(r'^(file://)?/+'), '')}';
+    if (!url.startsWith('http')) {
+      url = '$base/${url.replaceAll(RegExp(r'^(file://)?/+'), '')}';
+    }
+    return Uri.parse(url).isAbsolute ? url : defaultImage;
   }
 
   @override
@@ -27,8 +30,9 @@ class ProfileScreen extends GetView<ProfileController> {
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
       body: Obx(() {
-        final hasToken = controller.hasToken.value;
-        final user = funcController.userMe.value;
+        if (funcController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.lightBlue));
+        }
         return CustomScrollView(
           slivers: [
             SliverAppBar(
@@ -41,18 +45,26 @@ class ProfileScreen extends GetView<ProfileController> {
                   final isCollapsed = constraints.maxHeight <= 80;
                   return FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    title: hasToken && isCollapsed ? Row(
+                    title: funcController.globalToken.value.isNotEmpty && isCollapsed
+                        ? Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        CircleAvatar(radius: 16, backgroundImage: NetworkImage(_getProfileUrl(user.data?.profilePicture))),
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(_getProfileUrl(funcController.userMe.value.data?.profilePicture)),
+                        ),
                         const SizedBox(width: 10),
                         Text(
-                          user.data?.firstName ?? 'no name',
-                          style: const TextStyle(fontSize: 14, color: Colors.white),
+                          funcController.userMe.value.data?.firstName ?? 'Ism kiritilmagan',
+                          style: TextStyle(
+                            fontSize: Responsive.scaleFont(14, context),
+                            color: Colors.white,
+                          ),
                         ),
                       ],
-                    ) : null,
+                    )
+                        : null,
                     background: Stack(
                       alignment: Alignment.topRight,
                       children: [
@@ -68,44 +80,69 @@ class ProfileScreen extends GetView<ProfileController> {
                                   height: Responsive.scaleHeight(140, context),
                                   width: Responsive.scaleWidth(140, context),
                                   child: CachedNetworkImage(
-                                    imageUrl: _getProfileUrl(user.data?.profilePicture),
+                                    imageUrl: _getProfileUrl(funcController.userMe.value.data?.profilePicture),
                                     fit: BoxFit.cover,
-                                    placeholder: (context, url) => Center(child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2)),
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2),
+                                    ),
                                     errorWidget: (context, url, error) => Container(
-                                      height: Responsive.scaleHeight(200, context),
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(12)),
-                                      child: Center(child: Icon(LucideIcons.imageOff, size: Responsive.scaleFont(48, context), color: AppColors.lightGray))
-                                    )
-                                  )
-                                )
+                                      height: Responsive.scaleHeight(140, context),
+                                      width: Responsive.scaleWidth(140, context),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.darkBlue,
+                                        borderRadius: BorderRadius.circular(1000),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          LucideIcons.imageOff,
+                                          size: Responsive.scaleFont(48, context),
+                                          color: AppColors.lightGray,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: 12),
-                              if (hasToken)
+                              if (funcController.globalToken.value.isNotEmpty)
                                 Column(
                                   children: [
-                                    Text(user.data?.firstName != null ? '${user.data?.firstName} ${user.data?.lastName ?? ''}' : user.data?.lastName != null ? user.data!.lastName.toString() : 'no name', style: const TextStyle(color: Colors.white)),
-                                    if (user.data?.authProviders?.first.email != null)
-                                      Text(user.data?.authProviders?.first.email ?? 'no email', style: const TextStyle(color: Colors.white70))
-                                    else Text(user.data?.authProviders?.first.providersUserId ?? 'no phone', style: const TextStyle(color: Colors.white70))
-                                  ]
+                                    Text(
+                                      funcController.userMe.value.data?.firstName != null
+                                          ? '${funcController.userMe.value.data!.firstName} ${funcController.userMe.value.data?.lastName ?? ''}'
+                                          : funcController.userMe.value.data?.lastName ?? 'Ism kiritilmagan',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: Responsive.scaleFont(18, context),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      funcController.userMe.value.data?.authProviders?.isNotEmpty == true
+                                          ? funcController.userMe.value.data!.authProviders!.first.email ?? funcController.userMe.value.data!.authProviders!.first.providersUserId ?? 'Ma\'lumot yo\'q'
+                                          : 'Ma\'lumot yo\'q',
+                                      style: TextStyle(
+                                        color: AppColors.lightGray.withAlpha(200),
+                                        fontSize: Responsive.scaleFont(18, context),
+                                      ),
+                                    ),
+                                  ],
                                 )
                               else
                                 ElevatedButton(
                                   onPressed: controller.onLoginTap,
                                   style: ElevatedButton.styleFrom(
                                     minimumSize: const Size(200, 40),
-                                    padding:
-                                    const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                                     backgroundColor: AppColors.midBlue,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                   ),
-                                  child: Text('Kirish'.tr, style: TextStyle(color: Colors.white))
-                                )
-                            ]
-                          )
+                                  child: Text('Kirish'.tr, style: const TextStyle(color: Colors.white)),
+                                ),
+                            ],
+                          ),
                         ),
-                        if (hasToken)
+                        if (funcController.globalToken.value.isNotEmpty)
                           Positioned(
                             top: 16,
                             right: 16,
@@ -113,14 +150,14 @@ class ProfileScreen extends GetView<ProfileController> {
                               onPressed: controller.onEditProfile,
                               icon: const Icon(LucideIcons.userRoundPen, color: Colors.white, size: 16),
                               label: const Text('Tahrirlash', style: TextStyle(color: Colors.white, fontSize: 13)),
-                              style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4))
-                            )
-                          )
-                      ]
-                    )
+                              style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
+                            ),
+                          ),
+                      ],
+                    ),
                   );
-                }
-              )
+                },
+              ),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -128,12 +165,9 @@ class ProfileScreen extends GetView<ProfileController> {
                 child: Column(
                   children: [
                     const SizedBox(height: 10),
-                    if (controller.hasToken.value)
-                      _buildMenuItem(LucideIcons.userRound, 'Mening Profilim', controller.onMyProfileTap),
-                    if (controller.hasToken.value)
-                      _buildMenuItem(LucideIcons.squareLibrary, 'Mening Rezumelarim', controller.onMyResumesTap),
-                    if (controller.hasToken.value)
-                      _buildMenuItem(LucideIcons.megaphone, 'Mening e’lonlarim', controller.onMyPostsTap),
+                    if (controller.hasToken.value) _buildMenuItem(LucideIcons.userRound, 'Mening Profilim', controller.onMyProfileTap),
+                    if (controller.hasToken.value) _buildMenuItem(LucideIcons.squareLibrary, 'Mening Rezumelarim', controller.onMyResumesTap),
+                    if (controller.hasToken.value) _buildMenuItem(LucideIcons.megaphone, 'Mening e’lonlarim', controller.onMyPostsTap),
                     _buildMenuItem(LucideIcons.globe, 'Tillar', controller.onLanguagesTap, lang: true),
                     _buildMenuItem(LucideIcons.smartphone, 'Qurilmalar', controller.onDevicesTap),
                     _buildMenuItem(LucideIcons.headset, 'Qo‘llab-quvvatlash', controller.onSupportTap),
@@ -142,7 +176,10 @@ class ProfileScreen extends GetView<ProfileController> {
                     _buildMenuItem(LucideIcons.bell, 'Bildirishnomalar', controller.onNotificationsTap),
                     _buildMenuItem(LucideIcons.badgeHelp, 'Yordam markazi', controller.onHelpTap),
                     const SizedBox(height: 20),
-                    Align(alignment: Alignment.centerLeft, child: Text('Ijtimoiy tarmoqlar', style: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w600))),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Ijtimoiy tarmoqlar', style: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w600)),
+                    ),
                     _buildMenuItem(Icons.telegram, 'Telegram', () => controller.launchUrl('https://t.me/ishtopchi')),
                     _buildMenuItem(Icons.camera_alt_outlined, 'Instagram', () => controller.launchUrl('https://instagram.com/ishtopchi')),
                     const SizedBox(height: 20),
@@ -153,23 +190,26 @@ class ProfileScreen extends GetView<ProfileController> {
                           onPressed: controller.onLogoutTap,
                           icon: const Icon(LucideIcons.logOut, color: Colors.white),
                           label: const Text('Chiqish', style: TextStyle(color: Colors.white)),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.shade200, padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
-                          )
-                        )
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent.shade200,
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
                       ),
                     const SizedBox(height: 24),
-                    Center(child: Text('Ishtopchi v1.0', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)))
-                  ]
-                )
-              )
-            )
-          ]
+                    Center(child: Text('Ishtopchi v1.0', style: TextStyle(color: Colors.grey.shade600, fontSize: 13))),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
-      })
+      }),
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, {lang = false}) {
+  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, {bool lang = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Material(
@@ -188,15 +228,14 @@ class ProfileScreen extends GetView<ProfileController> {
                 Icon(icon, color: Colors.white),
                 const SizedBox(width: 16),
                 Expanded(child: Text(title.tr, style: const TextStyle(color: Colors.white))),
-                if (lang)Text('O‘zbek', style: const TextStyle(color: Colors.white)),
-                SizedBox(width: 6),
-                const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white60)
-              ]
-            )
-          )
-        )
-      )
+                if (lang) const Text('O‘zbek', style: TextStyle(color: Colors.white)),
+                const SizedBox(width: 6),
+                const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white60),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
-

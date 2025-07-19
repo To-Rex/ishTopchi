@@ -15,13 +15,13 @@ import '../../main/views/skeleton_post_card.dart';
 import '../../../common/widgets/post_card.dart';
 
 class MyPostsScreen extends StatefulWidget {
-  MyPostsScreen({super.key});
+  const MyPostsScreen({super.key});
 
   @override
-  _MyPostsScreenState createState() => _MyPostsScreenState();
+  MyPostsScreenState createState() => MyPostsScreenState();
 }
 
-class _MyPostsScreenState extends State<MyPostsScreen> {
+class MyPostsScreenState extends State<MyPostsScreen> {
   final FuncController funcController = Get.put(FuncController());
   final ApiController apiController = Get.find<ApiController>();
   final RefreshController refreshController = RefreshController(initialRefresh: false);
@@ -30,7 +30,6 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
   @override
   void initState() {
     super.initState();
-    // Sahifani boshlang‘ich yuklashni kechiktirish
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadMyPosts();
     });
@@ -165,9 +164,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                       Icon(LucideIcons.mapPin, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
                       SizedBox(width: 6.sp),
                       Obx(() => Text(
-                        funcController.userMe.value != null
-                            ? funcController.userMe.value!.data!.district!.name ?? 'Viloyat'.tr
-                            : 'Viloyat'.tr,
+                        funcController.userMe.value.data?.district?.name ?? 'Viloyat'.tr,
                         style: TextStyle(
                           color: AppColors.lightGray,
                           fontSize: Responsive.scaleFont(14, context),
@@ -247,76 +244,35 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            LucideIcons.fileX,
-                            size: 64.sp,
-                            color: AppColors.lightGray.withOpacity(0.5),
-                          ),
+                          Icon(LucideIcons.fileX, size: 64.sp, color: AppColors.lightGray.withAlpha(150)),
                           SizedBox(height: 16.sp),
-                          Text(
-                            'Hozircha e‘lonlaringiz yo‘q'.tr,
-                            style: TextStyle(
-                              color: AppColors.white,
-                              fontSize: Responsive.scaleFont(18, context),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                          Text('Hozircha e‘lonlaringiz yo‘q'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w500)),
                           SizedBox(height: 8.sp),
-                          Text(
-                            'Yangi e‘lon qo‘shish uchun quyidagi tugmani bosing'.tr,
-                            style: TextStyle(
-                              color: AppColors.lightGray,
-                              fontSize: Responsive.scaleFont(14, context),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                          Text('Yangi e‘lon qo‘shish uchun quyidagi tugmani bosing'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)), textAlign: TextAlign.center),
                           SizedBox(height: 16.sp),
                           ElevatedButton(
-                            onPressed: () => Get.toNamed('/add_post'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)),
-                              elevation: 0,
-                            ),
+                            onPressed: () {
+                              Get.back();
+                              funcController.setBarIndex(2);
+                            },
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, padding: EdgeInsets.zero, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)), elevation: 0),
                             child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: Responsive.scaleWidth(24, context),
-                                vertical: Responsive.scaleHeight(12, context),
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(24, context), vertical: Responsive.scaleHeight(12, context)),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [AppColors.lightBlue, AppColors.darkBlue],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
+                                gradient: LinearGradient(colors: [AppColors.lightBlue, AppColors.darkBlue], begin: Alignment.topLeft, end: Alignment.bottomRight),
                                 borderRadius: BorderRadius.circular(12.sp),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.lightBlue.withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
+                                boxShadow: [BoxShadow(color: AppColors.darkNavy, blurRadius: 8, offset: const Offset(0, 2))]
                               ),
-                              child: Text(
-                                'E‘lon qo‘shish'.tr,
-                                style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: Responsive.scaleFont(16, context),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                              child: Text('E‘lon qo‘shish'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600))
+                            )
+                          )
+                        ]
+                      )
+                    )
                   );
                 }
                 // E‘lonlar ro‘yxati
-                return funcController.isGridView.value
-                    ?  GridView.builder(
+                return funcController.isGridView.value ?  GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
@@ -330,9 +286,8 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                   itemBuilder: (context, index) {
                     final post = posts[index];
                     return PostCard(post: post);
-                  },
-                )
-                    : ListView.builder(
+                  }
+                ) : ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
@@ -340,13 +295,13 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                   itemBuilder: (context, index) {
                     final post = posts[index];
                     return PostCard(post: post);
-                  },
+                  }
                 );
-              }),
-            ),
-          ),
-        ],
-      ),
+              })
+            )
+          )
+        ]
+      )
     );
   }
 }
