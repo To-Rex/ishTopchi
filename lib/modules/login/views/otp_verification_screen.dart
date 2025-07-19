@@ -56,7 +56,7 @@ class OtpVerificationScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 36),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
                   child:  PinCodeTextField(
                      length: 6,
                      keyboardType: TextInputType.number,

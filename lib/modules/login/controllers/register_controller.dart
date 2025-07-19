@@ -7,57 +7,91 @@ class RegisterController extends GetxController {
   final RxString selectedRegionId = ''.obs;
   final RxString selectedDistrictId = '0'.obs;
   final RxString selectedGender = ''.obs;
+  final RxList<Map<String, dynamic>> regions = <Map<String, dynamic>>[].obs;
   final RxList<Map<String, dynamic>> districts = <Map<String, dynamic>>[].obs;
-  final Rx<File?> selectedImage = Rx<File?>(null); // Surat uchun observable
-
-  final RxBool isLoading = false.obs;
+  final Rx<File?> selectedImage = Rx<File?>(null);
+  final RxBool isLoadingRegions = false.obs;
+  final RxBool isLoadingDistricts = false.obs;
+  final RxBool isRegistering = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Viloyat tanlanganidan so'ng avtomatik tumanlarni yuklash uchun
+    loadRegions();
     ever(selectedRegionId, (regionId) {
-      if (regionId.isNotEmpty) {
+      if (regionId.isNotEmpty && regionId != '0') {
         loadDistricts(int.parse(regionId));
+      } else {
+        districts.clear();
+        selectedDistrictId.value = '0';
       }
     });
   }
 
-  Future<void> loadDistricts(int regionId) async {
+  Future<void> loadRegions() async {
     try {
+      isLoadingRegions.value = true;
       final apiController = Get.find<ApiController>();
-      final fetchedDistricts = await apiController.fetchDistricts(regionId);
-      districts.value = fetchedDistricts;
-      if (fetchedDistricts.isNotEmpty && selectedDistrictId.value == '0') {
-        selectedDistrictId.value = fetchedDistricts.first['id'].toString(); // Birinchi tuman tanlanadi
+      final fetchedRegions = await apiController.fetchRegions();
+      regions.value = fetchedRegions;
+      if (fetchedRegions.isNotEmpty && selectedRegionId.value.isEmpty) {
+        selectedRegionId.value = fetchedRegions.first['id'].toString();
       }
     } catch (e) {
-      print('loadDistricts xatolik: $e');
-      districts.value = [];
+      print('loadRegions xatolik: $e');
+      ShowToast.show('Xatolik', 'Viloyatlarni yuklashda xato yuz berdi', 2, 1);
+    } finally {
+      isLoadingRegions.value = false;
     }
   }
 
-  Future<void> registerUser(String firstName, String lastName, String gender, String birthDate, String regionId, String districtId, File? imageFile) async {
-    print('✅ Ro‘yxatdan o‘tish ma’lumotlari: $gender');
+  Future<void> loadDistricts(int regionId) async {
     try {
-      isLoading.value = true;
-      // print('✅ Ro‘yxatdan o‘tish ma’lumotlari:');
-      // print('Ism: $firstName');
-      // print('Familiya: $lastName');
-      // print('Jins: $gender');
-      // print('Tug‘ilgan sana: $birthDate');
-      // print('Viloyat ID: $regionId');
-      // print('Tuman ID: $districtId');
-      // print('Surat fayl: ${imageFile?.path ?? "Tanlanmagan"}');
-      ShowToast.show('Muvaffaqiyat', 'Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi', 1, 1);
-      ApiController apiController = Get.find<ApiController>();
-      await apiController.completeRegistration(firstName: firstName, lastName: lastName, districtId: int.parse(districtId), birthDate: birthDate, gender: gender.toString(), image: imageFile
+      isLoadingDistricts.value = true;
+      districts.clear(); // Oldingi tumanlarni tozalash
+      selectedDistrictId.value = '0'; // Tuman ID sini reset qilish
+      final apiController = Get.find<ApiController>();
+      final fetchedDistricts = await apiController.fetchDistricts(regionId);
+      districts.value = fetchedDistricts;
+      if (fetchedDistricts.isNotEmpty) {
+        selectedDistrictId.value = fetchedDistricts.first['id'].toString();
+      }
+    } catch (e) {
+      print('loadDistricts xatolik: $e');
+      ShowToast.show('Xatolik', 'Tumanlarni yuklashda xato yuz berdi', 2, 1);
+    } finally {
+      isLoadingDistricts.value = false;
+    }
+  }
+
+  Future<void> registerUser(
+      String firstName,
+      String lastName,
+      String gender,
+      String birthDate,
+      String regionId,
+      String districtId,
+      File? imageFile) async {
+    try {
+      isRegistering.value = true;
+      final apiController = Get.find<ApiController>();
+      await apiController.completeRegistration(
+        firstName: firstName,
+        lastName: lastName,
+        districtId: int.parse(districtId),
+        birthDate: birthDate,
+        gender: gender,
+        image: imageFile,
       );
+      ShowToast.show(
+          'Muvaffaqiyat', 'Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi', 1, 1);
     } catch (e) {
       print('❌ registerUser xatolik: $e');
-      ShowToast.show('Xatolik', 'Ro‘yxatdan o‘tishda xatolik yuz berdi', 2, 1, duration: 2);
+      ShowToast.show(
+          'Xatolik', 'Ro‘yxatdan o‘tishda xatolik yuz berdi', 2, 1,
+          duration: 2);
     } finally {
-      isLoading.value = false;
+      isRegistering.value = false;
     }
   }
 }
