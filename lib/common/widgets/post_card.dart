@@ -155,7 +155,7 @@ class PostCard extends StatelessWidget {
                           child: Text('Tahrirlash'.tr, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 10 : 12, context), color: AppColors.white)),
                           onPressed: () {
                             Get.back();
-
+                            funcController.setBarIndex(2);
                           }
                         )
                     ]
@@ -222,8 +222,8 @@ class PostCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.horizontal(left: Radius.circular(Responsive.scaleWidth(16, context))),
                   child: Container(
-                    width: Responsive.scaleWidth(isSmallScreen ? 160 : 180, context),
-                    height: Responsive.scaleHeight(isSmallScreen ? 200 : 220, context),
+                    width: Responsive.scaleWidth(isSmallScreen ? 170 : 190, context),
+                    height: Responsive.scaleHeight(isSmallScreen ? 170 : 190, context),
                     decoration: BoxDecoration(color: AppColors.lightGray.withAlpha(50)),
                     child: post.pictureUrl != null && post.pictureUrl!.isNotEmpty ? Image.network(
                       post.pictureUrl!.startsWith('http') ? post.pictureUrl! : 'https://ishtopchi.uz${post.pictureUrl}',
@@ -345,7 +345,27 @@ class PostCard extends StatelessWidget {
                             SizedBox(width: Responsive.scaleWidth(4, context)),
                             Text('${post.views ?? 0} ko‘rish', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: TextStyle(fontSize: Responsive.scaleFont(isSmallScreen ? 9 : 10, context), color: AppColors.lightGray))
                           ]
-                        )
+                        ),
+                        if (mePost)
+                          SizedBox(height: Responsive.scaleHeight(6, context)),
+                        if (mePost)
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: AppColors.lightBlue,
+                              padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(8, context)),
+                              minimumSize: Size(double.infinity, Responsive.scaleHeight(40, context)),
+                              maximumSize: Size(double.infinity, Responsive.scaleHeight(40, context)),
+                              alignment: Alignment.center,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)))
+                            ),
+                            child: Text('Tahrirlash'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(isSmallScreen ? 12 : 14, context))),
+                            onPressed: () {
+                              Get.back();
+                              funcController.setBarIndex(2);
+                            }
+                          )
+                        
                       ]
                     )
                   )
