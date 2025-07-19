@@ -289,7 +289,7 @@ class ApiController extends GetxController {
       }
       String url = '$_baseUrl/posts?page=$page&limit=$limit';
       if (funcController.selectedDistrict.value != null) {url += '&district_id=${funcController.selectedDistrict.value}';
-      } else if (funcController.userMe.value?.data?.district?.id != null) {
+      } else if (funcController.userMe.value.data?.district?.id != null) {
         //url += '&district_id=${funcController.userMe.value?.data?.district?.id}';
       }
       if (funcController.jobType.value != null) {

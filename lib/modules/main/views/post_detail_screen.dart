@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:ishtopchi/core/services/show_toast.dart';
+import 'package:ishtopchi/modules/profile/views/create_resume_screen.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -91,7 +92,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                         TextButton(
                           onPressed: () {
                             Get.back();
-                            Get.toNamed('/create_resume'); // CreateResumeScreen ga yo'naltirish
+                            Get.to(CreateResumeScreen());
                           },
                           child: Text('Yangi resume qo‘shish', style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context)))
                         )
