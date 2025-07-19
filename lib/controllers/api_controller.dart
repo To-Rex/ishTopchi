@@ -146,7 +146,13 @@ class ApiController extends GetxController {
         statusCode = e.response?.statusCode;
         errorMessage = e.response?.data['message'] ?? 'Server xatosi: $statusCode';
         print('getMe DioException: $statusCode - ${e.response?.data}');
-        Get.offAll(() => BlockedScreen());
+        if (statusCode == 404) {
+          errorMessage = 'Foydalanuvchi topilmadi';
+          await funcController.deleteToken();
+          funcController.userMe.value = null;
+          Get.back();
+          Get.offAllNamed('/login');
+        }
       } else {
         print('getMe umumiy xatosi: $e');
       }
