@@ -70,13 +70,13 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            style: TextButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(AppDimensions.paddingMedium, context), vertical: Responsive.scaleHeight(AppDimensions.paddingSmall, context))),
+            style: TextButton.styleFrom(overlayColor: AppColors.darkNavy, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(AppDimensions.cardRadius, context))), padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(AppDimensions.paddingMedium, context), vertical: Responsive.scaleHeight(AppDimensions.paddingSmall, context))),
             child: Text('Bekor qilish', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray, fontWeight: FontWeight.w600))
           ),
           TextButton(
             onPressed: () async {
               await funcController.deleteToken();
-              funcController.userMe.value = null;
+              //funcController.userMe.value = null;
               Get.back();
               Get.offAllNamed('/login');
               ShowToast.show('Muvaffaqiyat', 'Tizimdan chiqildi', 1, 1);

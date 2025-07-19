@@ -85,9 +85,9 @@ class ApiController extends GetxController {
         print('API javobi: ${response.data}');
         final accessToken = response.data['data']['token']['access_token'];
         await funcController.saveToken(accessToken);
+        getMe();
         print('Access token saqlandi: $accessToken');
         Get.offNamed(AppRoutes.main);
-        getMe();
       } else {
         print('${response.data}');
         throw Exception('API xatosi: ${response.statusCode} - ${response.data}');
@@ -98,7 +98,7 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<UserMe?> getMe() async {
+  Future<void> getMe() async {
     debugPrint('getMe token: ${funcController.globalToken.value}');
     try {
       final response = await _dio.get('$_baseUrl/user/me', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
@@ -108,15 +108,16 @@ class ApiController extends GetxController {
         fetchPosts();
         fetchWishlist();
         funcController.setUserMe(UserMe.fromJson(data));
-        if (funcController.userMe.value?.data?.firstName == 'DEFAULT_NAME'){
+        if (funcController.userMe.value.data?.firstName == 'DEFAULT_NAME'){
           print('DEFAULT_NAME');
           Get.to(() => EditProfileScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
         }
-        if (funcController.userMe.value?.data?.isBlocked == true){
+        if (funcController.userMe.value.data?.isBlocked == true){
           print('BLOCKED');
-          Get.to(() => const BlockedScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
+          Get.offAll(() => const BlockedScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
+          //return;
         }
-        return UserMe.fromJson(data);
+
       } else {
         String errorMessage;
         switch (response.statusCode) {
@@ -147,7 +148,6 @@ class ApiController extends GetxController {
         if (statusCode == 404) {
           errorMessage = 'Foydalanuvchi topilmadi';
           await funcController.deleteToken();
-          funcController.userMe.value = null;
           Get.back();
           Get.offAllNamed('/login');
         }
@@ -632,7 +632,7 @@ class ApiController extends GetxController {
       funcController.isLoading.value = true;
       final response = await _dio.post('$_baseUrl/devices', data: {
         'deviceId': funcController.deviceId.value,
-        'fcmToken': 'jhbkjhbkjhbkhjbkjhvghjvghvhgvghghvhvgjjvhggvhjkvjkkjhbkkjlnmlkmkbgjvvghvgjhjghvjhgcrdsxtes6726786287tgvhvhjbjnklq',
+        'fcmToken': 'jhbkjhbkjhbkhjbkjhvghjvghvhgvghghvhvgjjvhggvhjksvjkkjhbkkjlsnmlkmkbgjvvghvgjhjghvjhgcrdsxtes6726786287tgvhvhjbjnklq',
         'deviceName': funcController.deviceName.value,
         'deviceModel': funcController.deviceModel.value,
         'platform': funcController.platform.value,
@@ -641,13 +641,9 @@ class ApiController extends GetxController {
       if (response.statusCode == 200) {
         ShowToast.show('Muvaffaqiyat', 'Qurilma muvaffaqiyatli kiritildi', 3, 1);
         await fetchDevices(); // Ro'yxatni yangilash
-      } else {
-        //ShowToast.show('Xatolik', 'Qurilma kiritishda xato: ${response.statusCode}', 3, 1);
       }
     } catch (e) {
       print('loginDevice xatolik: $e');
-    } finally {
-      funcController.isLoading.value = false;
     }
   }
 

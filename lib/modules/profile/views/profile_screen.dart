@@ -45,10 +45,10 @@ class ProfileScreen extends GetView<ProfileController> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        CircleAvatar(radius: 16, backgroundImage: NetworkImage(_getProfileUrl(user?.data?.profilePicture))),
+                        CircleAvatar(radius: 16, backgroundImage: NetworkImage(_getProfileUrl(user.data?.profilePicture))),
                         const SizedBox(width: 10),
                         Text(
-                          user?.data?.firstName ?? 'no name',
+                          user.data?.firstName ?? 'no name',
                           style: const TextStyle(fontSize: 14, color: Colors.white),
                         ),
                       ],
@@ -68,7 +68,7 @@ class ProfileScreen extends GetView<ProfileController> {
                                   height: Responsive.scaleHeight(140, context),
                                   width: Responsive.scaleWidth(140, context),
                                   child: CachedNetworkImage(
-                                    imageUrl: _getProfileUrl(user?.data?.profilePicture),
+                                    imageUrl: _getProfileUrl(user.data?.profilePicture),
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) => Center(child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2)),
                                     errorWidget: (context, url, error) => Container(
@@ -84,10 +84,10 @@ class ProfileScreen extends GetView<ProfileController> {
                               if (hasToken)
                                 Column(
                                   children: [
-                                    Text(user?.data?.firstName != null ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}' : user?.data!.lastName != null ? user!.data!.lastName.toString() : 'no name', style: const TextStyle(color: Colors.white)),
-                                    if (user?.data?.authProviders?.first.email != null)
-                                      Text(user?.data?.authProviders?.first.email ?? 'no email', style: const TextStyle(color: Colors.white70))
-                                    else Text(user?.data?.authProviders?.first.providersUserId ?? 'no phone', style: const TextStyle(color: Colors.white70))
+                                    Text(user.data?.firstName != null ? '${user.data?.firstName} ${user.data?.lastName ?? ''}' : user.data?.lastName != null ? user.data!.lastName.toString() : 'no name', style: const TextStyle(color: Colors.white)),
+                                    if (user.data?.authProviders?.first.email != null)
+                                      Text(user.data?.authProviders?.first.email ?? 'no email', style: const TextStyle(color: Colors.white70))
+                                    else Text(user.data?.authProviders?.first.providersUserId ?? 'no phone', style: const TextStyle(color: Colors.white70))
                                   ]
                                 )
                               else

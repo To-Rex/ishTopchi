@@ -21,7 +21,7 @@ Future<void> main() async {
   await GetStorage.init(); // GetStorage ni ishga tushirish
   runApp(MyApp());
   Get.put(FuncController());
-  Get.lazyPut(() => ProfileController());
+  Get.put(ProfileController());
   Get.put(ApiController());
   Get.put(MainController());
   Get.put(AdPostingController());

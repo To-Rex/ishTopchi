@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../config/theme/app_colors.dart';
+import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../../../core/utils/responsive.dart';
 import '../../favorites/views/favorites_screen.dart';
@@ -30,6 +31,7 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ApiController().getMe();
     return Scaffold(
       appBar: AppBar(
         title: Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray)),

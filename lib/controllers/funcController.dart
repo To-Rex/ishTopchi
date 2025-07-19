@@ -30,7 +30,7 @@ class FuncController {
   final RxBool hasMore = true.obs;
   final RxInt totalPosts = 0.obs;
   final RxInt totalMePosts = 0.obs;
-  final userMe = Rxn<UserMe>();
+  final userMe = UserMe().obs;
 
   final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   final RxString deviceName = ''.obs;

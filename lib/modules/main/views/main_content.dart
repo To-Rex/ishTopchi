@@ -707,7 +707,7 @@ class MainContent extends StatelessWidget {
                   children: [
                     Icon(LucideIcons.mapPin, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
                     SizedBox(width: 6.sp),
-                    Obx(() => Text(funcController.userMe.value != null && funcController.userMe.value!.data!.district != null ? funcController.userMe.value!.data!.district!.name ?? 'Viloyat'.tr : 'Viloyat'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500)))
+                    Obx(() => Text(funcController.userMe.value.data?.district != null ? funcController.userMe.value.data?.district?.name ?? 'Viloyat'.tr : 'Viloyat'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500)))
                   ]
                 )
               ),
