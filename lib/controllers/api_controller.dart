@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:ishtopchi/core/services/show_toast.dart';
 import '../config/routes/app_routes.dart';
@@ -11,8 +12,8 @@ import '../core/models/post_model.dart';
 import '../core/models/resumes_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
-import '../modules/ad_posting/controllers/ad_posting_controller.dart';
 import '../modules/login/views/otp_verification_screen.dart';
+import '../modules/profile/views/edit_profile_screen.dart';
 import 'funcController.dart';
 
 class ApiController extends GetxController {
@@ -97,6 +98,7 @@ class ApiController extends GetxController {
   }
 
   Future<UserMe?> getMe() async {
+    debugPrint('getMe token: ${funcController.globalToken.value}');
     try {
       final response = await _dio.get('$_baseUrl/user/me', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       if (response.statusCode == 200) {
@@ -105,6 +107,10 @@ class ApiController extends GetxController {
         fetchPosts();
         fetchWishlist();
         funcController.setUserMe(UserMe.fromJson(data));
+        if (funcController.userMe.value?.data?.firstName == 'DEFAULT_NAME'){
+          print('DEFAULT_NAME');
+          Get.to(() => EditProfileScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
+        }
         return UserMe.fromJson(data);
       } else {
         print('Xatolik: ${response.statusCode} - ${response.data}');
