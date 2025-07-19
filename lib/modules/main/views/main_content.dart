@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ishtopchi/modules/main/views/skeleton_post_card.dart';
+import 'package:ishtopchi/modules/profile/views/edit_profile_screen.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
@@ -670,32 +671,17 @@ class MainContent extends StatelessWidget {
         Container(
           height: Responsive.scaleHeight(55, context),
           alignment: Alignment.center,
-          margin: EdgeInsets.only(
-            top: Responsive.scaleHeight(10, context),
-            left: Responsive.scaleWidth(16, context),
-            right: Responsive.scaleWidth(16, context),
-            bottom: Responsive.scaleHeight(10, context),
-          ),
+          margin: EdgeInsets.only(top: Responsive.scaleHeight(10, context), left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(10, context)),
           child: TextField(
             decoration: InputDecoration(
               hintText: 'Qidirish...',
               hintStyle: TextStyle(color: AppColors.lightGray),
-              prefixIcon: Icon(
-                LucideIcons.search,
-                color: AppColors.lightGray,
-                size: Responsive.scaleFont(20, context),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
-                borderSide: BorderSide.none,
-              ),
+              prefixIcon: Icon(LucideIcons.search, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)), borderSide: BorderSide.none),
               filled: true,
-              fillColor: AppColors.darkBlue,
+              fillColor: AppColors.darkBlue
             ),
-            style: TextStyle(
-              fontSize: Responsive.scaleFont(16, context),
-              color: AppColors.lightGray,
-            ),
+            style: TextStyle(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray),
             onChanged: (value) async {
               funcController.searchQuery.value = value;
               funcController.currentPage.value = 1;
@@ -703,52 +689,27 @@ class MainContent extends StatelessWidget {
               funcController.posts.clear();
               await apiController.fetchPosts(search: value, page: 1);
               refreshController.refreshCompleted();
-            },
-          ),
+            }
+          )
         ),
         // Qo'shimcha sozlamalar masalan filterlar, grid, list, etc va boshqa
         Container(
           height: Responsive.scaleHeight(55, context),
           alignment: Alignment.center,
-          margin: EdgeInsets.only(
-            left: Responsive.scaleWidth(16, context),
-            right: Responsive.scaleWidth(16, context),
-            bottom: Responsive.scaleHeight(10, context),
-          ),
+          margin: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(10, context)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Responsive.scaleWidth(12, context),
-                  vertical: Responsive.scaleHeight(10, context),
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.darkBlue,
-                  borderRadius: BorderRadius.circular(8.sp),
-                ),
+                padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(10, context)),
+                decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
                 child: Row(
                   children: [
-                    Icon(
-                      LucideIcons.mapPin,
-                      color: AppColors.lightGray,
-                      size: Responsive.scaleFont(20, context),
-                    ),
+                    Icon(LucideIcons.mapPin, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
                     SizedBox(width: 6.sp),
-                    Obx(
-                      () => Text(
-                        funcController.userMe.value != null
-                            ? funcController.userMe.value!.data!.district!.name ?? 'Viloyat'.tr
-                            : 'Viloyat'.tr,
-                        style: TextStyle(
-                          color: AppColors.lightGray,
-                          fontSize: Responsive.scaleFont(14, context),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                    Obx(() => Text(funcController.userMe.value != null && funcController.userMe.value!.data!.district != null ? funcController.userMe.value!.data!.district!.name ?? 'Viloyat'.tr : 'Viloyat'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500)))
+                  ]
+                )
               ),
               Obx(() => Expanded(
                   child: Row(
@@ -766,33 +727,16 @@ class MainContent extends StatelessWidget {
                   showFilterDialog(context, funcController, apiController);
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.scaleWidth(12, context),
-                    vertical: Responsive.scaleHeight(10, context),
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBlue,
-                    borderRadius: BorderRadius.circular(8.sp),
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(10, context)),
+                  decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
                   child: Row(
                     children: [
-                      Icon(
-                        LucideIcons.listFilter,
-                        color: AppColors.lightGray,
-                        size: Responsive.scaleFont(20, context),
-                      ),
+                      Icon(LucideIcons.listFilter, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
                       SizedBox(width: 6.sp),
-                      Text(
-                        'Filtr'.tr,
-                        style: TextStyle(
-                          color: AppColors.lightGray,
-                          fontSize: Responsive.scaleFont(14, context),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                      Text('Filtr'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500))
+                    ]
+                  )
+                )
               ),
               SizedBox(width: 10.sp),
               GestureDetector(
@@ -800,25 +744,13 @@ class MainContent extends StatelessWidget {
                   funcController.isGridView.value = !funcController.isGridView.value;
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.scaleWidth(16, context),
-                    vertical: Responsive.scaleHeight(10, context),
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBlue,
-                    borderRadius: BorderRadius.circular(8.sp),
-                  ),
-                  child: Obx(
-                    () => Icon(
-                      !funcController.isGridView.value ? LucideIcons.grid2x2 : LucideIcons.list,
-                      color: AppColors.lightGray,
-                      size: Responsive.scaleFont(20, context),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+                  padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(10, context)),
+                  decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
+                  child: Obx(() => Icon(!funcController.isGridView.value ? LucideIcons.grid2x2 : LucideIcons.list, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)))
+                )
+              )
+            ]
+          )
         ),
         Expanded(
           child: RefreshComponent(

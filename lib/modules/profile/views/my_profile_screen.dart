@@ -62,29 +62,6 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     return LucideIcons.info;
   }
 
-  List<Color> _getAuthGradient(UserMe? user) {
-    if (user?.data?.authProviders?.isNotEmpty ?? false) {
-      final provider = user!.data!.authProviders!.first.providerType;
-      if (provider == 'GOOGLE') {
-        return [Colors.blue.shade800, Colors.blue.shade400];
-      } else if (provider == 'PHONE_NUMBER') {
-        return [Colors.green.shade800, Colors.green.shade400];
-      }
-    }
-    return [AppColors.lightBlue, AppColors.darkBlue];
-  }
-
-  Color _getAuthShadowColor(UserMe? user) {
-    if (user?.data?.authProviders?.isNotEmpty ?? false) {
-      final provider = user!.data!.authProviders!.first.providerType;
-      if (provider == 'GOOGLE') {
-        return AppColors.darkNavy;
-      } else if (provider == 'PHONE_NUMBER') {
-        return AppColors.lightBlue;
-      }
-    }
-    return Colors.black26;
-  }
 
   String _getAuthInfo(UserMe? user) {
     if (user?.data?.authProviders?.isNotEmpty ?? false) {
@@ -251,58 +228,24 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Kirish ma’lumotlari',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: Responsive.scaleFont(18, context),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          Text('Kirish ma’lumotlari', style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.bold)),
                           SizedBox(height: Responsive.scaleHeight(8, context)),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                _getAuthIcon(user),
-                                color: Colors.white,
-                                size: Responsive.scaleFont(20, context),
-                              ),
+                              Icon(_getAuthIcon(user), color: Colors.white, size: Responsive.scaleFont(20, context)),
                               SizedBox(width: Responsive.scaleWidth(8, context)),
-                              Text(
-                                _getAuthMethod(user),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: Responsive.scaleFont(16, context),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                              Text(_getAuthMethod(user), style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600))
+                            ]
                           ),
                           SizedBox(height: Responsive.scaleHeight(8, context)),
-                          Text(
-                            _getAuthInfo(user),
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: Responsive.scaleFont(14, context),
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
+                          Text(_getAuthInfo(user), style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(14, context), fontStyle: FontStyle.italic)),
                           SizedBox(height: Responsive.scaleHeight(16, context)),
-                          TextButton(
-                            onPressed: () => Get.back(),
-                            child: Text(
-                              'Yopish',
-                              style: TextStyle(
-                                color: AppColors.lightBlue,
-                                fontSize: Responsive.scaleFont(14, context),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                          TextButton(onPressed: () => Get.back(), child: Text('Yopish', style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context))))
+                        ]
+                      )
+                    )
+                  )
                 );
               },
               child: AnimatedContainer(
@@ -316,18 +259,14 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     padding: EdgeInsets.symmetric(vertical: Responsive.scaleHeight(10, context), horizontal: Responsive.scaleWidth(14, context)),
                     margin: EdgeInsets.symmetric(vertical: Responsive.scaleHeight(4, context)),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: _getAuthGradient(user), begin: Alignment.centerLeft, end: Alignment.centerRight),
+                      color: AppColors.lightBlue,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [BoxShadow(color: _getAuthShadowColor(user), blurRadius: 8, spreadRadius: 1, offset: Offset(0, 3))]
+                      boxShadow: [BoxShadow(color: AppColors.darkNavy, blurRadius: 8, spreadRadius: 1, offset: Offset(0, 3))]
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AnimatedScale(
-                          scale: 1.0,
-                          duration: const Duration(milliseconds: 300),
-                          child: Icon(_getAuthIcon(user), color: Colors.white, size: Responsive.scaleFont(25, context))
-                        ),
+                        AnimatedScale(scale: 1.0, duration: const Duration(milliseconds: 300), child: Icon(_getAuthIcon(user), color: Colors.white, size: Responsive.scaleFont(25, context))),
                         SizedBox(width: Responsive.scaleWidth(12, context)),
                         Text(_getAuthMethod(user), style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w800))
                       ]

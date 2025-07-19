@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../config/theme/app_colors.dart';
+import '../../../controllers/funcController.dart';
 import '../../../core/utils/responsive.dart';
 import '../../favorites/views/favorites_screen.dart';
 import '../../ad_posting/views/ad_posting_screen.dart';
 import '../../messages/views/messages_screen.dart';
+import '../../profile/views/edit_profile_screen.dart';
 import '../../profile/views/profile_screen.dart';
 import 'main_content.dart';
 
@@ -13,10 +15,10 @@ class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  State<MainScreen> createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const MainContent(), // Asosiy sahifa uchun placeholder
