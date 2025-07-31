@@ -30,7 +30,7 @@ class MainScreen extends StatelessWidget {
       const MainContent(),
       const FavoritesScreen(),
       const AdPostingScreen(),
-      const MessagesScreen(),
+      MessagesScreen(),
       ProfileScreen(),
     ];
 

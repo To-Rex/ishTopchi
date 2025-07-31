@@ -2,20 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
+import '../../../controllers/socket_service.dart';
+import '../../../core/models/chat_rooms.dart';
 import '../../../core/models/message_model.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/messages_controller.dart';
 
 class MessagesScreen extends GetView<MessagesController> {
-  const MessagesScreen({super.key});
+  MessagesScreen({super.key});
+
+  //final SocketService _socketService = SocketService();
+  final WebSocketService _socketService = WebSocketService();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.darkNavy,
-      appBar: _buildAppBar(context),
-      body: _buildBody(context)
-    );
+
+    _socketService.connect('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTA0LCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1Mzk0OTUwNCwiZXhwIjoxNzg1NDg1NTA0fQ.CRAxyjnuYE8ir2_SP0uE6ayIrbNMuuVIFxBM5weGU_g');
+
+    return Scaffold(backgroundColor: AppColors.darkNavy, appBar: _buildAppBar(context), body: _buildBody(context));
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {

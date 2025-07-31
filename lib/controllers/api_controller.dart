@@ -34,12 +34,12 @@ class ApiController extends GetxController {
         return url;
       } else {
         ShowToast.show('Xatolik', 'Rasm serverga yuklashda xatolik yuz berdi', 3, 1);
-        print('❌ uploadImage xatolik: ${response.statusCode}');
+        debugPrint('❌ uploadImage xatolik: ${response.statusCode}');
         return null;
       }
     } catch (e) {
       ShowToast.show('Xatolik', 'Exxx nimadir xato ketdi', 3, 1);
-      print('❌ uploadImage exception: $e');
+      debugPrint('❌ uploadImage exception: $e');
       return null;
     }
   }
@@ -55,7 +55,7 @@ class ApiController extends GetxController {
         throw Exception('Viloyatlarni olishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('fetchRegions xatolik: $e');
+      debugPrint('fetchRegions xatolik: $e');
       return [];
     }
   }
@@ -71,29 +71,29 @@ class ApiController extends GetxController {
         throw Exception('Tumanlarni olishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('fetchDistricts xatolik: $e');
+      debugPrint('fetchDistricts xatolik: $e');
       return [];
     }
   }
 
   Future<void> sendGoogleIdToken(String idToken, String platform) async {
-    print('ID Token: $idToken');
-    print('Platform: $platform');
+    debugPrint('ID Token: $idToken');
+    debugPrint('Platform: $platform');
     try {
       final response = await _dio.post('$_baseUrl/oauth/google', options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}), data: {'idToken': idToken, 'platform': platform});
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('API javobi: ${response.data}');
+        debugPrint('API javobi: ${response.data}');
         final accessToken = response.data['data']['token']['access_token'];
         await funcController.saveToken(accessToken);
         getMe();
-        print('Access token saqlandi: $accessToken');
+        debugPrint('Access token saqlandi: $accessToken');
         Get.offNamed(AppRoutes.main);
       } else {
-        print('${response.data}');
+        debugPrint('${response.data}');
         throw Exception('API xatosi: ${response.statusCode} - ${response.data}');
       }
     } catch (error) {
-      print('API so‘rovi xatosi: $error');
+      debugPrint('API so‘rovi xatosi: $error');
       throw Exception('API so‘rovi xatosi: $error');
     }
   }
@@ -104,16 +104,16 @@ class ApiController extends GetxController {
       final response = await _dio.get('$_baseUrl/user/me', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = response.data;
-        print('User ME: $data');
+        //debugPrint('User ME: $data');
         fetchPosts();
         fetchWishlist();
         funcController.setUserMe(UserMe.fromJson(data));
         if (funcController.userMe.value.data?.firstName == 'DEFAULT_NAME'){
-          print('DEFAULT_NAME');
+          debugPrint('DEFAULT_NAME');
           Get.to(() => EditProfileScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
         }
         if (funcController.userMe.value.data?.isBlocked == true){
-          print('BLOCKED');
+          debugPrint('BLOCKED');
           Get.offAll(() => const BlockedScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
           //return;
         }
@@ -136,9 +136,8 @@ class ApiController extends GetxController {
           default:
             errorMessage = 'Noma’lum xato: ${response.statusCode}';
         }
-        print('getMe xatosi: ${response.statusCode} - ${response.data}');
+        debugPrint('getMe xatosi: ${response.statusCode} - ${response.data}');
         ShowToast.show('Xatolik', errorMessage, 2, 1);
-        return null;
       }
     } catch (e) {
       String errorMessage = 'Noma’lum xato yuz berdi';
@@ -152,29 +151,28 @@ class ApiController extends GetxController {
           Get.offAllNamed('/login');
         }
       } else {
-        print('getMe umumiy xatosi: $e');
+        debugPrint('getMe umumiy xatosi: $e');
       }
       ShowToast.show('Xatolik', errorMessage, 2, 1);
-      return null;
     }
   }
 
   Future generateOtp(String phoneNumber) async {
-    print('Phone number: $phoneNumber');
+    debugPrint('Phone number: $phoneNumber');
     try {
       final response = await _dio.post('$_baseUrl/otp-based-auth/generate-otp', data: {'phoneNumber': '+998$phoneNumber'}, options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('API javobi: ${response.data}');
+        debugPrint('API javobi: ${response.data}');
         final encryptedOtp = response.data['data'];
-        print('OTP yuborildi. Encrypted OTP: $encryptedOtp');
+        debugPrint('OTP yuborildi. Encrypted OTP: $encryptedOtp');
         funcController.setOtpTokenOnly(encryptedOtp);
         funcController.setOtpPhone(phoneNumber);
         Get.to(() => OtpVerificationScreen(phone: phoneNumber.trim()), transition: Transition.fadeIn);
       } else {
-        print('OTP yuborishda xatolik: ${response.statusCode}');
+        debugPrint('OTP yuborishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('generateOtp xatolik: $e');
+      debugPrint('generateOtp xatolik: $e');
     }
   }
 
@@ -183,25 +181,25 @@ class ApiController extends GetxController {
     final phone = funcController.getOtpPhone();
     try {
       final response = await _dio.post('$_baseUrl/otp-based-auth/login', data: json.encode({"phone_number": phone, "otp": otp, "fingerprint": fingerprint}), options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json', 'Authorization': 'Bearer $fingerprint'}));
-      print('✅ Javob: ${response.data}');
+      debugPrint('✅ Javob: ${response.data}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.data['meta']['is_first_login'] == true) {
           final token = response.data['data']['token']['access_token'];
           await funcController.saveToken(token);
           Get.toNamed(AppRoutes.register);
-          print('✅ Login muvaffaqiyatli. Access Token: $token');
+          debugPrint('✅ Login muvaffaqiyatli. Access Token: $token');
         } else {
           final token = response.data['data']['token']['access_token'];
           await funcController.saveToken(token);
           Get.offNamed(AppRoutes.main);
           getMe();
-          print('✅ Login muvaffaqiyatli. Access Token: $token');
+          debugPrint('✅ Login muvaffaqiyatli. Access Token: $token');
         }
       } else {
-        print('❌ Status: ${response.statusCode}');
+        debugPrint('❌ Status: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ loginWithOtp xatolik: $e');
+      debugPrint('❌ loginWithOtp xatolik: $e');
     }
   }
 
@@ -211,7 +209,7 @@ class ApiController extends GetxController {
       if (image != null) {
         imageUrl = await uploadImage(image, funcController.getToken());
         if (imageUrl == null) {
-          print('❌ Rasm yuklashda muammo bo‘ldi');
+          debugPrint('❌ Rasm yuklashda muammo bo‘ldi');
           return;
         }
       }
@@ -219,17 +217,17 @@ class ApiController extends GetxController {
       if (imageUrl != null) {
         data['profile_picture'] = imageUrl;
       }
-      print('➡️ Registration body: $data');
+      debugPrint('➡️ Registration body: $data');
       final response = await _dio.post('$_baseUrl/otp-based-auth/complete-registration', data: data, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.getToken()}', 'Content-Type': 'application/json'}));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('✅ Ro‘yxatdan o‘tish yakunlandi.');
+        debugPrint('✅ Ro‘yxatdan o‘tish yakunlandi.');
         Get.offNamed(AppRoutes.main);
       } else {
-        print('❌ completeRegistration xatolik: ${response.statusCode} - ${response.data}');
+        debugPrint('❌ completeRegistration xatolik: ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
-      print('❌ completeRegistration exception: $e');
+      debugPrint('❌ completeRegistration exception: $e');
     }
   }
 
@@ -241,25 +239,25 @@ class ApiController extends GetxController {
       if (image != null) {
         imageUrl = await uploadImage(image, funcController.globalToken.value);
         if (imageUrl == null) {
-          print('❌ Rasm yuklashda muammo bo‘ldi');
+          debugPrint('❌ Rasm yuklashda muammo bo‘ldi');
           return false;
         }
       }
 
       final Map<String, dynamic> data = {'first_name': firstName, 'last_name': lastName, 'birth_date': birthDate, 'gender': gender, 'district_id': districtId};
       if (imageUrl != null) {data['profile_picture'] = imageUrl;}
-      final userId = funcController.userMe.value?.data?.id ?? 0; // Foydalanuvchi ID sini olish
+      final userId = funcController.userMe.value.data?.id ?? 0; // Foydalanuvchi ID sini olish
       final response = await _dio.patch('$_baseUrl/user/$userId', data: json.encode(data), options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer ${funcController.globalToken.value}', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200) {
-        print('✅ Profil yangilandi: ${response.data}');
+        debugPrint('✅ Profil yangilandi: ${response.data}');
         await getMe();
         return true;
       } else {
-        print('❌ updateProfile xatolik: ${response.statusCode} - ${response.data}');
+        debugPrint('❌ updateProfile xatolik: ${response.statusCode} - ${response.data}');
         return false;
       }
     } catch (e) {
-      print('❌ updateProfile exception: $e');
+      debugPrint('❌ updateProfile exception: $e');
       return false;
     }
   }
@@ -275,7 +273,7 @@ class ApiController extends GetxController {
         throw Exception('Kategoriyalarni olishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('fetchCategories xatolik: $e');
+      debugPrint('fetchCategories xatolik: $e');
       return [];
     }
   }
@@ -312,14 +310,14 @@ class ApiController extends GetxController {
         url,
         options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}),
       );
-      print('API javobi posts (page $page): ${response.data}');
-      print('Status code: ${response.statusCode}');
+      //debugPrint('API javobi posts (page $page): ${response.data}');
+      //debugPrint('Status code: ${response.statusCode}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
         final meta = Meta.fromJson(response.data['meta']);
         funcController.totalPosts.value = meta.total ?? 0;
         if (data.isEmpty) {
-          print('Ma’lumotlar tugadi');
+          debugPrint('Ma’lumotlar tugadi');
           funcController.hasMore.value = false;
           return;
         }
@@ -333,7 +331,7 @@ class ApiController extends GetxController {
         throw Exception('Postlarni olishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('fetchPosts xatolik (page $page): $e');
+      debugPrint('fetchPosts xatolik (page $page): $e');
     } finally {
       funcController.isLoading.value = false;
     }
@@ -353,14 +351,14 @@ class ApiController extends GetxController {
       final response = await _dio.get('$_baseUrl/posts/my-stats', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       if (response.statusCode == 200 && response.data['data'] != null) {
         final data = response.data;
-        print('User stats: $data');
+        //debugPrint('User stats: $data');
         funcController.meStats.value = MeStats.fromJson(data);
       } else {
         ShowToast.show('Xatolik', 'Foydalanuvchining statistikasi olishda xatolik yuz berdi', 3, 1);
-        print('❌ fetchUserStats xatolik: ${response.statusCode} - ${response.data}');
+        debugPrint('❌ fetchUserStats xatolik: ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
-      print('fetchUserStats xatolik: $e');
+      debugPrint('fetchUserStats xatolik: $e');
 
     } finally {
       funcController.isLoading.value = false;
@@ -372,17 +370,17 @@ class ApiController extends GetxController {
     try {
       funcController.isLoading.value = true;
       if (page == 1) {funcController.hasMore.value = true;}
-      String url = '$_baseUrl/posts?page=$page&limit=$limit&user_id=${funcController.userMe.value?.data?.id}';
+      String url = '$_baseUrl/posts?page=$page&limit=$limit&user_id=${funcController.userMe.value.data?.id}';
       if (search != null && search.isNotEmpty) {url += '&search=$search';}
       final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
-      print('API javobi posts (page $page): ${response.data}');
-      print('Status code: ${response.statusCode}');
+      //debugPrint('API javobi posts (page $page): ${response.data}');
+      //debugPrint('Status code: ${response.statusCode}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
         final meta = MeMeta.fromJson(response.data['meta']);
         funcController.totalMePosts.value = meta.total ?? 0;
         if (data.isEmpty) {
-          print('Ma’lumotlar tugadi');
+          debugPrint('Ma’lumotlar tugadi');
           funcController.hasMore.value = false;
           return;
         }
@@ -396,7 +394,7 @@ class ApiController extends GetxController {
         throw Exception('Postlarni olishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('fetchPosts xatolik (page $page): $e');
+      debugPrint('fetchPosts xatolik (page $page): $e');
     } finally {
       funcController.isLoading.value = false;
     }
@@ -407,13 +405,13 @@ class ApiController extends GetxController {
       final response = await _dio.post('$_baseUrl/posts', data: json.encode(postData), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         ShowToast.show('Muvaffaqiyat', 'Post muvaffaqiyatli yaratildi', 3, 1);
-        print('✅ Post muvaffaqiyatli yaratildi: ${response.data}');
+        debugPrint('✅ Post muvaffaqiyatli yaratildi: ${response.data}');
       } else {
-        print('❌ createPost xatolik: ${response.statusCode} - ${response.data}');
+        debugPrint('❌ createPost xatolik: ${response.statusCode} - ${response.data}');
         ShowToast.show('Xatolik', 'Post yuborishda xatolik yuz berdi', 3, 1);
       }
     } catch (e) {
-      print('❌ createPost exception: $e');
+      debugPrint('❌ createPost exception: $e');
       ShowToast.show('Xatolik', 'Post yuborishda xato: $e', 3, 1);
     }
   }
@@ -422,41 +420,41 @@ class ApiController extends GetxController {
   Future<void> fetchWishlist() async {
     try {
       final response = await _dio.get('$_baseUrl/wishlist', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
-      print('API javobi wishlist: ${response.data}');
+      //debugPrint('API javobi wishlist: ${response.data}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
         funcController.wishList.value = data.where((json) => json != null).map((json) => WishList.fromJson(json as Map<String, dynamic>)).toList();
-        print('WishList uzunligi: ${funcController.wishList.length}');
+        //debugPrint('WishList uzunligi: ${funcController.wishList.length}');
       } else if (response.statusCode == 404) {
         funcController.clearWishList();
-        print('Wishlist bo‘sh');
+        debugPrint('Wishlist bo‘sh');
       } else {
-        print('Wishlistni olishda xatolik: ${response.statusCode}');
+        debugPrint('Wishlistni olishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
       funcController.clearWishList();
-      print('fetchWishlist xatolik: $e');
+      debugPrint('fetchWishlist xatolik: $e');
     }
   }
 
   // Yoqtirish (wishlist'ga qo'shish)
   Future<void> addToWishlist(int postId) async {
-    print(postId);
+    debugPrint(postId.toString());
     try {
       final response = await _dio.post('$_baseUrl/wishlist', data: {'post_id': postId}, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('Post wishlistga qo‘shildi: $postId');
+        debugPrint('Post wishlistga qo‘shildi: $postId');
         fetchWishlist(); // Wishlistni yangilash
       } else {
         throw Exception('Wishlistga qo‘shishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('addToWishlist xatolik: $e');
+      debugPrint('addToWishlist xatolik: $e');
     }
   }
 
   Future<void> removeFromWishlist(int wishlistId) async {
-    print('wishlistId: $wishlistId');
+    debugPrint('wishlistId: $wishlistId');
     try {
       final response = await _dio.delete('$_baseUrl/wishlist/$wishlistId', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       if (response.statusCode == 200 || response.statusCode == 204 || response.statusCode == 201) {
@@ -465,7 +463,7 @@ class ApiController extends GetxController {
         throw Exception('Wishlistdan o‘chirishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('removeFromWishlist xatolik: $e');
+      debugPrint('removeFromWishlist xatolik: $e');
     }
   }
 
@@ -474,11 +472,11 @@ class ApiController extends GetxController {
   Future<void> fetchMeResumes({int page = 1, int limit = 10}) async {
     try {
       funcController.isLoading.value = true;
-      final userId = funcController.userMe.value?.data?.id;
+      final userId = funcController.userMe.value.data?.id;
       String url = '$_baseUrl/resumes?user_id=$userId&page=$page&limit=$limit';
       final response = await _dio.get(url, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
-      print('API javobi resumes (page $page): ${response.data}');
-      print('Status code: ${response.statusCode}');
+      //debugPrint('API javobi resumes (page $page): ${response.data}');
+      //debugPrint('Status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = response.data;
@@ -486,7 +484,7 @@ class ApiController extends GetxController {
         funcController.resumes.value = resumes.data ?? [];
         funcController.totalResumes.value = resumes.meta?.total ?? 0;
         if (resumes.data == null || resumes.data!.isEmpty) {
-          print('Ma’lumotlar tugadi');
+          debugPrint('Ma’lumotlar tugadi');
           funcController.hasMore.value = false;
         } else {
           funcController.hasMore.value = (resumes.meta?.total ?? 0) > funcController.resumes.length;
@@ -495,7 +493,7 @@ class ApiController extends GetxController {
         throw Exception('Resumelarni olishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
-      print('fetchResumes xatolik (page $page): $e');
+      debugPrint('fetchResumes xatolik (page $page): $e');
       ShowToast.show('Xatolik', 'Resumelarni olishda xato yuz berdi', 3, 1);
     } finally {
       funcController.isLoading.value = false;
@@ -524,7 +522,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       ShowToast.show('Xatolik', 'Resume yaratishda xato: $e', 3, 1);
-      print('createResume xatolik: $e');
+      debugPrint('createResume xatolik: $e');
     } finally {
       funcController.isLoading.value = false;
     }
@@ -543,7 +541,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       ShowToast.show('Xatolik', 'Resume o‘chirishda xato: $e', 3, 1);
-      print('deleteResume xatolik: $e');
+      debugPrint('deleteResume xatolik: $e');
     } finally {
       funcController.isLoading.value = false;
     }
@@ -572,7 +570,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       ShowToast.show('Xatolik', 'Resume yangilashda xato: $e', 3, 1);
-      print('updateResume xatolik: $e');
+      debugPrint('updateResume xatolik: $e');
     } finally {
       funcController.isLoading.value = false;
     }
@@ -584,17 +582,15 @@ class ApiController extends GetxController {
   Future<void> fetchDevices() async {
     try {
       final response = await _dio.get('$_baseUrl/devices', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
-      print('Devices: ${response.data}');
+      //debugPrint('Devices: ${response.data}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         funcController.devicesModel.value = DevicesModel.fromJson(response.data);
         funcController.fetchDeviceInfo();
       } else {
-        print('Qurilmalarni yuklashda xato yuz berdi');
-       // ShowToast.show('Xatolik', 'Qurilmalarni yuklashda xato yuz berdi', 3, 1);
+        debugPrint('Qurilmalarni yuklashda xato yuz berdi');
       }
     } catch (e) {
-      //ShowToast.show('Xatolik', 'Qurilmalarni yuklashda xato yuz berdi', 3, 1);
-      print('fetchDevices xatolik: $e');
+      debugPrint('fetchDevices xatolik: $e');
     }
   }
 
@@ -610,7 +606,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       ShowToast.show('Xatolik', 'Qurilma o‘chirishda xato: $e', 3, 1);
-      print('deleteDevice xatolik: $e');
+      debugPrint('deleteDevice xatolik: $e');
     } finally {
       funcController.isLoading.value = false;
     }
@@ -621,7 +617,7 @@ class ApiController extends GetxController {
       funcController.isLoading.value = true;
       await _dio.post('$_baseUrl/devices/$id/login', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
     } catch (e) {
-      print('loginDevice xatolik: $e');
+      debugPrint('loginDevice xatolik: $e');
     } finally {
       funcController.isLoading.value = false;
     }
@@ -643,7 +639,7 @@ class ApiController extends GetxController {
         await fetchDevices(); // Ro'yxatni yangilash
       }
     } catch (e) {
-      print('loginDevice xatolik: $e');
+      debugPrint('loginDevice xatolik: $e');
     }
   }
 
@@ -654,7 +650,7 @@ class ApiController extends GetxController {
     try {
       funcController.isLoading.value = true;
       final response = await _dio.post('$_baseUrl/applications', data: {'post_id': postId, 'message': message, 'resume_id': resumeId}, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
-      print(response.data);
+      debugPrint(response.data);
       if (response.statusCode == 200 || response.statusCode == 201) {
         ShowToast.show('Muvaffaqiyat', 'Murojaat muvaffaqiyatli yuborildi', 2, 1);
       } else {
@@ -662,7 +658,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       ShowToast.show('Xatolik', 'Murojaat oldin yuborilgan', 3, 1);
-      print('createApplication xatolik: $e');
+      debugPrint('createApplication xatolik: $e');
     }
   }
 

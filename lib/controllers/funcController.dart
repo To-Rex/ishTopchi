@@ -80,6 +80,7 @@ class FuncController {
         deviceId.value = iosInfo.identifierForVendor ?? 'Noma’lum';
         platform.value = 'iOS';
       }
+      print('Qurilma ma’lumotlari: deviceName=${deviceName.value}, deviceModel=${deviceModel.value}, deviceId=${deviceId.value}, platform=${platform.value}');
     } catch (e) {
       print('Qurilma ma’lumotlarini olishda xato: $e');
     }
