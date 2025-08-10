@@ -12,13 +12,38 @@ class MessagesScreen extends GetView<MessagesController> {
   MessagesScreen({super.key});
 
   //final SocketService _socketService = SocketService();
-  final WebSocketService _socketService = WebSocketService();
+  //final WebSocketService _socketService = WebSocketService();
+
+
 
   @override
   Widget build(BuildContext context) {
 
-    _socketService.connect('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTA0LCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1Mzk0OTUwNCwiZXhwIjoxNzg1NDg1NTA0fQ.CRAxyjnuYE8ir2_SP0uE6ayIrbNMuuVIFxBM5weGU_g');
+    //_socketService.connect('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTA0LCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1Mzk0OTUwNCwiZXhwIjoxNzg1NDg1NTA0fQ.CRAxyjnuYE8ir2_SP0uE6ayIrbNMuuVIFxBM5weGU_g');
 
+
+    /*final socket = SocketService();
+
+// Listeners
+    socket.onNewMessage((msg) => print('newMessage: $msg'));
+    socket.onMessageStatus((st) => print('messageStatus: $st'));
+    socket.onError((e) => print('SOCKET ERROR: $e'));
+
+// Ulanish
+    socket.connect(token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEyLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1NDU2Nzg4NCwiZXhwIjoxNzg2MTAzODg0fQ.oRzyoRtRkuls_4ObF4XrDlMmOCQ6YE9r_3u065bKtMY');
+
+// Xonaga qo‘shilish
+    socket.joinChat(64);
+
+// Xabar yuborish
+    socket.sendMessage(chatRoomId: 64, content: 'Salom!');
+    socket.sendMessage(chatRoomId: 64, content: 'Salom!');
+
+// Presence
+    socket.updatePresence(true);
+
+// Presence
+    socket.updatePresence(true);*/
     return Scaffold(backgroundColor: AppColors.darkNavy, appBar: _buildAppBar(context), body: _buildBody(context));
   }
 
@@ -27,27 +52,21 @@ class MessagesScreen extends GetView<MessagesController> {
       backgroundColor: AppColors.darkNavy,
       elevation: 0,
       title: Container(
-        decoration: BoxDecoration(
-          color: AppColors.darkBlue,
-          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        ),
+        decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(AppDimensions.cardRadius)),
         child: TextField(
           onChanged: (value) => controller.filterMessages(value),
           style: TextStyle(color: AppColors.lightGray),
           decoration: InputDecoration(
             hintText: 'Xabarni qidiring...',
-            hintStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.7)),
+            hintStyle: TextStyle(color: AppColors.lightBlue),
             prefixIcon: Icon(Icons.search, color: AppColors.lightGray),
             fillColor: AppColors.darkBlue,
             suffixIcon: controller.searchQuery.isNotEmpty ? IconButton(icon: Icon(Icons.clear, color: AppColors.lightGray), onPressed: () {},) : null,
             border: InputBorder.none,
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-              borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5),
-            ),
-          ),
-        ),
-      ),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5))
+          )
+        )
+      )
     );
   }
 

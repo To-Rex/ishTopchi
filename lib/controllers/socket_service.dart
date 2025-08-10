@@ -1,211 +1,142 @@
-import 'dart:convert';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class WebSocketService {
-  WebSocketChannel? channel;
-  final List<Function(Map<String, dynamic>)> messageHandlers = [];
-  final List<Function(String)> messageErrorHandlers = [];
-  final List<Function(Map<String, dynamic>)> messageStatusHandlers = [];
 
-  // Singleton pattern
-  static final WebSocketService _instance = WebSocketService._internal();
-  factory WebSocketService() => _instance;
-  WebSocketService._internal();
+typedef Json = Map<String, dynamic>;
 
-  void connect(String token) {
-    if (channel != null) {
-      print('WebSocket allaqachon ulangan');
-      return;
-    }
+class SocketService {
+  static final SocketService _i = SocketService._internal();
+  factory SocketService() => _i;
+  SocketService._internal();
 
-    try {
-      channel = WebSocketChannel.connect(
-        Uri.parse('wss://ishtopchi.uz/api/socket.io/?EIO=4&transport=websocket&token=$token'),
-      );
+  IO.Socket? _socket;
 
-      channel!.stream.listen((message) {
-          print('Serverdan xabar: $message');
-          // JSON xabarni parse qilish
-          sendMessage(311,message);
-          try {
-            final data = jsonDecode(message);
-            if (data['event'] == 'newMessage') {
-              for (var handler in messageHandlers) {
-                handler(data['data']);
-              }
-            } else if (data['event'] == 'messageError') {
-              for (var handler in messageErrorHandlers) {
-                handler(data['message']);
-              }
-            } else if (data['event'] == 'messageStatus') {
-              for (var handler in messageStatusHandlers) {
-                handler(data['data']);
-              }
-            }
-          } catch (e) {
-            print('Xabar parsing xatosi: $e');
-            for (var handler in messageErrorHandlers) {
-              handler('Xabar parsing xatosi: $e');
-            }
-          }
-        },
-        onError: (error) {
-          print('Xato: $error');
-          for (var handler in messageErrorHandlers) {
-            handler(error.toString());
-          }
-        },
-        onDone: () {
-          print('Ulanish uzildi');
-          channel = null;
-        },
-      );
-    } catch (e) {
-      print('Ulanish xatosi: $e');
-      for (var handler in messageErrorHandlers) {
-        handler(e.toString());
+  bool get isConnected => _socket?.connected == true;
+
+  // Listeners
+  final _onNewMessage = <void Function(Json)>[];
+  final _onMessageStatus = <void Function(Json)>[];
+  final _onUserOnline = <void Function(Json)>[];
+  final _onUserOffline = <void Function(Json)>[];
+  final _onUserPresence = <void Function(Json)>[];
+  final _onError = <void Function(String)>[];
+
+  void connect({required String token}) {
+    if (isConnected) return;
+
+    _socket = IO.io(
+      'wss://ishtopchi.uz',
+      IO.OptionBuilder()
+          .setPath('/api/socket.io')            // <-- /socket.io
+          .setTransports(['websocket'])       // mobil uchun barqaror
+          .enableReconnection()
+          .setReconnectionAttempts(9999)
+          .setReconnectionDelay(1000)
+          .setAuth({'token': token})          // NestJS: client.handshake.auth.token
+          .build(),
+    );
+
+    // Optional: socket.io internal options
+    _socket!.io.options?['timeout'] = 20000;
+
+    // Lifecycle
+    _socket!.on('connect', (_) => _log('suuuuuuu: ${_socket!.id}'));
+    _socket!.on('disconnect', (reason) => _log('disconnected: $reason'));
+    _socket!.on('connect_error', (e) => _notifyError('connect_error: $e'));
+    _socket!.on('error', (e) => _notifyError('error: $e'));
+
+    // === Server eventlari (NestJS Gateway) ===
+    _socket!.on('newMessage', (data) {
+      print('Serverdan xabar: $data');
+      final json = _asJson(data);
+      for (final cb in _onNewMessage) {
+        cb(json);
       }
-    }
+    });
+
+    _socket!.on('messageStatus', (data) {
+      print('Serverdan status: $data');
+      final json = _asJson(data);
+      for (final cb in _onMessageStatus) cb(json);
+    });
+
+    _socket!.on('userOnline', (data) {
+      print('Serverdan online: $data');
+      final json = _asJson(data);
+      for (final cb in _onUserOnline) cb(json);
+    });
+
+    _socket!.on('userOffline', (data) {
+      print('Serverdan offline: $data');
+      final json = _asJson(data);
+      for (final cb in _onUserOffline) cb(json);
+    });
+
+    _socket!.on('userPresence', (data) {
+      print('Serverdan presence: $data');
+      final json = _asJson(data);
+      for (final cb in _onUserPresence) cb(json);
+    });
   }
 
-  void joinChat(int chatId) {
-    if (channel != null) {
-      final message = jsonEncode({'event': 'joinChat', 'data': chatId});
-      channel!.sink.add(message);
-      print('Yuborilgan: $message');
-    } else {
-      print('WebSocket ulanmagan');
-      for (var handler in messageErrorHandlers) {
-        handler('WebSocket ulanmagan');
-      }
-    }
+  // Rooms
+  void joinChat(int chatRoomId) {
+    if (!isConnected) return _notifyError('Socket ulanmagan');
+    _socket!.emit('joinChat', chatRoomId);
+    _log('emit joinChat: $chatRoomId');
   }
 
-  void sendMessage(int chatId, String content) {
-    if (channel != null) {
-      final message = jsonEncode({
-        'event': 'sendMessage',
-        'data': {'chatRoomId': chatId, 'content': content}
-      });
-      channel!.sink.add(message);
-      print('Yuborilgan xabar: $message');
-    } else {
-      print('WebSocket ulanmagan');
-      for (var handler in messageErrorHandlers) {
-        handler('WebSocket ulanmagan');
-      }
-    }
+  void leaveChat(int chatRoomId) {
+    if (!isConnected) return _notifyError('Socket ulanmagan');
+    _socket!.emit('leaveChat', chatRoomId);
+    _log('emit leaveChat: $chatRoomId');
   }
 
-  void markAsRead(int chatId, List<int> messageIds) {
-    if (channel != null) {
-      final message = jsonEncode({
-        'event': 'markAsRead',
-        'data': {'chatRoomId': chatId, 'messageIds': messageIds}
-      });
-      channel!.sink.add(message);
-      print('Yuborilgan: $message');
-    }
+  // Messaging
+  void sendMessage({required int chatRoomId, required String content}) {
+    if (!isConnected) return _notifyError('Socket ulanmagan');
+    final payload = {'chatRoomId': chatRoomId, 'content': content};
+    _socket!.emit('sendMessage', payload);
+    _log('emit sendMessage: $payload');
   }
 
-  void onMessage(void Function(Map<String, dynamic>) handler) {
-    messageHandlers.add(handler);
+  // Presence (Serverdagi event nomi hozir "udatePresence")
+  void updatePresence(bool isOnline) {
+    if (!isConnected) return _notifyError('Socket ulanmagan');
+    _socket!.emit('udatePresence', {'isOnline': isOnline});
+    _log('emit udatePresence: {isOnline: $isOnline}');
   }
 
-  void onMessageError(void Function(String) handler) {
-    messageErrorHandlers.add(handler);
-  }
-
-  void onMessageStatus(void Function(Map<String, dynamic>) handler) {
-    messageStatusHandlers.add(handler);
-  }
+  // Listeners qo‘shish
+  void onNewMessage(void Function(Json) cb) => _onNewMessage.add(cb);
+  void onMessageStatus(void Function(Json) cb) => _onMessageStatus.add(cb);
+  void onUserOnline(void Function(Json) cb) => _onUserOnline.add(cb);
+  void onUserOffline(void Function(Json) cb) => _onUserOffline.add(cb);
+  void onUserPresence(void Function(Json) cb) => _onUserPresence.add(cb);
+  void onError(void Function(String) cb) => _onError.add(cb);
 
   void disconnect() {
-    if (channel != null) {
-      channel!.sink.close();
-      channel = null;
-      print('WebSocket o\'chirildi');
+    try {
+      _socket?.dispose();
+      _socket?.disconnect();
+    } finally {
+      _socket = null;
+      _log('socket closed');
     }
   }
+
+  // Helpers
+  Json _asJson(dynamic data) {
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return Map<String, dynamic>.from(data);
+    return {'data': data};
+  }
+
+  void _notifyError(String msg) {
+    for (final cb in _onError) cb(msg);
+  }
+
+  void _log(String msg) {
+    // ignore: avoid_print
+    print('[SocketService] $msg');
+  }
 }
-
-
-
-
-//import 'package:socket_io_client/socket_io_client.dart' as IO;
-//
-// class SocketService {
-//   static final SocketService _instance = SocketService._internal();
-//   factory SocketService() => _instance;
-//   SocketService._internal();
-//
-//   IO.Socket? socket;
-//
-//   void connect(String token) {
-//     if (socket != null && socket!.connected) {
-//       print('✅ Allaqachon ulanilgan');
-//       return;
-//     }
-//
-//     socket = IO.io(
-//       'wss://ishtopchi.uz',
-//       IO.OptionBuilder()
-//           .setPath('/api/socket.io')
-//           .setExtraHeaders({'x-auth-token': token})
-//           .setExtraHeaders({'Authorization': 'Bearer $token'})
-//           .setTransports(['websocket'])
-//           .enableForceNew()
-//           .enableReconnection()
-//           .setReconnectionAttempts(5)
-//           .setReconnectionDelay(1000)
-//           .build()
-//     );
-//
-//     socket!.onConnectError((data) {
-//       print('❌ Ulanishda xatolik: $data');
-//       print('Xato tafsilotlari: ${data.toString()}');
-//     });
-//
-//     socket!.onDisconnect((data) {
-//       print('🛑 Ulanish uzildi: $data');
-//     });
-//
-//     socket!.onConnect((_) {
-//       print('✅ WebSocket ulandi');
-//     });
-//
-//     socket!.on('newMessage', (data) {
-//       print('📩 Yangi xabar: $data');
-//     });
-//
-//     socket!.on('chatRoomsUpdate', (data) {
-//       print('📥 ChatRooms yangilandi: $data');
-//     });
-//
-//     socket!.on('messageError', (error) {
-//       print('❌ Xabar xatosi: $error');
-//     });
-//
-//     socket!.connect();
-//   }
-//
-
-//   void disconnect() {
-//     socket?.disconnect();
-//     print('🔌 Ulanish o‘chirildi');
-//   }
-//
-//   void joinChat(int chatId) {
-//     socket?.emit('joinChat', chatId);
-//   }
-//
-//   void leaveChat(int chatId) {
-//     socket?.emit('leaveChat', chatId);
-//   }
-//
-//   void sendMessage(int chatId, String content) {
-//     socket?.emit('sendMessage', {'chatRoomId': chatId, 'content': content});
-//   }
-//
-//   void getChatRooms({int page = 1, int limit = 10}) {socket?.emit('getChatRooms', {'page': page, 'limit': limit});}
-// }
