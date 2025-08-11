@@ -6,9 +6,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../core/services/show_toast.dart';
 import 'dart:convert';
+
+import '../../../core/utils/responsive.dart';
 
 class CachedTileProvider extends TileProvider {
   @override
@@ -140,7 +143,12 @@ class AdPostingController extends GetxController {
   Future<bool> checkLocationPermission() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ShowToast.show('Joylashuv o‘chirilgan', 'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.', 4, 1);
+      ShowToast.show(
+        'Joylashuv o‘chirilgan',
+        'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.',
+        4,
+        1,
+      );
       return false;
     }
 
@@ -150,6 +158,18 @@ class AdPostingController extends GetxController {
       return true;
     }
 
+    // Dialog oynasini ko‘rsatish
+    bool? dialogResult = await _showPermissionDialog();
+    if (dialogResult != true) {
+      ShowToast.show(
+        'Ruxsat berilmadi',
+        'Joylashuv ruxsatini berish uchun iltimos sozlamalardan ruxsat bering.',
+        5,
+        1,
+      );
+      return false;
+    }
+
     if (status.isDenied || status.isRestricted) {
       final newStatus = await Permission.locationWhenInUse.request();
       debugPrint('Requested permission result: $newStatus');
@@ -157,20 +177,64 @@ class AdPostingController extends GetxController {
         debugPrint('✅ Permission NOW GRANTED');
         return true;
       } else {
-        ShowToast.show('Ruxsat berilmadi', 'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
+        ShowToast.show(
+          'Ruxsat berilmadi',
+          'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
+          5,
+          1,
+        );
         await openAppSettings();
         return false;
       }
     }
 
     if (status.isPermanentlyDenied) {
-      ShowToast.show('Ruxsat kerak', 'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
+      ShowToast.show(
+        'Ruxsat kerak',
+        'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
+        5,
+        1,
+      );
       await openAppSettings();
       return false;
     }
 
-    ShowToast.show('Xato', 'Joylashuv ruxsatini aniqlashda muammo yuz berdi.', 3, 1);
+    ShowToast.show(
+      'Xato',
+      'Joylashuv ruxsatini aniqlashda muammo yuz berdi.',
+      3,
+      1,
+    );
     return false;
+  }
+
+
+  Future<bool?> _showPermissionDialog() async {
+    return showDialog<bool>(
+      context: Get.context!, // Get.context orqali joriy contextni olish
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.onSurface,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context))),
+          title: Text('Joylashuv ruxsati kerak', style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(16, context, ), fontWeight: FontWeight.bold)),
+          content: Text(
+            'Ushbu ilova joylashuv ma\'lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e\'lon joylashuvi uchun zarur.',
+            style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(14, context)),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false), // Ruxsat berilmadi
+              child: Text('Bekor qilish', style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(14, context))),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true), // Ruxsat berildi
+              child: Text('Ruxsat berish', style: TextStyle(color: AppColors.green,
+                  fontSize: Responsive.scaleFont(14, context))),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> initializeApp() async {
