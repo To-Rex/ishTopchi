@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
+import '../../../controllers/funcController.dart';
 import '../../../core/services/show_toast.dart';
 import 'dart:convert';
 
@@ -60,6 +61,9 @@ class AdPostingController extends GetxController {
   }
 
   Future<void> _initializeData() async {
+    if (FuncController().getToken() == null || FuncController().getToken() == '') {
+      return;
+    }
     final token = await _waitForToken();
     if (token == null) {
       return;
@@ -141,32 +145,22 @@ class AdPostingController extends GetxController {
   }
 
   Future<bool> checkLocationPermission() async {
+    if (FuncController().getToken() == null || FuncController().getToken() == '') {
+      return false;
+    }
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ShowToast.show(
-        'Joylashuv o‘chirilgan',
-        'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.',
-        4,
-        1,
-      );
+      ShowToast.show('Joylashuv o‘chirilgan', 'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.', 4, 1);
       return false;
     }
 
     var status = await Permission.locationWhenInUse.status;
-    if (status.isGranted) {
-      debugPrint('✅ Permission GRANTED');
-      return true;
-    }
+    if (status.isGranted) {debugPrint('✅ Permission GRANTED');return true;}
 
     // Dialog oynasini ko‘rsatish
     bool? dialogResult = await _showPermissionDialog();
     if (dialogResult != true) {
-      ShowToast.show(
-        'Ruxsat berilmadi',
-        'Joylashuv ruxsatini berish uchun iltimos sozlamalardan ruxsat bering.',
-        5,
-        1,
-      );
+      ShowToast.show('Ruxsat berilmadi', 'Joylashuv ruxsatini berish uchun iltimos sozlamalardan ruxsat bering.', 5, 1);
       return false;
     }
 
@@ -177,34 +171,19 @@ class AdPostingController extends GetxController {
         debugPrint('✅ Permission NOW GRANTED');
         return true;
       } else {
-        ShowToast.show(
-          'Ruxsat berilmadi',
-          'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
-          5,
-          1,
-        );
+        ShowToast.show('Ruxsat berilmadi', 'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
         await openAppSettings();
         return false;
       }
     }
 
     if (status.isPermanentlyDenied) {
-      ShowToast.show(
-        'Ruxsat kerak',
-        'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
-        5,
-        1,
-      );
+      ShowToast.show('Ruxsat kerak', 'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
       await openAppSettings();
       return false;
     }
 
-    ShowToast.show(
-      'Xato',
-      'Joylashuv ruxsatini aniqlashda muammo yuz berdi.',
-      3,
-      1,
-    );
+    ShowToast.show('Xato', 'Joylashuv ruxsatini aniqlashda muammo yuz berdi.', 3, 1);
     return false;
   }
 
@@ -239,6 +218,9 @@ class AdPostingController extends GetxController {
 
   Future<void> initializeApp() async {
     print('MainController: Initializing app...');
+    if (FuncController().getToken() == null || FuncController().getToken() == '') {
+      return;
+    }
     if (await checkLocationPermission()) {
       try {
         Position position = await Geolocator.getCurrentPosition();

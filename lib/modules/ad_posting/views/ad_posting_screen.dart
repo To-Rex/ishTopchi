@@ -110,9 +110,9 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(backgroundColor: AppColors.darkNavy,
-      //body: _buildBody(context)
-      body: funcController.getToken() != null ? _buildBody(context) : NotLogged()
+  Widget build(BuildContext context) => Scaffold(
+      backgroundColor: AppColors.darkNavy,
+      body: funcController.getToken() == null || funcController.getToken() == '' ? NotLogged() : _buildBody(context)
   );
 
   Widget _buildBody(BuildContext context) => FutureBuilder<List<List<Map<String, dynamic>>>>(

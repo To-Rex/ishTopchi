@@ -39,10 +39,7 @@ class _SupportScreenState extends State<SupportScreen> {
             _buildContactItem(context, Icons.telegram, 'Telegram', '@IshtopchiSupport', () => _launchURL('https://t.me/IshtopchiSupport')),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             // Qo'shimcha yordam
-            Text(
-              'Yordam markazi',
-              style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600),
-            ),
+            Text('Yordam markazi', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600),),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             _buildHelpItem(context, 'FAQ', () => _launchURL('https://ishtopchi.uz/faq')),
             SizedBox(height: Responsive.scaleHeight(12, context)),

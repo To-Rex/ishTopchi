@@ -108,16 +108,14 @@ class ApiController extends GetxController {
         fetchPosts();
         fetchWishlist();
         funcController.setUserMe(UserMe.fromJson(data));
-        if (funcController.userMe.value.data?.firstName == 'DEFAULT_NAME'){
+        if (funcController.userMe.value.data?.firstName == 'DEFAULT_NAME') {
           debugPrint('DEFAULT_NAME');
           Get.to(() => EditProfileScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
         }
-        if (funcController.userMe.value.data?.isBlocked == true){
+        if (funcController.userMe.value.data?.isBlocked == true) {
           debugPrint('BLOCKED');
           Get.offAll(() => const BlockedScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
-          //return;
         }
-
       } else {
         String errorMessage;
         switch (response.statusCode) {
