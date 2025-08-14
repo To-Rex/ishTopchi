@@ -19,8 +19,6 @@ class MainController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Dastlabki postlarni yuklash
     fetchInitialPosts();
-
   }
 }
