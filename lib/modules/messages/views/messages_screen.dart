@@ -47,7 +47,9 @@ class MessagesScreen extends GetView<MessagesController> {
 
 // Presence
     socket.updatePresence(true);*/
-    return Scaffold(backgroundColor: AppColors.darkNavy, appBar: _buildAppBar(context), body: _buildBody(context));
+    return Scaffold(backgroundColor: AppColors.darkNavy,
+        appBar: funcController.getToken() == null || funcController.getToken() == '' ? null : _buildAppBar(context),
+        body: _buildBody(context));
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
