@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
+import '../../../controllers/funcController.dart';
 import '../../../controllers/socket_service.dart';
 import '../../../core/models/chat_rooms.dart';
 import '../../../core/models/message_model.dart';
@@ -10,6 +12,7 @@ import '../controllers/messages_controller.dart';
 
 class MessagesScreen extends GetView<MessagesController> {
   MessagesScreen({super.key});
+  final FuncController funcController = Get.find<FuncController>();
 
   //final SocketService _socketService = SocketService();
   //final WebSocketService _socketService = WebSocketService();
@@ -71,6 +74,9 @@ class MessagesScreen extends GetView<MessagesController> {
   }
 
   Widget _buildBody(BuildContext context) {
+    if (funcController.getToken() == null || funcController.getToken() == '') {
+      return NotLogged();
+    }
     return Obx(() {
       return controller.filteredMessages.isEmpty
           ? _buildEmptyState(context)
