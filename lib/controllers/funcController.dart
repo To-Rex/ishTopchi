@@ -38,6 +38,7 @@ class FuncController {
   final RxString deviceModel = ''.obs;
   final RxString deviceId = ''.obs;
   final RxString platform = ''.obs;
+  final RxBool hasToken = false.obs;
 
 
 
@@ -146,12 +147,24 @@ class FuncController {
 
   String getOtpPhone() => '+998${otpPhone.value}';
 
-  Future<void> saveToken(String token) async => await storage.write('token', token);
 
-  //String? getToken() => storage.read('token');
-  String? getToken() => globalToken.value = storage.read('token') ?? '';
+  Future<void> saveToken(String token) async {
+    await storage.write('token', token);
+    globalToken.value = token;
+    hasToken.value = token.isNotEmpty;
+  }
 
-  Future<void> deleteToken() async => await storage.remove('token');
+  String? getToken() {
+    final token = storage.read('token') ?? '';
+    globalToken.value = token; // Har doim globalToken ni yangilash
+    return token;
+  }
+
+  Future<void> deleteToken() async {
+    await storage.remove('token');
+    globalToken.value = '';
+    hasToken.value = false;
+  }
 
   String get tokenBearer => storage.read('token') ?? '';
 

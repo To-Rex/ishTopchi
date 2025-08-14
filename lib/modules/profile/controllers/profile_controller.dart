@@ -39,6 +39,7 @@ class ProfileController extends GetxController {
     super.onInit();
     _checkTokenAndLoadUser();
     loadRegions();
+    ever(funcController.globalToken, (_) => _checkTokenAndLoadUser());
     ever(selectedRegionId, (regionId) {
       if (regionId.isNotEmpty && regionId != '0') {
         loadDistricts(int.parse(regionId));
