@@ -92,4 +92,18 @@ class Responsive {
     print('Responsive: Screen width: $width, height: $height, pixelRatio: $pixelRatio');
     print('Responsive: Device type: ${isMobile(context) ? "Mobile" : isTablet(context) ? "Tablet" : "Desktop"}');
   }
+
+  int getCrossAxisCount(BuildContext context) {
+    double screenWidth = Responsive.screenWidth(context);
+    if (screenWidth >= 1024) {
+      // iPad 13-inch yoki undan katta ekranlar uchun
+      return 4;
+    } else if (screenWidth >= 800) {
+      return 3;
+    } else if (screenWidth >= 600) {
+      return 2;
+    } else {
+      return 2;
+    }
+  }
 }

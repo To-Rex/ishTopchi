@@ -73,14 +73,6 @@ class MyPostsScreenState extends State<MyPostsScreen> {
     }
   }
 
-  // Grid uchun dinamik crossAxisCount hisoblash
-  int _getCrossAxisCount(BuildContext context) {
-    final width = Responsive.screenWidth(context);
-    if (width > 1200) return 4; // Katta ekranlar (planshet, desktop)
-    if (width > 600) return 3; // O‘rta ekranlar (planshet)
-    return 2; // Telefonlar
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -89,19 +81,9 @@ class MyPostsScreenState extends State<MyPostsScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.darkNavy,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, color: AppColors.white, size: 24.sp),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Mening e‘lonlarim'.tr,
-          style: TextStyle(
-            color: AppColors.white,
-            fontSize: Responsive.scaleFont(20, context),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
+        leading: IconButton(icon: Icon(LucideIcons.arrowLeft, color: AppColors.white, size: 24), onPressed: () => Get.back()),
+        title: Text('Mening e‘lonlarim'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(20, context), fontWeight: FontWeight.w600)),
+        centerTitle: true
       ),
       body: Column(
         children: [
@@ -113,19 +95,16 @@ class MyPostsScreenState extends State<MyPostsScreen> {
               top: Responsive.scaleHeight(10, context),
               left: Responsive.scaleWidth(16, context),
               right: Responsive.scaleWidth(16, context),
-              bottom: Responsive.scaleHeight(10, context),
+              bottom: Responsive.scaleHeight(10, context)
             ),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Qidirish...'.tr,
                 hintStyle: TextStyle(color: AppColors.lightGray),
                 prefixIcon: Icon(LucideIcons.search, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)),
-                  borderSide: BorderSide.none,
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)), borderSide: BorderSide.none),
                 filled: true,
-                fillColor: AppColors.darkBlue,
+                fillColor: AppColors.darkBlue
               ),
               style: TextStyle(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray),
               onChanged: (value) async {
@@ -135,8 +114,8 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                 funcController.mePosts.clear();
                 await _loadMyPosts();
                 refreshController.refreshCompleted();
-              },
-            ),
+              }
+            )
           ),
           // Filtr va ko‘rinish tugmalari
           Container(
@@ -145,34 +124,21 @@ class MyPostsScreenState extends State<MyPostsScreen> {
             margin: EdgeInsets.only(
               left: Responsive.scaleWidth(16, context),
               right: Responsive.scaleWidth(16, context),
-              bottom: Responsive.scaleHeight(10, context),
+              bottom: Responsive.scaleHeight(10, context)
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.scaleWidth(12, context),
-                    vertical: Responsive.scaleHeight(10, context),
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBlue,
-                    borderRadius: BorderRadius.circular(8.sp),
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(10, context)),
+                  decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
                   child: Row(
                     children: [
                       Icon(LucideIcons.mapPin, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
                       SizedBox(width: 6.sp),
-                      Obx(() => Text(
-                        funcController.userMe.value.data?.district?.name ?? 'Viloyat'.tr,
-                        style: TextStyle(
-                          color: AppColors.lightGray,
-                          fontSize: Responsive.scaleFont(14, context),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )),
-                    ],
-                  ),
+                      Obx(() => Text(funcController.userMe.value.data?.district?.name ?? 'Viloyat'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500)))
+                    ]
+                  )
                 ),
                 Obx(() => Expanded(
                     child: Row(
@@ -190,23 +156,17 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                     funcController.isGridView.value = !funcController.isGridView.value;
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Responsive.scaleWidth(16, context),
-                      vertical: Responsive.scaleHeight(10, context),
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.darkBlue,
-                      borderRadius: BorderRadius.circular(8.sp),
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(10, context)),
+                    decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
                     child: Obx(() => Icon(
                       !funcController.isGridView.value ? LucideIcons.grid2x2 : LucideIcons.list,
                       color: AppColors.lightGray,
-                      size: Responsive.scaleFont(20, context),
-                    )),
-                  ),
-                ),
-              ],
-            ),
+                      size: Responsive.scaleFont(20, context)
+                    ))
+                  )
+                )
+              ]
+            )
           ),
           // E‘lonlar ro‘yxati
           Expanded(
@@ -224,13 +184,9 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(
-                      left: Responsive.scaleWidth(16, context),
-                      right: Responsive.scaleWidth(16, context),
-                      bottom: Responsive.scaleHeight(16, context),
-                    ),
+                    padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: _getCrossAxisCount(context),
+                      crossAxisCount: Responsive().getCrossAxisCount(context),
                       crossAxisSpacing: Responsive.scaleWidth(16, context),
                       mainAxisSpacing: Responsive.scaleHeight(16, context),
                       childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.6,
@@ -277,7 +233,7 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: _getCrossAxisCount(context),
+                    crossAxisCount: Responsive().getCrossAxisCount(context),
                     crossAxisSpacing: Responsive.scaleWidth(16, context),
                     mainAxisSpacing: Responsive.scaleHeight(16, context),
                     childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.535,

@@ -59,14 +59,12 @@
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Bu ilova debugging va hot-reload funksiyalari uchun mahalliy tarmoqqa ulanishi kerak.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Ilova joylashuvni aniqlash uchun doimiy ruxsat so'raydi</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Joylashuvingizdan foydalanishga doimiy ruxsat kerak</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Joylashuvingizni aniqlash uchun ilova foydalanadi</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Bu ilova foydalanuvchi ma'lumotlarini Google Sign-In orqali xavfsiz autentifikatsiya qilish uchun ishlatadi.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs access to your location at all times to provide nearby services and personalized features, even when the app is running in the background.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app requires access to your location at all times to provide accurate background tracking and location-based services.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+	<string>The app requests location permission only to show nearby job postings. Location data is not stored or shared with third parties.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -33,14 +33,14 @@ class PrivacyScreen extends StatelessWidget {
             SizedBox(height: Responsive.scaleHeight(8, context)),
             _buildInfoText(context, 'Sizning shaxsiy ma’lumotlaringiz xavfsiz saqlanadi. Ma’lumotlaringizni ko‘rish va boshqarish uchun quyidagi havolaga o‘ting.'),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildLinkItem(context, 'Maxfiylik siyosati', 'https://x.ai/privacy', () => _launchURL('https://x.ai/privacy')),
+            _buildLinkItem(context, 'Maxfiylik siyosati', 'ishtopchi.uz', () => _launchURL('https://ishtopchi.uz/uz/privacy')),
             SizedBox(height: Responsive.scaleHeight(20, context)),
             // Ma'lumotlar xavfsizligi
             _buildSectionTitle(context, 'Ma’lumotlar Xavfsizligi'),
             SizedBox(height: Responsive.scaleHeight(8, context)),
             _buildInfoText(context, 'Biz eng zamonaviy shifrlash usullaridan foydalanamiz. Ma’lumotlaringiz faqat ruxsat berilgan holatda ishlatiladi.'),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildLinkItem(context, 'Xavfsizlik qoidalari', 'https://x.ai/security', () => _launchURL('https://x.ai/security')),
+            _buildLinkItem(context, 'Xavfsizlik qoidalari', 'ishtopchi.uz', () => _launchURL('https://ishtopchi.uz/uz/data-security')),
             SizedBox(height: Responsive.scaleHeight(20, context)),
             // Sozlamalar
             _buildSectionTitle(context, 'Maxfiylik Sozlamalari'),
@@ -97,13 +97,7 @@ class PrivacyScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.darkBlue,
           borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.darkNavy.withAlpha(50),
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: AppColors.darkNavy.withAlpha(50), blurRadius: 4, offset: Offset(0, 2))]
         ),
         child: Row(
           children: [
@@ -113,22 +107,19 @@ class PrivacyScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500),
-                  ),
+                  Text(title, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500)),
                   Text(
                     detail,
                     style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+                    overflow: TextOverflow.ellipsis
+                  )
+                ]
+              )
+            )
+          ]
+        )
+      )
     );
   }
 
@@ -141,25 +132,16 @@ class PrivacyScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.darkBlue,
           borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.darkNavy.withAlpha(50),
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: AppColors.darkNavy.withAlpha(50), blurRadius: 4, offset: Offset(0, 2))]
         ),
         child: Row(
           children: [
             Icon(Icons.settings, color: AppColors.lightBlue, size: Responsive.scaleFont(20, context)),
             SizedBox(width: Responsive.scaleWidth(16, context)),
-            Text(
-              title,
-              style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500),
-            ),
-          ],
-        ),
-      ),
+            Text(title, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500))
+          ]
+        )
+      )
     );
   }
 

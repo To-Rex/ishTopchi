@@ -455,7 +455,7 @@ class MainContent extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: Responsive.screenWidth(context) < 300 ? 1 : 2,
+                        crossAxisCount: Responsive().getCrossAxisCount(context),
                         crossAxisSpacing: Responsive.scaleWidth(16, context),
                         mainAxisSpacing: Responsive.scaleHeight(16, context),
                         childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.6
@@ -479,7 +479,7 @@ class MainContent extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: Responsive.screenWidth(context) < 300 ? 1 : 2,
+                      crossAxisCount: Responsive().getCrossAxisCount(context),
                       crossAxisSpacing: Responsive.scaleWidth(16, context),
                       mainAxisSpacing: Responsive.scaleHeight(16, context),
                       childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.59

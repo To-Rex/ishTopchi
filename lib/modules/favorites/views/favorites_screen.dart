@@ -28,7 +28,7 @@ class FavoritesScreen extends StatelessWidget {
         ) : funcController.isGridView.value ? GridView.builder(
           padding: const EdgeInsets.all(16),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: Responsive.screenWidth(context) < 300 ? 1 : 2,
+            crossAxisCount: Responsive().getCrossAxisCount(context),
             crossAxisSpacing: Responsive.scaleWidth(16, context),
             mainAxisSpacing: Responsive.scaleHeight(16, context),
             childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.59,
