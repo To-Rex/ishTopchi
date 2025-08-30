@@ -327,6 +327,8 @@ class AdPostingController extends GetxController {
 
   Future<void> submitAd() async {
     if (!validateForm()) {
+      print('Form validate failed');
+      print('titleController.text: ${titleController.text} /n contentController.text: ${contentController.text} /n phoneNumberController.text: ${phoneNumberController.text} /n selectedRegionId.value: ${selectedRegionId.value} /n selectedDistrictId.value: ${selectedDistrictId.value} /n selectedCategory.value: ${selectedCategory.value} /n latitudeController.text: ${latitudeController.text} /n longitudeController.text: ${longitudeController.text}');
       ShowToast.show('Xato', 'Iltimos, majburiy maydonlarni to‘ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!', 3, 1);
       return;
     }

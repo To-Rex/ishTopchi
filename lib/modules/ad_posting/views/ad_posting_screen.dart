@@ -177,13 +177,10 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 fieldKey: _regionFieldKey
               ),
               SizedBox(height: AppDimensions.paddingMedium),
-              Obx(() => controller.isLoadingDistricts.value ? SizedBox(
-                height: AppDimensions.buttonHeight,
-                child: const Center(child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2)),
-              )
-                  : _buildDropdownField<String>(context, 'Tuman *', controller.districts, controller.selectedDistrictId, LucideIcons.mapPin, (value) => controller.selectedDistrictId.value = value ?? '0', validator: (value) => value == null || value == '0' ? 'Tuman tanlanishi shart' : null, fieldKey: _districtFieldKey)),
+              Obx(() => controller.isLoadingDistricts.value ? SizedBox(height: AppDimensions.buttonHeight, child: const Center(child: CircularProgressIndicator(color: AppColors.lightBlue, strokeWidth: 2))
+              ) : _buildDropdownField<String>(context, 'Tuman *', controller.districts, controller.selectedDistrictId, LucideIcons.mapPin, (value) => controller.selectedDistrictId.value = value ?? '0', validator: (value) => value == null || value == '0' ? 'Tuman tanlanishi shart' : null, fieldKey: _districtFieldKey)),
               SizedBox(height: AppDimensions.paddingMedium),
-              _buildTextField(context, controller.locationTitleController, 'Manzil', 'Masalan: Office Building', maxLines: 1, keyboardType: TextInputType.text, fieldKey: _locationTitleFieldKey),
+              _buildTextField(context, controller.locationTitleController, 'Manzil', 'Masalan: Office Building', maxLines: 1, keyboardType: TextInputType.text, fieldKey: _locationTitleFieldKey, textInputAction: TextInputAction.next),
               SizedBox(height: AppDimensions.paddingMedium),
               _buildDropdownJobType<String>(context, 'Ish turi', jobTypes, controller.selectedJobType, LucideIcons.briefcase, (value) => controller.selectedJobType.value = value!, fieldKey: _jobTypeFieldKey),
               SizedBox(height: AppDimensions.paddingMedium),
@@ -369,7 +366,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
     ]
   );
 
-  Widget _buildTextField(BuildContext context, TextEditingController controller, String label, String hint, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator, List<TextInputFormatter>? inputFormatters, GlobalKey<FormFieldState>? fieldKey}) =>
+  Widget _buildTextField(BuildContext context, TextEditingController controller, String label, String hint, {int maxLines = 1, TextInputType? keyboardType, String? Function(String?)? validator, List<TextInputFormatter>? inputFormatters, GlobalKey<FormFieldState>? fieldKey, TextInputAction? textInputAction}) =>
       TextFormField(
         key: fieldKey,
         controller: controller,
@@ -378,6 +375,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
         inputFormatters: inputFormatters,
         style: const TextStyle(color: AppColors.lightGray),
         validator: validator,
+        textInputAction: textInputAction,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(color: AppColors.lightBlue),
@@ -393,47 +391,47 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
       );
 
   Widget _buildDropdownField<T>(BuildContext context, String label, RxList<dynamic> items, Rx<T> selectedValue, IconData icon, Function(T?) onChanged, {String? Function(T?)? validator, bool isInt = false, GlobalKey<FormFieldState>? fieldKey}) =>
-  isInt ? DropdownButtonFormField2<T>(
-        key: fieldKey,
-        value: selectedValue.value,
-        isExpanded: true,
-        validator: validator,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
-          labelText: label,
-          labelStyle: TextStyle(color: AppColors.lightBlue),
-          filled: true,
-          fillColor: AppColors.darkBlue,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5)),
-          contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
-          errorStyle: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context))
-        ),
-        dropdownStyleData: DropdownStyleData(
-          maxHeight: Responsive.scaleHeight(200, context),
-          width: Responsive.scaleWidth(250, context),
-          decoration: BoxDecoration(
-            color: AppColors.darkBlue,
-            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-            boxShadow: [BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5)]
+      DropdownButtonFormField2<T>(
+          key: fieldKey,
+          value: selectedValue.value,
+          isExpanded: true,
+          validator: validator,
+          decoration: InputDecoration(
+              prefixIcon: Icon(icon, color: AppColors.lightGray, size: Responsive.scaleFont(18, context)),
+              labelText: label,
+              labelStyle: TextStyle(color: AppColors.lightBlue),
+              filled: true,
+              fillColor: AppColors.darkBlue,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5)),
+              contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
+              errorStyle: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(12, context))
           ),
-          elevation: 4
-        ),
-        iconStyleData: IconStyleData(icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context))),
-        style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
-        items: items.map((item) {
-          return DropdownMenuItem<T>(
-            value: isInt ? item['id'] as T : item['id'].toString() as T,
-            child: Text(
-              item['title'] ?? item['name'] ?? 'Noma’lum',
-              style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
-              overflow: TextOverflow.ellipsis
-            )
-          );
-        }).toList(),
-        onChanged: onChanged,
-        hint: Text('Tanlang', style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context)))
-      ) : SizedBox();
+          dropdownStyleData: DropdownStyleData(
+              maxHeight: Responsive.scaleHeight(200, context),
+              width: Responsive.scaleWidth(250, context),
+              decoration: BoxDecoration(
+                  color: AppColors.darkBlue,
+                  borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+                  boxShadow: [BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 5)]
+              ),
+              elevation: 4
+          ),
+          iconStyleData: IconStyleData(icon: Icon(LucideIcons.chevronDown, color: AppColors.lightGray, size: Responsive.scaleFont(18, context))),
+          style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+          items: items.map((item) {
+            return DropdownMenuItem<T>(
+                value: (item['id'] != null) ? (isInt ? item['id'] as T : item['id'].toString() as T) : item['value'] as T,  // Bu qator o'zgardi: id mavjud bo'lsa, to'g'ri tipga o'tkazamiz
+                child: Text(
+                    item['title'] ?? item['name'] ?? 'Noma’lum',
+                    style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
+                    overflow: TextOverflow.ellipsis
+                )
+            );
+          }).toList(),
+          onChanged: onChanged,
+          hint: Text('Tanlang', style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context)))
+      );
 
   Widget _buildSubmitButton(BuildContext context) => SizedBox(
     width: double.infinity,

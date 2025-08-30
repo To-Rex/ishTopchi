@@ -20,7 +20,7 @@ import 'funcController.dart';
 class ApiController extends GetxController {
   static const String _baseUrl = 'https://ishtopchi.uz/api';
 
-  final Dio _dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 10)));
+  final Dio _dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 15), receiveTimeout: const Duration(seconds: 15)));
 
   final FuncController funcController = Get.put(FuncController());
 
