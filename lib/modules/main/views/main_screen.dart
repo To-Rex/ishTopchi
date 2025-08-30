@@ -70,8 +70,8 @@ class MainScreen extends StatelessWidget {
         elevation: 0,
         onTap: (index) {
           funcController.setBarIndex(index);
-        },
-      )),
+        }
+      ))
     );
   }
 }

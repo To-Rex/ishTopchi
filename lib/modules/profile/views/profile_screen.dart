@@ -152,7 +152,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     _buildMenuItem(LucideIcons.badgeInfo, 'Ilova haqida', controller.onAboutAppTap),
                     _buildMenuItem(LucideIcons.shieldAlert, 'Xavfsizlik va Maxfiylik', controller.onPrivacyTap),
                     _buildMenuItem(LucideIcons.bell, 'Bildirishnomalar', controller.onNotificationsTap),
-                    _buildMenuItem(LucideIcons.badgeHelp, 'Yordam markazi', controller.onHelpTap),
+                    _buildMenuItem(LucideIcons.handHelping, 'Yordam markazi', controller.onHelpTap),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerLeft,

@@ -50,19 +50,10 @@ class PrivacyScreen extends StatelessWidget {
             _buildActionItem(context, 'Maxfiylik sozlamalarini ko‘rish', () => _openSettings(context)),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             // Mualliflik
-            Center(
-              child: Text(
-                '© 2025 Ishtopchi. Barcha huquqlar himoyalangan.',
-                style: TextStyle(
-                  color: AppColors.lightGray,
-                  fontSize: Responsive.scaleFont(12, context),
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+            Center(child: Text('© 2025 Ishtopchi. Barcha huquqlar himoyalangan.', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context), fontStyle: FontStyle.italic)))
+          ]
+        )
+      )
     );
   }
 
