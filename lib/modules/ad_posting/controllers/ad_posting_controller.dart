@@ -61,6 +61,12 @@ class AdPostingController extends GetxController {
   }
 
   Future<void> _initializeData() async {
+    if (regions.isEmpty) {
+      await loadRegions();
+    }
+    if (categories.isEmpty) {
+      await loadCategories();
+    }
     if (FuncController().getToken() == null || FuncController().getToken() == '') {
       return;
     }
@@ -68,10 +74,7 @@ class AdPostingController extends GetxController {
     if (token == null) {
       return;
     }
-    await Future.wait([
-      loadRegions(),
-      loadCategories(),
-    ]);
+    //await Future.wait([loadRegions(), loadCategories()]);
   }
 
   Future<String?> _waitForToken() async {
@@ -201,10 +204,10 @@ class AdPostingController extends GetxController {
             style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(14, context)),
           ),
           actions: [
-            TextButton(
+            /*TextButton(
               onPressed: () => Navigator.of(context).pop(false), // Ruxsat berilmadi
               child: Text('Bekor qilish', style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(14, context))),
-            ),
+            ),*/
             TextButton(
               onPressed: () => Navigator.of(context).pop(true), // Ruxsat berildi
               child: Text('Ruxsat berish', style: TextStyle(color: AppColors.green,

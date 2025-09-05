@@ -76,7 +76,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Sarlavha
-                Text('Murojaat qilish', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w800)),
+                Text('Murojaat qilish'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w800)),
                 SizedBox(height: AppDimensions.paddingSmall),
                 // Resume tanlash
                 Obx(() {
@@ -87,21 +87,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Rezumelar mavjud emas', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
+                        Text('Rezyumelar mavjud emas'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
                         SizedBox(height: AppDimensions.paddingSmall),
                         TextButton(
                           onPressed: () {
                             Get.back();
                             Get.to(CreateResumeScreen());
                           },
-                          child: Text('Yangi resume qo‘shish', style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context)))
+                          child: Text('Yangi rezyume qo‘shish'.tr, style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context)))
                         )
                       ]
                     );
                   }
                   return DropdownButtonFormField<int>(
                     decoration: InputDecoration(
-                      labelText: 'Resume tanlang',
+                      labelText: 'Rezyume tanlang'.tr,
                       labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide(color: AppColors.lightBlue)),
                       filled: true,
@@ -110,7 +110,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                     ),
                     dropdownColor: AppColors.darkNavy,
                     value: selectedResumeId.value == -1 ? null : selectedResumeId.value,
-                    items: funcController.resumes.map((resume) => DropdownMenuItem<int>(value: resume.id, child: Text(resume.title ?? 'Noma’lum', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)), overflow: TextOverflow.ellipsis))).toList(),
+                    items: funcController.resumes.map((resume) => DropdownMenuItem<int>(value: resume.id, child: Text(resume.title ?? 'Noma’lum'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)), overflow: TextOverflow.ellipsis))).toList(),
                     onChanged: (value) {
                       selectedResumeId.value = value ?? -1;
                     }
@@ -122,9 +122,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                   controller: messageController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    labelText: 'Xabar',
+                    labelText: 'Xabar'.tr,
                     labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
-                    hintText: 'Murojaat xabarini kiriting',
+                    hintText: 'Murojaat matnini kiriting'.tr,
                     hintStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide(color: AppColors.lightBlue)),
                     filled: true,
@@ -140,7 +140,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                   children: [
                     TextButton(
                       onPressed: () => Get.back(),
-                      child: Text('Bekor qilish', style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(14, context)))
+                      child: Text('Bekor qilish'.tr, style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(14, context)))
                     ),
                     SizedBox(width: AppDimensions.paddingSmall),
                     TextButton(
@@ -155,17 +155,17 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                         ),
                         onPressed: () async {
                           if (selectedResumeId.value == -1) {
-                            ShowToast.show('Xatolik', 'Iltimos, resume tanlang', 1, 1);
+                            ShowToast.show('Xatolik'.tr, 'Iltimos, rezyume tanlang'.tr, 1, 1);
                             return;
                           }
                           if (messageController.text.trim().isEmpty) {
-                            ShowToast.show('Xatolik', 'Iltimos, xabar kiriting', 1, 1);
+                            ShowToast.show('Xatolik'.tr, 'Iltimos, xabar kiriting'.tr, 1, 1);
                             return;
                           }
                           Get.back();
                           await apiController.createApplication(postId, messageController.text.trim(), selectedResumeId.value);
                         },
-                        child: Text('Yuborish', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600))
+                        child: Text('Yuborish'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600))
                     )
                   ]
                 )
@@ -191,7 +191,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
         backgroundColor: AppColors.darkNavy,
         elevation: 0,
         leading: IconButton(icon: Icon(LucideIcons.arrowLeft, color: AppColors.white, size: Responsive.scaleFont(22, context)),onPressed: () => Get.back(),),
-        title: Text('E‘lon tafsilotlari',style: TextStyle(color: AppColors.white,fontSize: Responsive.scaleFont(18, context),fontWeight: FontWeight.w600)),
+        title: Text('E’lon tafsilotlari'.tr,style: TextStyle(color: AppColors.white,fontSize: Responsive.scaleFont(18, context),fontWeight: FontWeight.w600)),
         centerTitle: true,
         actions: [
           Obx(() {
@@ -242,7 +242,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                 SizedBox(height: AppDimensions.paddingMedium),
                 // 2. Sarlavha
                 Text(
-                  widget.post.title ?? 'Noma’lum',
+                  widget.post.title ?? 'Noma’lum'.tr,
                   style: TextStyle(fontSize: Responsive.scaleFont(22, context), fontWeight: FontWeight.w700, color: AppColors.white),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -254,7 +254,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                     children: [
                       Icon(LucideIcons.briefcaseBusiness, size: Responsive.scaleFont(16, context), color: AppColors.lightBlue),
                       SizedBox(width: Responsive.scaleWidth(6, context)),
-                      Text(widget.post.jobType == 'FULL_TIME' ? 'To‘liq ish kuni' : widget.post.jobType == 'TEMPORARY' ? 'Vaqtinchalik ish' : widget.post.jobType == 'REMOTE' ? 'Masofaviy ish' : widget.post.jobType == 'DAILY' ? 'Kunlik ish' : widget.post.jobType == 'PROJECT_BASED' ? 'Loyihaviy ish' : widget.post.jobType == 'INTERNSHIP' ? 'Amaliyot' : 'Noma’lum',style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.white))
+                      Text(widget.post.jobType == 'FULL_TIME' ? 'To‘liq ish kuni'.tr : widget.post.jobType == 'TEMPORARY' ? 'Vaqtinchalik ish'.tr : widget.post.jobType == 'REMOTE' ? 'Masofaviy ish'.tr : widget.post.jobType == 'DAILY' ? 'Kunlik ish'.tr : widget.post.jobType == 'PROJECT_BASED' ? 'Loyihaviy ish'.tr : widget.post.jobType == 'INTERNSHIP' ? 'Amaliyot'.tr : 'Noma’lum'.tr,style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.white))
                     ]
                   ),
                 if (widget.post.jobType != null)
@@ -265,7 +265,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                     children: [
                       Icon(LucideIcons.briefcase, size: Responsive.scaleFont(16, context), color: AppColors.lightBlue),
                       SizedBox(width: Responsive.scaleWidth(6, context)),
-                      Text(widget.post.employmentType == 'FULL_TIME' ? 'To‘liq ish kuni' : widget.post.employmentType == 'PART_TIME' ? 'Yarim stavka' : widget.post.employmentType == 'SHIFT_BASED' ? 'Smenali ish' : widget.post.employmentType == 'FLEXIBLE' ? 'Moslashuvchan ish' : widget.post.employmentType == 'REGULAR_SCHEDULE' ? 'Doimiy jadval' : 'Noma’lum', style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.white))
+                      Text(widget.post.employmentType == 'FULL_TIME' ? 'To‘liq ish kuni'.tr : widget.post.employmentType == 'PART_TIME' ? 'Yarim stavka'.tr : widget.post.employmentType == 'SHIFT_BASED' ? 'Smenali ish'.tr : widget.post.employmentType == 'FLEXIBLE' ? 'Moslashuvchan ish'.tr : widget.post.employmentType == 'REGULAR_SCHEDULE' ? 'Doimiy jadval'.tr : 'Noma’lum'.tr, style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.white))
                     ]
                 ),
                 if (widget.post.employmentType != null)
@@ -281,7 +281,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                       ),
                       SizedBox(width: Responsive.scaleWidth(6, context)),
                       Text(
-                        'Joylashtirilgan: ${widget.post.createdAt!.substring(0, 10)}',
+                        '${'Joylashtirilgan'.tr}: ${widget.post.createdAt!.substring(0, 10)}',
                         style: TextStyle(
                           fontSize: Responsive.scaleFont(13, context),
                           color: AppColors.lightGray,
@@ -295,7 +295,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                   children: [
                     Icon(LucideIcons.wallet, size: Responsive.scaleFont(16, context), color: AppColors.lightBlue),
                     SizedBox(width: Responsive.scaleWidth(6, context)),
-                    Text('${widget.post.salaryFrom ?? 'Noma’lum'} - ${widget.post.salaryTo ?? 'Noma’lum'} UZS', style: TextStyle(fontSize: Responsive.scaleFont(14, context), color: AppColors.white, fontWeight: FontWeight.w600))
+                    Text('${widget.post.salaryFrom ?? 'Noma’lum'.tr} - ${widget.post.salaryTo ?? 'Noma’lum'.tr} UZS', style: TextStyle(fontSize: Responsive.scaleFont(14, context), color: AppColors.white, fontWeight: FontWeight.w600))
                   ]
                 ),
                 SizedBox(height: AppDimensions.paddingSmall),
@@ -306,7 +306,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                     SizedBox(width: Responsive.scaleWidth(6, context)),
                     Expanded(
                       child: Text(
-                        widget.post.district?.name ?? widget.post.location?.title ?? 'Noma’lum tuman',
+                        widget.post.district?.name ?? widget.post.location?.title ?? 'Noma’lum tuman'.tr,
                         style: TextStyle(fontSize: Responsive.scaleFont(14, context), color: AppColors.white),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis
@@ -320,12 +320,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                   width: double.infinity,
                   padding: EdgeInsets.all(AppDimensions.paddingMedium),
                   decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(12)),
-                  child: Text(widget.post.content ?? 'Tavsif yo‘q', style: TextStyle(fontSize: Responsive.scaleFont(15, context), color: AppColors.lightGray, height: 1.6))
+                  child: Text(widget.post.content ?? 'Tavsif yo‘q'.tr, style: TextStyle(fontSize: Responsive.scaleFont(15, context), color: AppColors.lightGray, height: 1.6))
                 ),
                 SizedBox(height: AppDimensions.paddingMedium),
                 // 7. Bog‘lanish uchun
                 Text(
-                  'Bog‘lanish uchun',
+                  'Bog‘lanish uchun'.tr,
                   style: TextStyle(
                     fontSize: Responsive.scaleFont(15, context),
                     color: AppColors.lightBlue,
@@ -340,7 +340,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                       if (await canLaunchUrl(url)) {
                         await launchUrl(url);
                       } else {
-                        Get.snackbar('Xato', 'Qo‘ng‘iroq qilib bo‘lmadi');
+                        Get.snackbar('Xato'.tr, 'Qo‘ng‘iroq qilib bo‘lmadi'.tr);
                       }
                     },
                     child: Row(
@@ -359,7 +359,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                       if (await canLaunchUrl(url)) {
                         await launchUrl(url);
                       } else {
-                        Get.snackbar('Xato', 'Email yuborib bo‘lmadi');
+                        Get.snackbar('Xato'.tr, 'Email yuborib bo‘lmadi'.tr);
                       }
                     },
                     child: Row(
@@ -386,7 +386,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                           child: ElevatedButton(
                               onPressed: () => _showApplicationDialog(context, apiController, widget.post.id!),
                               style: ElevatedButton.styleFrom(backgroundColor: AppColors.lightBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius))),
-                              child: Text('Murojaat qilish', textAlign: TextAlign.center, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600))
+                              child: Text('Murojaat qilish'.tr, textAlign: TextAlign.center, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600))
                           )
                         )
                       )
@@ -484,7 +484,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                               splashRadius: 20,
                               style: IconButton.styleFrom(backgroundColor: AppColors.darkBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius))),
                               icon: Icon(LucideIcons.locate, color: Colors.blue, size: Responsive.scaleFont(20, context)),
-                              tooltip: 'Joriy joylashuvni aniqlash',
+                              tooltip: 'Joriy joylashuvni aniqlash'.tr,
                               onPressed: () => controller.getCurrentLocation(_moveMap)
                             )
                         )
@@ -504,7 +504,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                         children: [
                           Icon(LucideIcons.hash, size: Responsive.scaleFont(16, context), color: AppColors.lightGray),
                           SizedBox(width: Responsive.scaleWidth(6, context)),
-                          Text('ID: ${widget.post.id ?? 'Noma’lum'}', style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.lightGray))
+                          Text('ID: ${widget.post.id ?? 'Noma’lum'.tr}', style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.lightGray))
                         ]
                       ),
                       SizedBox(height: AppDimensions.paddingSmall),
@@ -512,7 +512,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                         children: [
                           Icon(LucideIcons.eye, size: Responsive.scaleFont(16, context), color: AppColors.lightGray),
                           SizedBox(width: Responsive.scaleWidth(6, context)),
-                          Text('${widget.post.views ?? 0} ko‘rish', style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.lightGray))
+                          Text('${widget.post.views ?? 0} ko‘rish'.tr, style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.lightGray))
                         ]
                       ),
                       SizedBox(height: AppDimensions.paddingSmall),
@@ -522,7 +522,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> with TickerProvider
                           children: [
                             Icon(LucideIcons.circleAlert, size: Responsive.scaleFont(16, context), color: AppColors.red),
                             SizedBox(width: Responsive.scaleWidth(6, context)),
-                            Text('Shikoyat qilish', style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.red, decoration: TextDecoration.underline, decorationColor: AppColors.red))
+                            Text('Shikoyat qilish'.tr, style: TextStyle(fontSize: Responsive.scaleFont(13, context), color: AppColors.red, decoration: TextDecoration.underline, decorationColor: AppColors.red))
                           ]
                         )
                       )

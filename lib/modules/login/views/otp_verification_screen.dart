@@ -19,7 +19,7 @@ class OtpVerificationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
       appBar: AppBar(
-        title: Text('Tasdiqlash kodi', style: TextStyle(color: AppColors.white)),
+        title: Text('Tasdiqlash kodi'.tr, style: TextStyle(color: AppColors.white)),
         backgroundColor: AppColors.darkNavy,
         foregroundColor: AppColors.white
       ),
@@ -33,7 +33,7 @@ class OtpVerificationScreen extends StatelessWidget {
                 Icon(Icons.lock_outline_rounded, size: 60, color: AppColors.lightBlue),
                 const SizedBox(height: 24),
                 Text(
-                  'Tasdiqlash kodi',
+                  'Tasdiqlash kodi'.tr,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: AppColors.white,
                     fontWeight: FontWeight.w600,
@@ -41,7 +41,7 @@ class OtpVerificationScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'SMS orqali yuborilgan kodni kiriting',
+                  'SMS orqali yuborilgan kodni kiriting'.tr,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.lightBlue,
                   ),
@@ -92,7 +92,7 @@ class OtpVerificationScreen extends StatelessWidget {
                       controller.resendCode(phone);
                     }
                   },
-                  child: Text(controller.resendAvailable.value ? 'Kodni qayta yuborish' : '', style: TextStyle(color: controller.resendAvailable.value ? AppColors.lightBlue : Colors.grey.shade600))
+                  child: Text(controller.resendAvailable.value ? 'Kodni qayta yuborish'.tr : '', style: TextStyle(color: controller.resendAvailable.value ? AppColors.lightBlue : Colors.grey.shade600))
                 ) : TextButton(
                   onPressed: () {},
                   child: Text('Qayta yuborish mumkin: ${controller.remainingSeconds.value}s', style: const TextStyle(color: AppColors.lightBlue))

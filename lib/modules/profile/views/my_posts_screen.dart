@@ -82,7 +82,7 @@ class MyPostsScreenState extends State<MyPostsScreen> {
         backgroundColor: AppColors.darkNavy,
         elevation: 0,
         leading: IconButton(icon: Icon(LucideIcons.arrowLeft, color: AppColors.white, size: 24), onPressed: () => Get.back()),
-        title: Text('Mening e‘lonlarim'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(20, context), fontWeight: FontWeight.w600)),
+        title: Text('Mening e’lonlarim'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(20, context), fontWeight: FontWeight.w600)),
         centerTitle: true
       ),
       body: Column(
@@ -202,9 +202,9 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                         children: [
                           Icon(LucideIcons.fileX, size: 64.sp, color: AppColors.lightGray.withAlpha(150)),
                           SizedBox(height: 16.sp),
-                          Text('Hozircha e‘lonlaringiz yo‘q'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w500)),
+                          Text('Hozircha e’lonlaringiz yo‘q'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w500)),
                           SizedBox(height: 8.sp),
-                          Text('Yangi e‘lon qo‘shish uchun quyidagi tugmani bosing'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)), textAlign: TextAlign.center),
+                          Text('Yangi e’lon qo‘shish uchun quyidagi tugmani bosing'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)), textAlign: TextAlign.center),
                           SizedBox(height: 16.sp),
                           ElevatedButton(
                             onPressed: () {
@@ -219,7 +219,7 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                                 borderRadius: BorderRadius.circular(12.sp),
                                 boxShadow: [BoxShadow(color: AppColors.darkNavy, blurRadius: 8, offset: const Offset(0, 2))]
                               ),
-                              child: Text('E‘lon qo‘shish'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600))
+                              child: Text('E’lon qo‘shish'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600))
                             )
                           )
                         ]

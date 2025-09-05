@@ -23,8 +23,8 @@ class FavoritesScreen extends StatelessWidget {
         return funcController.isLoading.value
             ? const Center(child: CircularProgressIndicator())
             : funcController.wishList.isEmpty
-            ? const Center(
-          child: Text('Saqlangan postlar yo‘q', style: TextStyle(color: Colors.white, fontSize: 18)),
+            ? Center(
+          child: Text('Saqlangan postlar yo‘q'.tr, style: TextStyle(color: Colors.white, fontSize: 18)),
         ) : funcController.isGridView.value ? GridView.builder(
           padding: const EdgeInsets.all(16),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

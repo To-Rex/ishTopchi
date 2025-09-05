@@ -15,7 +15,7 @@ class NotLogged extends StatelessWidget{
       children: [
         Icon(LucideIcons.logIn, size: 60.sp, color: AppColors.lightGray),
         SizedBox(height: 20.sp),
-        Text('Siz ro‘yhatdan o‘tmagansiz'.tr, style: TextStyle(fontSize: Responsive.scaleFont(20, context), color: AppColors.lightGray, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
+        Text('Siz ro‘yxatdan o‘tmagansiz'.tr, style: TextStyle(fontSize: Responsive.scaleFont(20, context), color: AppColors.lightGray, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
         SizedBox(height: 10.sp),
         Text('Iltimos, hisobingizga kiring yoki ro‘yxatdan o‘ting'.tr, style: TextStyle(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
         SizedBox(height: 30.sp),

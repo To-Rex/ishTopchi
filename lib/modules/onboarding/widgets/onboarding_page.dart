@@ -8,18 +8,13 @@ class OnboardingPage extends StatefulWidget {
   final String body;
   final IconData icon;
 
-  const OnboardingPage({
-    Key? key,
-    required this.title,
-    required this.body,
-    required this.icon,
-  }) : super(key: key);
+  const OnboardingPage({super.key, required this.title, required this.body, required this.icon});
 
   @override
-  _OnboardingPageState createState() => _OnboardingPageState();
+  OnboardingPageState createState() => OnboardingPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage> with SingleTickerProviderStateMixin {
+class OnboardingPageState extends State<OnboardingPage> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 

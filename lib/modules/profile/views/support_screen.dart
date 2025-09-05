@@ -17,7 +17,7 @@ class _SupportScreenState extends State<SupportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Qo‘llab-quvvatlash', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
+        title: Text('Qo‘llab-quvvatlash'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
         backgroundColor: AppColors.darkNavy,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
@@ -32,18 +32,18 @@ class _SupportScreenState extends State<SupportScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Kontaktlar ro'yxati
-            _buildContactItem(context, Icons.phone, 'Telefon', '+998 90 123 45 67', () => _launchURL('tel:+998901234567')),
+            _buildContactItem(context, Icons.phone, 'Telefon'.tr, '+998 90 123 45 67', () => _launchURL('tel:+998901234567')),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildContactItem(context, Icons.email, 'Email', 'support@ishtopchi.uz', () => _launchURL('mailto:support@ishtopchi.uz')),
+            _buildContactItem(context, Icons.email, 'Email'.tr, 'support@ishtopchi.uz', () => _launchURL('mailto:support@ishtopchi.uz')),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildContactItem(context, Icons.telegram, 'Telegram', '@IshtopchiSupport', () => _launchURL('https://t.me/IshtopchiSupport')),
+            _buildContactItem(context, Icons.telegram, 'Telegram'.tr, '@IshtopchiSupport', () => _launchURL('https://t.me/IshtopchiSupport')),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             // Qo'shimcha yordam
-            Text('Yordam markazi', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600),),
+            Text('Yordam markazi'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600),),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildHelpItem(context, 'FAQ', () => _launchURL('https://ishtopchi.uz/faq')),
+            _buildHelpItem(context, 'Ko‘p beriladigan savollar'.tr, () => _launchURL('https://ishtopchi.uz/faq')),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildHelpItem(context, 'Qo‘llanma', () => _launchURL('https://ishtopchi.uz/guide')),
+            _buildHelpItem(context, 'Qo‘llanma'.tr, () => _launchURL('https://ishtopchi.uz/guide')),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             // Yordam so'rash tugmasi
             Center(
@@ -56,7 +56,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   elevation: 2,
                 ),
                 child: Text(
-                  'Yordam so‘rash',
+                  'Yordam so‘rash'.tr,
                   style: TextStyle(
                     fontSize: Responsive.scaleFont(16, context),
                     color: AppColors.white,
@@ -150,7 +150,7 @@ class _SupportScreenState extends State<SupportScreen> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      Get.snackbar('Xatolik', 'Havola ochilmadi', colorText: AppColors.white, backgroundColor: AppColors.red);
+      Get.snackbar('Xatolik'.tr, 'Havola ochilmadi'.tr, colorText: AppColors.white, backgroundColor: AppColors.red);
     }
   }
 
@@ -168,7 +168,7 @@ class _SupportScreenState extends State<SupportScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Yordam so‘rash',
+                  'Yordam so‘rash'.tr,
                   style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600),
                 ),
                 SizedBox(height: Responsive.scaleHeight(16, context)),
@@ -176,7 +176,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   controller: messageController,
                   maxLines: 4,
                   decoration: InputDecoration(
-                    labelText: 'Xabar',
+                    labelText: 'Xabar'.tr,
                     labelStyle: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context)),
                     filled: true,
                     fillColor: AppColors.lightBlue.withAlpha(50),
@@ -193,7 +193,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Bekor qilish', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
+                      child: Text('Bekor qilish'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context))),
                     ),
                     SizedBox(width: Responsive.scaleWidth(10, context)),
                     ElevatedButton(
@@ -201,7 +201,7 @@ class _SupportScreenState extends State<SupportScreen> {
                         if (messageController.text.isNotEmpty) {
                           // Yordam so'rovini yuborish logikasi (masalan, API so'rovi)
                           Navigator.pop(context);
-                          Get.snackbar('Muvaffaqiyat', 'Yordam so‘rovi yuborildi', colorText: AppColors.white, backgroundColor: AppColors.lightBlue.withAlpha(100));
+                          Get.snackbar('Muvaffaqiyatli'.tr, 'Yordam so‘rovi yuborildi'.tr, colorText: AppColors.white, backgroundColor: AppColors.lightBlue.withAlpha(100));
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -209,7 +209,7 @@ class _SupportScreenState extends State<SupportScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context))),
                         padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(8, context)),
                       ),
-                      child: Text('Yuborish', style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context))),
+                      child: Text('Yuborish'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context))),
                     ),
                   ],
                 ),

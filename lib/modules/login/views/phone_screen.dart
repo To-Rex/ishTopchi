@@ -22,7 +22,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
   String? _validatePhone(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Telefon raqam kiriting';
+      return 'Telefon raqam kiriting'.tr;
     }
     if (!RegExp(r'^\d{9}$').hasMatch(phoneFormatter.getUnmaskedText())) {
       return 'Format: 90 123 45 67';
@@ -51,7 +51,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
-      appBar: AppBar(title: Text('Telefon raqam', style: TextStyle(color: AppColors.white)), backgroundColor: AppColors.darkNavy, foregroundColor: AppColors.white),
+      appBar: AppBar(title: Text('Telefon raqam'.tr, style: TextStyle(color: AppColors.white)), backgroundColor: AppColors.darkNavy, foregroundColor: AppColors.white),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -64,7 +64,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
                   const Icon(Icons.phone_android, size: 60, color: AppColors.lightBlue),
                   const SizedBox(height: 24),
                   Text(
-                    'Telefon raqam kiriting',
+                    'Telefon raqam kiriting'.tr,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.white,
@@ -72,7 +72,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Telegramdan ro‘yxatdan o‘tgan raqam bo‘lishi kerak',
+                    'Telegramdan ro‘yxatdan o‘tgan raqam bo‘lishi kerak'.tr,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: AppColors.lightBlue,
                     ),
@@ -113,7 +113,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
                       ),
                       onPressed: _submit,
-                      child: const Text('Kodni yuborish', style: TextStyle(fontSize: 16, color: AppColors.white)),
+                      child: Text('Kodni yuborish'.tr, style: TextStyle(fontSize: 16, color: AppColors.white)),
                     ),
                   ),
                   SizedBox(height: 150)

@@ -51,7 +51,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       children: [
                         CircleAvatar(radius: 16, backgroundImage: NetworkImage(_getProfileUrl(funcController.userMe.value.data?.profilePicture))),
                         const SizedBox(width: 10),
-                        Text(funcController.userMe.value.data?.firstName ?? 'Ism kiritilmagan', style: TextStyle(fontSize: Responsive.scaleFont(14, context), color: Colors.white))
+                        Text(funcController.userMe.value.data?.firstName ?? 'Ism kiritilmagan'.tr, style: TextStyle(fontSize: Responsive.scaleFont(14, context), color: Colors.white))
                       ]
                     ) : null,
                     background: Stack(
@@ -95,13 +95,13 @@ class ProfileScreen extends GetView<ProfileController> {
                                     Text(
                                       funcController.userMe.value.data?.firstName != null
                                           ? '${funcController.userMe.value.data!.firstName} ${funcController.userMe.value.data?.lastName ?? ''}'
-                                          : funcController.userMe.value.data?.lastName ?? 'Ism kiritilmagan',
+                                          : funcController.userMe.value.data?.lastName ?? 'Ism kiritilmagan'.tr,
                                       style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w500)
                                     ),
                                     Text(
                                       funcController.userMe.value.data?.authProviders?.isNotEmpty == true
-                                          ? funcController.userMe.value.data!.authProviders!.first.email ?? funcController.userMe.value.data!.authProviders!.first.providersUserId ?? 'Ma\'lumot yo\'q'
-                                          : 'Ma’lumotlar yo‘q',
+                                          ? funcController.userMe.value.data!.authProviders!.first.email ?? funcController.userMe.value.data!.authProviders!.first.providersUserId ?? 'Ma’lumotlar yo‘q'.tr
+                                          : 'Ma’lumotlar yo‘q'.tr,
                                       style: TextStyle(color: AppColors.lightGray.withAlpha(200), fontSize: Responsive.scaleFont(18, context))
                                     )
                                   ]
@@ -127,7 +127,7 @@ class ProfileScreen extends GetView<ProfileController> {
                             child: TextButton.icon(
                               onPressed: controller.onEditProfile,
                               icon: const Icon(LucideIcons.userRoundPen, color: Colors.white, size: 16),
-                              label: const Text('Tahrirlash', style: TextStyle(color: Colors.white, fontSize: 13)),
+                              label: Text('Tahrirlash'.tr, style: TextStyle(color: Colors.white, fontSize: 13)),
                               style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4))
                             )
                           )
@@ -143,23 +143,23 @@ class ProfileScreen extends GetView<ProfileController> {
                 child: Column(
                   children: [
                     const SizedBox(height: 10),
-                    if (controller.hasToken.value) _buildMenuItem(LucideIcons.userRound, 'Mening Profilim', controller.onMyProfileTap),
-                    if (controller.hasToken.value) _buildMenuItem(LucideIcons.squareLibrary, 'Mening Rezumelarim', controller.onMyResumesTap),
+                    if (controller.hasToken.value) _buildMenuItem(LucideIcons.userRound, 'Mening Profilim'.tr, controller.onMyProfileTap),
+                    if (controller.hasToken.value) _buildMenuItem(LucideIcons.squareLibrary, 'Mening Rezyumelarim'.tr, controller.onMyResumesTap),
                     if (controller.hasToken.value) _buildMenuItem(LucideIcons.megaphone, 'Mening e’lonlarim', controller.onMyPostsTap),
-                    _buildMenuItem(LucideIcons.globe, 'Tillar', controller.onLanguagesTap, lang: true),
-                    _buildMenuItem(LucideIcons.smartphone, 'Qurilmalar', controller.onDevicesTap),
-                    _buildMenuItem(LucideIcons.headset, 'Qo‘llab-quvvatlash', controller.onSupportTap),
-                    _buildMenuItem(LucideIcons.badgeInfo, 'Ilova haqida', controller.onAboutAppTap),
-                    _buildMenuItem(LucideIcons.shieldAlert, 'Xavfsizlik va Maxfiylik', controller.onPrivacyTap),
-                    _buildMenuItem(LucideIcons.bell, 'Bildirishnomalar', controller.onNotificationsTap),
-                    _buildMenuItem(LucideIcons.handHelping, 'Yordam markazi', controller.onHelpTap),
+                    _buildMenuItem(LucideIcons.globe, 'Tillar'.tr, controller.onLanguagesTap, lang: true),
+                    _buildMenuItem(LucideIcons.smartphone, 'Qurilmalar'.tr, controller.onDevicesTap),
+                    _buildMenuItem(LucideIcons.headset, 'Qo‘llab-quvvatlash'.tr, controller.onSupportTap),
+                    _buildMenuItem(LucideIcons.badgeInfo, 'Ilova haqida'.tr, controller.onAboutAppTap),
+                    _buildMenuItem(LucideIcons.shieldAlert, 'Xavfsizlik va Maxfiylik'.tr, controller.onPrivacyTap),
+                    _buildMenuItem(LucideIcons.bell, 'Bildirishnomalar'.tr, controller.onNotificationsTap),
+                    _buildMenuItem(LucideIcons.handHelping, 'Yordam markazi'.tr, controller.onHelpTap),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Ijtimoiy tarmoqlar', style: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w600)),
+                      child: Text('Ijtimoiy tarmoqlar'.tr, style: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w600)),
                     ),
-                    _buildMenuItem(Icons.telegram, 'Telegram', () => controller.launchUrl('https://t.me/ishtopchi')),
-                    _buildMenuItem(Icons.camera_alt_outlined, 'Instagram', () => controller.launchUrl('https://instagram.com/ishtopchi')),
+                    _buildMenuItem(Icons.telegram, 'Telegram'.tr, () => controller.launchUrl('https://t.me/ishtopchi')),
+                    _buildMenuItem(Icons.camera_alt_outlined, 'Instagram'.tr, () => controller.launchUrl('https://instagram.com/ishtopchi')),
                     const SizedBox(height: 20),
                     if (controller.hasToken.value)
                       SizedBox(
@@ -167,7 +167,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         child: ElevatedButton.icon(
                           onPressed: controller.onLogoutTap,
                           icon: const Icon(LucideIcons.logOut, color: Colors.white),
-                          label: const Text('Chiqish', style: TextStyle(color: Colors.white)),
+                          label: Text('Chiqish'.tr, style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.redAccent.shade200,
                             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
@@ -206,7 +206,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 Icon(icon, color: Colors.white),
                 const SizedBox(width: 16),
                 Expanded(child: Text(title.tr, style: const TextStyle(color: Colors.white))),
-                if (lang) const Text('O‘zbek', style: TextStyle(color: Colors.white)),
+                if (lang) Text('O‘zbek'.tr, style: TextStyle(color: Colors.white)),
                 const SizedBox(width: 6),
                 const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white60),
               ],

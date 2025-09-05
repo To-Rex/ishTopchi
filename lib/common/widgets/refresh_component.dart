@@ -40,8 +40,8 @@ class RefreshComponent extends StatelessWidget {
         onRefresh: onRefresh ?? _getData,
         controller: refreshController,
         scrollController: scrollController,
-        child: child, // SingleChildScrollView olib tashlandi
-      ),
+        child: child
+      )
     );
   }
 }

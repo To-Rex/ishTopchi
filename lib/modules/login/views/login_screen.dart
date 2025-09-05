@@ -73,7 +73,7 @@ class LoginScreenState extends State<LoginScreen> with SingleTickerProviderState
                         children: [
                           const SizedBox(height: 100),
                           Text(
-                            'Ishtopchi',
+                            'Ishtopchi'.tr,
                             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                               fontSize: Responsive.scaleFont(48, context),
                               fontWeight: FontWeight.bold,
@@ -82,7 +82,7 @@ class LoginScreenState extends State<LoginScreen> with SingleTickerProviderState
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Ish e’lonlari platformasi',
+                            'Ish e’lonlari platformasi'.tr,
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Colors.white70,
                               fontSize: Responsive.scaleFont(16, context),
@@ -90,8 +90,10 @@ class LoginScreenState extends State<LoginScreen> with SingleTickerProviderState
                           ),
                           const SizedBox(height: 48),
 
+                          //platform is android
+                          if (Platform.isAndroid)
                           Obx(() => CustomButton(
-                            text: 'Google bilan kirish',
+                            text: 'Google bilan kirish'.tr,
                             onPressed: controller.isLoading.value
                                 ? null
                                 : Platform.isIOS
@@ -102,10 +104,21 @@ class LoginScreenState extends State<LoginScreen> with SingleTickerProviderState
                             backgroundColor: AppColors.white,
                             textColor: AppColors.midBlue,
                           )),
+                          if (Platform.isIOS)
+                          Obx(() => CustomButton(
+                            text: 'Apple bilan kirish'.tr,
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : controller.signInWithApple,
+                            icon: Bootstrap.apple,
+                            isLoading: controller.isLoading.value,
+                            backgroundColor: AppColors.white,
+                            textColor: AppColors.midBlue
+                          )),
                           const SizedBox(height: 16),
 
                           Obx(() => CustomButton(
-                            text: 'Telegram bilan kirish',
+                            text: 'Telegram bilan kirish'.tr,
                             onPressed: controller.isLoading.value ? null : controller.signInWithTelegram,
                             icon: Icons.telegram,
                             isLoading: controller.isLoading.value,
@@ -114,7 +127,7 @@ class LoginScreenState extends State<LoginScreen> with SingleTickerProviderState
                           const SizedBox(height: 32),
 
                           Text(
-                            'Yangi foydalanuvchi? Ro‘yxatdan o‘ting',
+                            'Yangi foydalanuvchi? Ro‘yxatdan o‘ting'.tr,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.white60,
                               fontSize: Responsive.scaleFont(14, context),
@@ -146,7 +159,7 @@ class LoginScreenState extends State<LoginScreen> with SingleTickerProviderState
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      child: const Text('Davom etish'),
+                      child: Text('Davom etish'.tr),
                     ),
                   ),
                 ],

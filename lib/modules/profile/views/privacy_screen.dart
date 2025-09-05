@@ -14,7 +14,7 @@ class PrivacyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Xavfsizlik va Maxfiylik', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
+        title: Text('Xavfsizlik va Maxfiylik'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
         backgroundColor: AppColors.darkNavy,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
@@ -29,28 +29,28 @@ class PrivacyScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Maxfiylik siyosati
-            _buildSectionTitle(context, 'Maxfiylik Siyosati'),
+            _buildSectionTitle(context, 'Maxfiylik Siyosati'.tr),
             SizedBox(height: Responsive.scaleHeight(8, context)),
-            _buildInfoText(context, 'Sizning shaxsiy ma’lumotlaringiz xavfsiz saqlanadi. Ma’lumotlaringizni ko‘rish va boshqarish uchun quyidagi havolaga o‘ting.'),
+            _buildInfoText(context, 'Sizning shaxsiy ma’lumotlaringiz xavfsiz saqlanadi. Ma’lumotlaringizni ko‘rish va boshqarish uchun quyidagi havolaga o‘ting.'.tr),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildLinkItem(context, 'Maxfiylik siyosati', 'ishtopchi.uz', () => _launchURL('https://ishtopchi.uz/uz/privacy')),
+            _buildLinkItem(context, 'Maxfiylik siyosati'.tr, 'ishtopchi.uz', () => _launchURL('https://ishtopchi.uz/uz/privacy')),
             SizedBox(height: Responsive.scaleHeight(20, context)),
             // Ma'lumotlar xavfsizligi
-            _buildSectionTitle(context, 'Ma’lumotlar Xavfsizligi'),
+            _buildSectionTitle(context, 'Ma’lumotlar Xavfsizligi'.tr),
             SizedBox(height: Responsive.scaleHeight(8, context)),
-            _buildInfoText(context, 'Biz eng zamonaviy shifrlash usullaridan foydalanamiz. Ma’lumotlaringiz faqat ruxsat berilgan holatda ishlatiladi.'),
+            _buildInfoText(context, 'Biz eng zamonaviy shifrlash usullaridan foydalanamiz. Ma’lumotlaringiz faqat ruxsat berilgan holatda ishlatiladi.'.tr),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildLinkItem(context, 'Xavfsizlik qoidalari', 'ishtopchi.uz', () => _launchURL('https://ishtopchi.uz/uz/data-security')),
+            _buildLinkItem(context, 'Xavfsizlik qoidalari'.tr, 'ishtopchi.uz', () => _launchURL('https://ishtopchi.uz/uz/data-security')),
             SizedBox(height: Responsive.scaleHeight(20, context)),
             // Sozlamalar
-            _buildSectionTitle(context, 'Maxfiylik Sozlamalari'),
+            _buildSectionTitle(context, 'Maxfiylik Sozlamalari'.tr),
             SizedBox(height: Responsive.scaleHeight(8, context)),
-            _buildInfoText(context, 'Shaxsiy ma’lumotlaringizni boshqarish uchun sozlamalarni tekshiring.'),
+            _buildInfoText(context, 'Shaxsiy ma’lumotlaringizni boshqarish uchun sozlamalarni tekshiring.'.tr),
             SizedBox(height: Responsive.scaleHeight(12, context)),
-            _buildActionItem(context, 'Maxfiylik sozlamalarini ko‘rish', () => _openSettings(context)),
+            _buildActionItem(context, 'Maxfiylik sozlamalarini ko‘rish'.tr, () => _openSettings(context)),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             // Mualliflik
-            Center(child: Text('© 2025 Ishtopchi. Barcha huquqlar himoyalangan.', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context), fontStyle: FontStyle.italic)))
+            Center(child: Text('© 2025 Ishtopchi. Barcha huquqlar himoyalangan.'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context), fontStyle: FontStyle.italic)))
           ]
         )
       )
@@ -141,12 +141,12 @@ class PrivacyScreen extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      Get.snackbar('Xatolik', 'Havola ochilmadi', colorText: AppColors.white, backgroundColor: AppColors.red);
+      Get.snackbar('Xatolik'.tr, 'Havola ochilmadi'.tr, colorText: AppColors.white, backgroundColor: AppColors.red);
     }
   }
 
   void _openSettings(BuildContext context) {
     // Bu yerda maxfiylik sozlamalarini ochish uchun maxsus ekran yoki navigatsiya qo'shilishi mumkin
-    Get.snackbar('Xabar', 'Maxfiylik sozlamalari hozircha mavjud emas', colorText: AppColors.white, backgroundColor: AppColors.lightBlue.withAlpha(100));
+    Get.snackbar('Xabar'.tr, 'Maxfiylik sozlamalari hozircha mavjud emas'.tr, colorText: AppColors.white, backgroundColor: AppColors.lightBlue.withAlpha(100));
   }
 }

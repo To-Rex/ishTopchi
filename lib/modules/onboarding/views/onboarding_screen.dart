@@ -56,7 +56,7 @@ class OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPro
               )
             ),
             bodyWidget: Text(
-              "Eng yaxshi ish e'lonlarini toping va o'z karyerangizni boshlang.",
+              "Eng yaxshi ish e’lonlarini toping va o‘z karyerangizni boshlang.",
               style: TextStyle(fontSize: 16, color: Color(0xFF778DA9), height: 1.5),
               textAlign: TextAlign.center
             ),
@@ -75,7 +75,7 @@ class OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPro
               )
             ),
             bodyWidget: Text(
-              "Ish beruvchi sifatida o'z e'lonlaringizni osongina joylashtiring.",
+              "Ish beruvchi sifatida o‘z e’lonlaringizni osongina joylashtiring.",
               style: TextStyle(fontSize: 16, color: Color(0xFF778DA9), height: 1.5),
               textAlign: TextAlign.center
             ),
@@ -113,7 +113,7 @@ class OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPro
               )
             ),
             bodyWidget: Text(
-              "Google yoki Telegram orqali tez va xavfsiz ro'yhatdan o'ting.",
+              "Google yoki Telegram orqali tez va xavfsiz ro‘yxatdan o‘ting.",
               style: TextStyle(fontSize: 16, color: Color(0xFF778DA9), height: 1.5),
               textAlign: TextAlign.center,
             ),
@@ -149,7 +149,7 @@ class OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPro
           constraints: BoxConstraints(minWidth: 200),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: Color(0xFF778DA9), width: 1)),
           child: Text(
-            "O'tkazib yuborish",
+            "O‘tkazib yuborish",
             textAlign: TextAlign.center,
             maxLines: 2,
             style: TextStyle(fontSize: 12, color: Color(0xFF778DA9), fontWeight: FontWeight.w600)

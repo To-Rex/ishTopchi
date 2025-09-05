@@ -12,13 +12,8 @@ class CustomCard extends StatelessWidget {
     return Card(
       color: AppColors.darkBlue,
       elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context)),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
-        child: child,
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context))),
+      child: Padding(padding: EdgeInsets.all(Responsive.scaleWidth(16, context)), child: child)
     );
   }
 }

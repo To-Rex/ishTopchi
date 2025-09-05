@@ -14,7 +14,7 @@ class AboutAppScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ilova haqida', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
+        title: Text('Ilova haqida'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
         backgroundColor: AppColors.darkNavy,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
@@ -45,7 +45,7 @@ class AboutAppScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'Versiya 1.0.0',
+              '${'Versiya'.tr} 1.0.0',
               style: TextStyle(
                 color: AppColors.lightGray,
                 fontSize: Responsive.scaleFont(14, context),
@@ -53,17 +53,17 @@ class AboutAppScreen extends StatelessWidget {
             ),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             // Ishlab chiquvchi
-            _buildInfoItem(context, Icons.person_outline, 'Ishlab chiquvchi', 'xAI Team'),
+            _buildInfoItem(context, Icons.person_outline, 'Ishlab chiquvchi'.tr, 'Doubleh Team'),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             // Ruxsatlar
-            _buildInfoItem(context, Icons.lock_outline, 'Ruxsatlar', 'Maxfiylik siyosati va shartlar'),
+            _buildInfoItem(context, Icons.lock_outline, 'Ruxsatlar'.tr, 'Maxfiylik siyosati va shartlar'.tr),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             // Havolalar
-            _buildLinkItem(context, Icons.link, 'Veb-sayt', 'https://x.ai', () => _launchURL('https://x.ai')),
+            _buildLinkItem(context, Icons.link, 'Veb-sayt'.tr, 'https://x.ai', () => _launchURL('https://x.ai')),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             // Qo‘shimcha ma’lumot
             Text(
-              '© 2025 Ishtopchi. Barcha huquqlar himoyalangan.',
+              '© 2025 Ishtopchi. Barcha huquqlar himoyalangan.'.tr,
               style: TextStyle(
                 color: AppColors.lightGray,
                 fontSize: Responsive.scaleFont(12, context),
@@ -164,7 +164,7 @@ class AboutAppScreen extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      Get.snackbar('Xatolik', 'Havola ochilmadi', colorText: AppColors.white, backgroundColor: AppColors.red);
+      Get.snackbar('Xatolik'.tr, 'Havola ochilmadi'.tr, colorText: AppColors.white, backgroundColor: AppColors.red);
     }
   }
 }

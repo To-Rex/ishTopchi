@@ -30,8 +30,8 @@ class MainScreen extends StatelessWidget {
       const MainContent(),
       const FavoritesScreen(),
       const AdPostingScreen(),
-      MessagesScreen(),
-      ProfileScreen(),
+      //MessagesScreen(),
+      ProfileScreen()
     ];
 
     return Scaffold(
@@ -39,24 +39,16 @@ class MainScreen extends StatelessWidget {
         title: const Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray)),
         backgroundColor: AppColors.darkNavy,
         leading: const Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray),
-        actions: [
-          IconButton(
-            icon: const Icon(LucideIcons.bell, color: AppColors.lightGray),
-            onPressed: () => Get.toNamed('/notifications'),
-          ),
-        ],
+        actions: [IconButton(icon: const Icon(LucideIcons.bell, color: AppColors.lightGray), onPressed: () => Get.toNamed('/notifications'))]
       ),
-      body: Obx(() => IndexedStack(
-        index: funcController.barIndex.value,
-        children: pages,
-      )),
+      body: Obx(() => IndexedStack(index: funcController.barIndex.value, children: pages)),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Asosiy'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.heart), label: 'Saqlanganlar'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.circlePlus), label: 'E’lon qo‘shish'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.messageCircle), label: 'Xabarlar'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profil'),
+        items: [
+          BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Asosiy'.tr),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.heart), label: 'Saqlanganlar'.tr),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.circlePlus), label: 'E’lon qo‘shish'.tr),
+          //BottomNavigationBarItem(icon: Icon(LucideIcons.messageCircle), label: 'Xabarlar'.tr),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profil'.tr),
         ],
         selectedFontSize: Responsive.scaleFont(12, context),
         unselectedFontSize: Responsive.scaleFont(12, context),

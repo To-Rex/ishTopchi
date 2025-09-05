@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../controllers/api_controller.dart';
 import '../views/phone_screen.dart';
 
@@ -7,6 +8,12 @@ class LoginController extends GetxController {
   final isLoading = false.obs;
 
   final ApiController _apiController = ApiController();
+
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
 
   Future<void> signInWithGoogle1() async {
     isLoading.value = true;
@@ -72,4 +79,34 @@ class LoginController extends GetxController {
     Get.to(PhoneScreen());
     //Get.to(RegisterScreen());
   }
+
+  Future<void> signInWithApple() async {
+    isLoading.value = true;
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      // Apple'dan kelgan ma'lumotlarni logda ko'rish
+      print("Apple User ID: ${credential.userIdentifier}");
+      print("Apple Email: ${credential.email}");
+      print("Apple Full Name: ${credential.givenName} ${credential.familyName}");
+
+      // Backendga yuborish (idToken orqali)
+      if (credential.identityToken != null) {
+        await _apiController.sendGoogleIdToken(credential.identityToken!, 'IOS');
+      } else {
+        print("Apple Sign-In: identityToken null qaytdi!");
+      }
+
+    } catch (e) {
+      print("Apple Sign-In error: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
 }

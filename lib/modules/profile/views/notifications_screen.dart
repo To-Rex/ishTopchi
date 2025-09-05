@@ -23,7 +23,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bildirishnomalar', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
+        title: Text('Bildirishnomalar'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(18, context))),
         backgroundColor: AppColors.darkNavy,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
@@ -38,21 +38,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Umumiy bildirishnomalar
-            _buildSettingItem(context, 'Umumiy bildirishnomalar', isGeneralEnabled, (value) {
+            _buildSettingItem(context, 'Umumiy bildirishnomalar'.tr, isGeneralEnabled, (value) {
               setState(() {
                 isGeneralEnabled = value;
               });
             }),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             // Xabarlar bildirishnomalari
-            _buildSettingItem(context, 'Xabarlar', isMessagesEnabled, (value) {
+            _buildSettingItem(context, 'Xabarlar'.tr, isMessagesEnabled, (value) {
               setState(() {
                 isMessagesEnabled = value;
               });
             }),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             // Eslatmalar bildirishnomalari
-            _buildSettingItem(context, 'Eslatmalar', isRemindersEnabled, (value) {
+            _buildSettingItem(context, 'Eslatmalar'.tr, isRemindersEnabled, (value) {
               setState(() {
                 isRemindersEnabled = value;
               });
@@ -69,7 +69,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   elevation: 2,
                 ),
                 child: Text(
-                  'Sozlamalarni saqlash',
+                  'Sozlamalarni saqlash'.tr,
                   style: TextStyle(
                     fontSize: Responsive.scaleFont(16, context),
                     color: AppColors.white,
@@ -124,8 +124,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void _saveSettings(BuildContext context) {
     // Saqlash logikasi (masalan, backend ga yuborish)
     Get.snackbar(
-      'Muvaffaqiyat',
-      'Bildirishnoma sozlamalari saqlandi',
+      'Muvaffaqiyatli'.tr,
+      'Bildirishnoma sozlamalari saqlandi'.tr,
       colorText: AppColors.white,
       backgroundColor: AppColors.lightBlue.withAlpha(100),
     );

@@ -42,7 +42,7 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     } else {
-      ShowToast.show('Xatolik', 'Email ochilmadi', 3, 1);
+      ShowToast.show('Xatolik'.tr, 'Email ochilmadi'.tr, 3, 1);
     }
   }
 
@@ -53,7 +53,7 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
     if (await canLaunchUrl(phoneUri)) {
       await launchUrl(phoneUri);
     } else {
-      ShowToast.show('Xatolik', 'Telefon ochilmadi', 3, 1);
+      ShowToast.show('Xatolik'.tr, 'Telefon ochilmadi'.tr, 3, 1);
     }
   }
 
@@ -64,14 +64,14 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.darkBlue,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(AppDimensions.cardRadius, context))),
-        title: Text('Accountdan chiqish', style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: Responsive.scaleFont(20, context), color: AppColors.red, fontWeight: FontWeight.bold),),
-        content: Text('Chiqishdan so‘ng tizimga qayta kirish uchun qayta login qiling!', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightBlue, height: 1.5), textAlign: TextAlign.start,),
+        title: Text('Accountdan chiqish'.tr, style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: Responsive.scaleFont(20, context), color: AppColors.red, fontWeight: FontWeight.bold),),
+        content: Text('Chiqishdan so‘ng tizimga qayta kirish uchun qayta login qiling!'.tr, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightBlue, height: 1.5), textAlign: TextAlign.start,),
         actionsAlignment: MainAxisAlignment.end,
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             style: TextButton.styleFrom(overlayColor: AppColors.darkNavy, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(AppDimensions.cardRadius, context))), padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(AppDimensions.paddingMedium, context), vertical: Responsive.scaleHeight(AppDimensions.paddingSmall, context))),
-            child: Text('Bekor qilish', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray, fontWeight: FontWeight.w600))
+            child: Text('Bekor qilish'.tr, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray, fontWeight: FontWeight.w600))
           ),
           TextButton(
             onPressed: () async {
@@ -79,14 +79,14 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
               //funcController.userMe.value = null;
               Get.back();
               Get.offAllNamed('/login');
-              ShowToast.show('Muvaffaqiyat', 'Tizimdan chiqildi', 1, 1);
+              ShowToast.show('Muvaffaqiyatli'.tr, 'Tizimdan chiqildi'.tr, 1, 1);
             },
             style: TextButton.styleFrom(
               backgroundColor: AppColors.red,
               padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(AppDimensions.paddingMedium, context), vertical: Responsive.scaleHeight(AppDimensions.paddingSmall, context)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(AppDimensions.cardRadius, context)))
             ),
-            child: Text('Chiqish', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.white, fontWeight: FontWeight.w600))
+            child: Text('Chiqish'.tr, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.white, fontWeight: FontWeight.w600))
           )
         ]
       )
@@ -112,10 +112,10 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
                   ScaleTransition(scale: _pulseAnimation, child: Icon(LucideIcons.lock, size: Responsive.scaleFont(AppDimensions.iconSizeLarge * 0.8, context), color: AppColors.red)),
                   SizedBox(height: Responsive.scaleHeight(AppDimensions.paddingLarge, context)),
                   // Asosiy sarlavha
-                  Text('Hisobingiz bloklangan', style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: Responsive.scaleFont(32, context), color: AppColors.lightGray, fontWeight: FontWeight.w800), textAlign: TextAlign.center),
+                  Text('Hisobingiz bloklangan'.tr, style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: Responsive.scaleFont(32, context), color: AppColors.lightGray, fontWeight: FontWeight.w800), textAlign: TextAlign.center),
                   SizedBox(height: Responsive.scaleHeight(AppDimensions.paddingMedium, context)),
                   // Tushuntirish matni
-                  Text('Hisobingiz vaqtincha bloklangan. Batafsil ma’lumot olish uchun qo‘llab-quvvatlash xizmatiga murojaat qiling.', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(15, context), color: AppColors.lightBlue.withAlpha(180), height: 1.6), textAlign: TextAlign.center),
+                  Text('Hisobingiz vaqtincha bloklangan. Batafsil ma’lumot olish uchun qo‘llab-quvvatlash xizmatiga murojaat qiling.'.tr, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(15, context), color: AppColors.lightBlue.withAlpha(180), height: 1.6), textAlign: TextAlign.center),
                   SizedBox(height: Responsive.scaleHeight(AppDimensions.paddingLarge * 1.5, context)),
                   // Bog‘lanish ma’lumotlari
                   GestureDetector(
@@ -177,7 +177,7 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
                       overlayColor: AppColors.red
                     ),
                     onPressed: () => _showLogoutDialog(),
-                    child: Text('Log out', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.red, fontWeight: FontWeight.w600))
+                    child: Text('Chiqish'.tr, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(16, context), color: AppColors.red, fontWeight: FontWeight.w600))
                   )
                 ]
               )

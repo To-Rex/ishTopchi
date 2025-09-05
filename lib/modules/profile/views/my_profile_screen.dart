@@ -42,12 +42,12 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     if (user?.data?.authProviders?.isNotEmpty ?? false) {
       final provider = user!.data!.authProviders!.first.providerType;
       if (provider == 'GOOGLE') {
-        return 'Google orqali kirilgan';
+        return 'Google orqali kirilgan'.tr;
       } else if (provider == 'PHONE_NUMBER') {
-        return 'Telefon raqami orqali kirilgan';
+        return 'Telefon raqami orqali kirilgan'.tr;
       }
     }
-    return 'Ma’lumot yo‘q';
+    return 'Ma’lumot yo‘q'.tr;
   }
 
   IconData _getAuthIcon(UserMe? user) {
@@ -66,9 +66,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   String _getAuthInfo(UserMe? user) {
     if (user?.data?.authProviders?.isNotEmpty ?? false) {
       final provider = user!.data!.authProviders!.first;
-      return provider.email ?? provider.providersUserId ?? 'Ma’lumot yo‘q';
+      return provider.email ?? provider.providersUserId ?? 'Ma’lumot yo‘q'.tr;
     }
-    return 'Ma’lumot yo‘q';
+    return 'Ma’lumot yo‘q'.tr;
   }
 
   @override
@@ -93,32 +93,14 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               TextButton.icon(
                 onPressed: () => Get.to(() => EditProfileScreen()),
                 icon: Icon(LucideIcons.userRoundPen, color: Colors.white, size: Responsive.scaleFont(20, context)),
-                label: Text(
-                  'Tahrirlash',
-                  style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(16, context)),
-                ),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.scaleWidth(12, context),
-                    vertical: Responsive.scaleHeight(8, context),
-                  ),
-                ),
-              ),
-            ],
+                label: Text('Tahrirlash'.tr, style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(16, context))),
+                style: TextButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(8, context)))
+              )
+            ]
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.scaleWidth(16, context),
-                vertical: Responsive.scaleHeight(24, context),
-              ),
-              child: AnimationLimiter(
-                child: _buildBody(context, user),
-              ),
-            ),
-          ),
-        ],
-      ),
+          SliverToBoxAdapter(child: Padding(padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(24, context)), child: AnimationLimiter(child: _buildBody(context, user))))
+        ]
+      )
     );
   }
 
@@ -133,7 +115,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             childAnimationBuilder: (widget) => SlideAnimation(verticalOffset: 20.0, child: FadeInAnimation(child: widget)),
             children: [
               SizedBox(height: Responsive.scaleHeight(70, context)),
-              Text('ID: ${user?.data?.id.toString() ?? 'Kiritilmagan'}', style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(15, context), fontWeight: FontWeight.w500)),
+              Text('${'ID'.tr}: ${user?.data?.id.toString() ?? 'Kiritilmagan'.tr}', style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(15, context), fontWeight: FontWeight.w500)),
               SizedBox(height: Responsive.scaleHeight(25, context)),
               GestureDetector(
                 onTap: () {
@@ -163,7 +145,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 )
               ),
               SizedBox(height: Responsive.scaleHeight(12, context)),
-              Text(user?.data?.firstName != null ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}' : user?.data?.lastName ?? 'Ism yo‘q', style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(22, context), fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+              Text(user?.data?.firstName != null ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}' : user?.data?.lastName ?? 'Ism yo‘q'.tr, style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(22, context), fontWeight: FontWeight.bold, letterSpacing: 0.5)),
               SizedBox(height: Responsive.scaleHeight(6, context)),
               Text(_getAuthInfo(user), style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(14, context), fontStyle: FontStyle.italic, fontWeight: FontWeight.w400))
             ]
@@ -180,14 +162,14 @@ class MyProfileScreenState extends State<MyProfileScreen> {
         duration: const Duration(milliseconds: 600),
         childAnimationBuilder: (widget) => SlideAnimation(verticalOffset: 20.0, curve: Curves.easeOutBack, child: FadeInAnimation(child: widget)),
         children: [
-          _buildSectionTitle(context, 'Statistika'),
+          _buildSectionTitle(context, 'Statistika'.tr),
           SizedBox(height: Responsive.scaleHeight(12, context)),
           Obx(() {
             if (funcController.isLoading.value) {
               return Center(child: CircularProgressIndicator(color: AppColors.lightBlue));
             }
             if (funcController.meStats.value.data == null) {
-              return Center(child: Text('Ma’lumotlar mavjud emas', style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(13, context))));
+              return Center(child: Text('Ma’lumotlar mavjud emas'.tr, style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(13, context))));
             }
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -195,26 +177,26 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 _buildStatCard(
                   context,
                   icon: LucideIcons.squareLibrary,
-                  title: 'Postlar',
+                  title: 'Postlar'.tr,
                   value: funcController.meStats.value.data?.postcount ?? '0'
                 ),
                 _buildStatCard(
                   context,
                   icon: LucideIcons.eye,
-                  title: 'Ko‘rishlar',
+                  title: 'Ko‘rishlar'.tr,
                   value: funcController.meStats.value.data?.totalViews ?? '0'
                 ),
                 _buildStatCard(
                   context,
                   icon: LucideIcons.fileText,
-                  title: 'Resumelar',
+                  title: 'Rezyumelar'.tr,
                   value: (user?.data?.resumes?.length ?? 0).toString()
                 )
               ]
             );
           }),
           SizedBox(height: Responsive.scaleHeight(20, context)),
-          _buildSectionTitle(context, 'Kirish ma’lumotlari'),
+          _buildSectionTitle(context, 'Kirish ma’lumotlari'.tr),
           SizedBox(height: Responsive.scaleHeight(10, context)),
           Center(
             child: GestureDetector(
@@ -228,7 +210,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Kirish ma’lumotlari', style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.bold)),
+                          Text('Kirish ma’lumotlari'.tr, style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.bold)),
                           SizedBox(height: Responsive.scaleHeight(8, context)),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -291,36 +273,36 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               _buildInfoCard(
                 context,
                 icon: LucideIcons.user,
-                title: 'Jins',
-                value: user?.data?.gender == 'MALE' ? 'Erkak' : user?.data?.gender == 'FEMALE' ? 'Ayol' : 'Kiritilmagan'
+                title: 'Jins'.tr,
+                value: user?.data?.gender == 'MALE' ? 'Erkak'.tr : user?.data?.gender == 'FEMALE' ? 'Ayol'.tr : 'Kiritilmagan'.tr
               ),
               SizedBox(height: Responsive.scaleHeight(6, context)),
               _buildInfoCard(
                 context,
                 icon: LucideIcons.calendar,
-                title: 'Tug‘ilgan sana',
-                value: user?.data?.birthDate ?? 'Kiritilmagan'
+                title: 'Tug‘ilgan sana'.tr,
+                value: user?.data?.birthDate ?? 'Kiritilmagan'.tr
               ),
               SizedBox(height: Responsive.scaleHeight(6, context)),
               _buildInfoCard(
                 context,
                 icon: LucideIcons.check,
-                title: 'Tasdiqlangan',
-                value: user?.data?.verified == true ? 'Ha' : 'Yo‘q'
+                title: 'Tasdiqlangan'.tr,
+                value: user?.data?.verified == true ? 'Ha'.tr : 'Yo‘q'.tr
               ),
               SizedBox(height: Responsive.scaleHeight(6, context)),
               _buildInfoCard(
                 context,
                 icon: LucideIcons.userCheck,
-                title: 'Rol',
-                value: user?.data?.role ?? 'Kiritilmagan'
+                title: 'Rol'.tr,
+                value: user?.data?.role ?? 'Kiritilmagan'.tr
               ),
               SizedBox(height: Responsive.scaleHeight(6, context)),
               _buildInfoCard(
                 context,
                 icon: LucideIcons.clock,
-                title: 'Ro‘yxatdan o‘tgan sana',
-                value: user?.data?.createdAt != null ? user!.data!.createdAt!.split('T')[0] : 'Kiritilmagan'
+                title: 'Ro‘yxatdan o‘tgan sana'.tr,
+                value: user?.data?.createdAt != null ? user!.data!.createdAt!.split('T')[0] : 'Kiritilmagan'.tr
               )
             ]
           ),
@@ -365,15 +347,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: EdgeInsets.only(left: Responsive.scaleWidth(6, context)),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: Colors.grey.shade300,
-          fontWeight: FontWeight.w600,
-          fontSize: Responsive.scaleFont(17, context),
-          letterSpacing: 0.5,
-        ),
-      ),
+      child: Text(title, style: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w600, fontSize: Responsive.scaleFont(17, context), letterSpacing: 0.5))
     );
   }
 
@@ -384,89 +358,37 @@ class MyProfileScreenState extends State<MyProfileScreen> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 600),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.darkBlue, AppColors.darkNavy],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+            gradient: LinearGradient(colors: [AppColors.darkBlue, AppColors.darkNavy], begin: Alignment.topCenter, end: Alignment.bottomCenter),
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 8,
-                spreadRadius: 1,
-                offset: Offset(0, 3),
-              ),
-            ],
+            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 1, offset: Offset(0, 3))]
           ),
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.8, end: 1.0).animate(
-              CurvedAnimation(
-                parent: ModalRoute.of(context)!.animation!,
-                curve: Curves.easeOutBack,
-              ),
+            scale: Tween<double>(begin: 0.8, end: 1.0).animate(CurvedAnimation(parent: ModalRoute.of(context)!.animation!, curve: Curves.easeOutBack)
             ),
             child: FadeTransition(
-              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                CurvedAnimation(
-                  parent: ModalRoute.of(context)!.animation!,
-                  curve: Curves.easeOut,
-                ),
-              ),
+              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: ModalRoute.of(context)!.animation!, curve: Curves.easeOut)),
               child: Padding(
                 padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'Hisobni o‘chirish',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: Responsive.scaleFont(18, context),
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                    Text('Hisobni o‘chirish'.tr, style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w800)),
                     SizedBox(height: Responsive.scaleHeight(12, context)),
-                    Text(
-                      'Hisobingizni o‘chirishni xohlaysizmi? Bu amal qaytarib bo‘lmaydi.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: Responsive.scaleFont(14, context),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
+                    Text('Hisobingizni o‘chirishni xohlaysizmi? Bu amal qaytarib bo‘lmaydi.'.tr, textAlign: TextAlign.center, style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w400)),
                     SizedBox(height: Responsive.scaleHeight(20, context)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
                           onPressed: () => Get.back(result: false),
-                          child: Text(
-                            'Bekor qilish',
-                            style: TextStyle(
-                              color: AppColors.lightBlue,
-                              fontSize: Responsive.scaleFont(14, context),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          child: Text('Bekor qilish'.tr, style: TextStyle(color: AppColors.lightBlue, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600))
                         ),
                         SizedBox(width: Responsive.scaleWidth(8, context)),
                         Container(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.redAccent, Colors.red],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            gradient: LinearGradient(colors: [Colors.redAccent, Colors.red], begin: Alignment.topLeft, end: Alignment.bottomRight),
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+                            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))]
                           ),
                           child: Material(
                             color: Colors.transparent,
@@ -474,32 +396,22 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                               borderRadius: BorderRadius.circular(12),
                               onTap: () => Get.back(result: true),
                               child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: Responsive.scaleHeight(10, context),
-                                  horizontal: Responsive.scaleWidth(16, context),
-                                ),
-                                child: Text(
-                                  'O‘chirish',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: Responsive.scaleFont(14, context),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                                padding: EdgeInsets.symmetric(vertical: Responsive.scaleHeight(10, context), horizontal: Responsive.scaleWidth(16, context)),
+                                child: Text('O‘chirish', style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600))
+                              )
+                            )
+                          )
                         ),
-                        SizedBox(width: Responsive.scaleWidth(8, context)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+                        SizedBox(width: Responsive.scaleWidth(8, context))
+                      ]
+                    )
+                  ]
+                )
+              )
+            )
+          )
+        )
+      )
     );
     if (confirm == true) {
       // await apiController.deleteAccount(); // Hisobni o‘chirish funksiyasi
@@ -511,19 +423,11 @@ class MyProfileScreenState extends State<MyProfileScreen> {
       duration: const Duration(milliseconds: 300),
       width: Responsive.scaleWidth(100, context),
       padding: EdgeInsets.all(Responsive.scaleWidth(10, context)),
-      decoration: BoxDecoration(
-        color: AppColors.darkBlue,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: AppColors.darkNavy, blurRadius: 6, offset: Offset(0, 2))]
-      ),
+      decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(12), boxShadow: [BoxShadow(color: AppColors.darkNavy, blurRadius: 6, offset: Offset(0, 2))]),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AnimatedScale(
-            scale: 1.0,
-            duration: const Duration(milliseconds: 300),
-            child: Icon(icon, color: AppColors.lightBlue, size: Responsive.scaleFont(24, context))
-          ),
+          AnimatedScale(scale: 1.0, duration: const Duration(milliseconds: 300), child: Icon(icon, color: AppColors.lightBlue, size: Responsive.scaleFont(24, context))),
           SizedBox(height: Responsive.scaleHeight(6, context)),
           Text(value, style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.bold)),
           SizedBox(height: Responsive.scaleHeight(4, context)),
@@ -541,61 +445,39 @@ class MyProfileScreenState extends State<MyProfileScreen> {
       decoration: BoxDecoration(
         color: AppColors.darkBlue,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.darkBlue.withAlpha(100),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: AppColors.darkBlue.withAlpha(100), blurRadius: 4, offset: Offset(0, 2))]
       ),
       child: Row(
         children: [
           AnimatedScale(
             scale: 1.0,
             duration: const Duration(milliseconds: 300),
-            child: Icon(
-              icon,
-              color: AppColors.lightBlue,
-              size: Responsive.scaleFont(25, context),
-            ),
+            child: Icon(icon, color: AppColors.lightBlue, size: Responsive.scaleFont(25, context))
           ),
           SizedBox(width: Responsive.scaleWidth(20, context)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: Responsive.scaleFont(13, context),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text(title, style: TextStyle(color: Colors.white70, fontSize: Responsive.scaleFont(13, context), fontWeight: FontWeight.w500)),
                 SizedBox(height: Responsive.scaleHeight(3, context)),
                 Text(
                   value,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: Responsive.scaleFont(15, context),
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(15, context), fontWeight: FontWeight.w600),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                  overflow: TextOverflow.ellipsis
+                )
+              ]
+            )
+          )
+        ]
+      )
     );
   }
 }
 
 class FullScreenImage extends StatelessWidget {
   final String url;
-
   const FullScreenImage({super.key, required this.url});
 
   @override
@@ -611,11 +493,11 @@ class FullScreenImage extends StatelessWidget {
               imageUrl: url,
               fit: BoxFit.contain,
               placeholder: (context, url) => CircularProgressIndicator(color: AppColors.lightBlue),
-              errorWidget: (context, url, error) => Icon(LucideIcons.imageOff, color: Colors.white, size: 48),
-            ),
-          ),
-        ),
-      ),
+              errorWidget: (context, url, error) => Icon(LucideIcons.imageOff, color: Colors.white, size: 48)
+            )
+          )
+        )
+      )
     );
   }
 }

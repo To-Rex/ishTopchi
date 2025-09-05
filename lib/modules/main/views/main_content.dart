@@ -363,7 +363,7 @@ class MainContent extends StatelessWidget {
           margin: EdgeInsets.only(top: Responsive.scaleHeight(10, context), left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(10, context)),
           child: TextField(
             decoration: InputDecoration(
-              hintText: 'Qidirish...',
+              hintText: 'Qidirish...'.tr,
               hintStyle: TextStyle(color: AppColors.lightGray),
               prefixIcon: Icon(LucideIcons.search, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)), borderSide: BorderSide.none),
@@ -448,7 +448,7 @@ class MainContent extends StatelessWidget {
             onLoading: onLoading,
             enablePullUp: funcController.hasMore.value,
             child: Obx(() {
-              debugPrint('Posts uzunligi: ${funcController.posts.length}');
+              debugPrint('${'Post uzunligi'.tr}: ${funcController.posts.length}');
               if (funcController.isLoading.value && funcController.posts.isEmpty) {
                 return funcController.isGridView.value ? GridView.builder(
                       shrinkWrap: true,
@@ -470,7 +470,7 @@ class MainContent extends StatelessWidget {
                       itemBuilder: (context, index) => const SkeletonPostCard(),
                     );
               } else if (funcController.posts.isEmpty) {
-                return SizedBox.expand(child: Center(child: Text('Postlar mavjud emas', style: TextStyle(color: AppColors.white, fontSize: 16, fontWeight: FontWeight.w500))));
+                return SizedBox.expand(child: Center(child: Text('Postlar mavjud emas'.tr, style: TextStyle(color: AppColors.white, fontSize: 16, fontWeight: FontWeight.w500))));
               }
               // Postlar mavjud bo‘lganda
               return funcController.isGridView.value

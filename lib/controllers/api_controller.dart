@@ -189,7 +189,8 @@ class ApiController extends GetxController {
         } else {
           final token = response.data['data']['token']['access_token'];
           await funcController.saveToken(token);
-          Get.offNamed(AppRoutes.main);
+          //Get.offNamed(AppRoutes.main);
+          Get.offAllNamed(AppRoutes.main);
           getMe();
           debugPrint('✅ Login muvaffaqiyatli. Access Token: $token');
         }
@@ -402,15 +403,15 @@ class ApiController extends GetxController {
     try {
       final response = await _dio.post('$_baseUrl/posts', data: json.encode(postData), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer $token', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ShowToast.show('Muvaffaqiyat', 'Post muvaffaqiyatli yaratildi', 3, 1);
+        ShowToast.show('Muvaffaqiyatli'.tr, 'Post muvaffaqiyatli yaratildi'.tr, 3, 1);
         debugPrint('✅ Post muvaffaqiyatli yaratildi: ${response.data}');
       } else {
         debugPrint('❌ createPost xatolik: ${response.statusCode} - ${response.data}');
-        ShowToast.show('Xatolik', 'Post yuborishda xatolik yuz berdi', 3, 1);
+        ShowToast.show('Xatolik'.tr, 'Post yuborishda xatolik yuz berdi'.tr, 3, 1);
       }
     } catch (e) {
       debugPrint('❌ createPost exception: $e');
-      ShowToast.show('Xatolik', 'Post yuborishda xato: $e', 3, 1);
+      ShowToast.show('Xatolik'.tr, 'Post yuborishda xato: $e', 3, 1);
     }
   }
 
@@ -506,20 +507,20 @@ class ApiController extends GetxController {
       if (file != null) {
         fileUrl = await uploadImage(file, funcController.globalToken.value);
         if (fileUrl == null) {
-          ShowToast.show('Xatolik', 'Fayl yuklashda xato yuz berdi', 3, 1);
+          ShowToast.show('Xatolik'.tr, 'Fayl yuklashda xato yuz berdi'.tr, 3, 1);
           return;
         }
       }
       final data = {'title': title, 'content': content, 'education': education, 'experience': experience, if (fileUrl != null) 'file_url': fileUrl};
       final response = await _dio.post('$_baseUrl/resumes', data: json.encode(data), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli yaratildi', 3, 1);
+        ShowToast.show('Muvaffaqiyatli', 'Resume muvaffaqiyatli yaratildi', 3, 1);
         await fetchMeResumes(page: 1); // Ro'yxatni yangilash
       } else {
-        ShowToast.show('Xatolik', 'Resume yaratishda xato: ${response.statusCode}', 3, 1);
+        ShowToast.show('Xatolik'.tr, 'Resume yaratishda xato: ${response.statusCode}', 3, 1);
       }
     } catch (e) {
-      ShowToast.show('Xatolik', 'Resume yaratishda xato: $e', 3, 1);
+      ShowToast.show('Xatolik'.tr, 'Resume yaratishda xato: $e', 3, 1);
       debugPrint('createResume xatolik: $e');
     } finally {
       funcController.isLoading.value = false;
@@ -532,7 +533,7 @@ class ApiController extends GetxController {
       funcController.isLoading.value = true;
       final response = await _dio.delete('$_baseUrl/resumes/$resumeId', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       if (response.statusCode == 200 || response.statusCode == 204) {
-        ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli o‘chirildi', 3, 1);
+        ShowToast.show('Muvaffaqiyatli', 'Resume muvaffaqiyatli o‘chirildi', 3, 1);
         await fetchMeResumes(page: 1); // Ro'yxatni yangilash
       } else {
         ShowToast.show('Xatolik', 'Resume o‘chirishda xato: ${response.statusCode}', 3, 1);
@@ -561,7 +562,7 @@ class ApiController extends GetxController {
       final data = {'title': title, 'content': content, 'education': education, 'experience': experience, if (fileUrl != null) 'file_url': fileUrl};
       final response = await _dio.patch('$_baseUrl/resumes/$resumeId', data: json.encode(data), options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}', 'Content-Type': 'application/json'}));
       if (response.statusCode == 200) {
-        ShowToast.show('Muvaffaqiyat', 'Resume muvaffaqiyatli yangilandi', 3, 1);
+        ShowToast.show('Muvaffaqiyatli', 'Resume muvaffaqiyatli yangilandi', 3, 1);
         await fetchMeResumes(page: 1); // Ro'yxatni yangilash
       } else {
         ShowToast.show('Xatolik', 'Resume yangilashda xato: ${response.statusCode}', 3, 1);
@@ -597,7 +598,7 @@ class ApiController extends GetxController {
       funcController.isLoading.value = true;
       final response = await _dio.delete('$_baseUrl/devices/$id', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ShowToast.show('Muvaffaqiyat', 'Qurilma muvaffaqiyatli o‘chirildi', 3, 1);
+        ShowToast.show('Muvaffaqiyatli', 'Qurilma muvaffaqiyatli o‘chirildi', 3, 1);
         await fetchDevices(); // Ro'yxatni yangilash
       } else {
         ShowToast.show('Xatolik', 'Qurilma o‘chirishda xato: ${response.statusCode}', 3, 1);
@@ -633,7 +634,7 @@ class ApiController extends GetxController {
         'isActive': true
       }, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       if (response.statusCode == 200) {
-        ShowToast.show('Muvaffaqiyat', 'Qurilma muvaffaqiyatli kiritildi', 3, 1);
+        ShowToast.show('Muvaffaqiyatli', 'Qurilma muvaffaqiyatli kiritildi', 3, 1);
         await fetchDevices(); // Ro'yxatni yangilash
       }
     } catch (e) {
@@ -650,7 +651,7 @@ class ApiController extends GetxController {
       final response = await _dio.post('$_baseUrl/applications', data: {'post_id': postId, 'message': message, 'resume_id': resumeId}, options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       debugPrint(response.data);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ShowToast.show('Muvaffaqiyat', 'Murojaat muvaffaqiyatli yuborildi', 2, 1);
+        ShowToast.show('Muvaffaqiyatli', 'Murojaat muvaffaqiyatli yuborildi', 2, 1);
       } else {
         ShowToast.show('Xatolik', 'Murojaat yuborishda xato: ${response.statusCode}', 3, 1);
       }

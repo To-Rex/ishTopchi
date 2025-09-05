@@ -1,5 +1,7 @@
 name: ishtopchi
-description: "A new Flutter project."
+description: "IshTopchi — O‘zbekiston bozorida ish qidiruvchilar va ish beruvchilarni 
+  birlashtiruvchi innovatsion platforma. 
+  Tez, ishonchli va qulay yechim."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -14,48 +16,64 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  # Firebase
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.1
+
+  # Auth
   google_sign_in: ^6.3.0
   sign_in_button: ^3.2.0
-  introduction_screen: ^3.1.14
+
+  # State management & storage
   get: ^4.7.2
   get_storage: ^2.1.1
-  firebase_core: ^4.0.0
+
+  # UI
+  introduction_screen: ^3.1.14
   lucide_icons_flutter: ^3.0.0
   icons_plus: ^5.0.0
+  dropdown_button2: ^2.3.9
+  flutter_staggered_animations: ^1.1.1
+  pull_to_refresh_flutter3: ^2.0.2
+  flutter_screenutil: ^5.9.3
+  shimmer: ^3.0.0
+  cached_network_image: ^3.4.1
+
+  # Networking
   dio: ^5.8.0+1
-  firebase_auth: ^6.0.1
+  http: ^1.4.0
   url_launcher: ^6.3.1
+
+  # Forms & inputs
   mask_text_input_formatter: ^2.9.0
   pin_code_fields: ^8.0.1
-  dropdown_button2: ^2.3.9
+
+  # Media & files
   image_picker: ^1.1.2
   path_provider: ^2.1.5
-  http: ^1.4.0
+
+  # Maps & location
   flutter_map: ^8.1.1
   flutter_map_animations: ^0.9.0
   latlong2: ^0.9.1
   geolocator: ^14.0.2
   permission_handler: ^12.0.1
-  cached_network_image: ^3.4.1
-  flutter_staggered_animations: ^1.1.1
-  pull_to_refresh_flutter3: ^2.0.2
-  flutter_screenutil: ^5.9.3
-  shimmer: ^3.0.0
+
+  # Utils
   intl: ^0.20.2
   device_info_plus: ^11.5.0
+
+  # Realtime
   socket_io_client: ^3.1.2
   web_socket_channel: ^3.0.3
-
-
+  sign_in_with_apple: ^7.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^5.0.0
 
 flutter:
-
   uses-material-design: true
   assets:
-     - assets/
+    - assets/

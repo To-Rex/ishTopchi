@@ -7,12 +7,7 @@ class CustomTextField extends StatelessWidget {
   final String hint;
   final TextInputType? keyboardType;
 
-  const CustomTextField({
-    Key? key,
-    required this.label,
-    required this.hint,
-    this.keyboardType,
-  }) : super(key: key);
+  const CustomTextField({super.key, required this.label, required this.hint, this.keyboardType});
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +20,10 @@ class CustomTextField extends StatelessWidget {
         hintStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.6)),
         filled: true,
         fillColor: AppColors.darkNavy,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: EdgeInsets.symmetric(
-          vertical: Responsive.scaleHeight(16, context),
-          horizontal: Responsive.scaleWidth(20, context),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        contentPadding: EdgeInsets.symmetric(vertical: Responsive.scaleHeight(16, context), horizontal: Responsive.scaleWidth(20, context))
       ),
-      style: TextStyle(color: AppColors.lightGray),
+      style: TextStyle(color: AppColors.lightGray)
     );
   }
 }

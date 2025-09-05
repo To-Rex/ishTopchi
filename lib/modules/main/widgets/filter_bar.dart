@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../core/utils/responsive.dart';
 
 class FilterBar extends StatelessWidget {
-  const FilterBar({Key? key}) : super(key: key);
+  const FilterBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class FilterBar extends StatelessWidget {
           Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Qidirish...',
+                hintText: 'Qidirish...'.tr,
                 hintStyle: TextStyle(color: AppColors.lightBlue),
                 filled: true,
                 fillColor: AppColors.darkNavy,
