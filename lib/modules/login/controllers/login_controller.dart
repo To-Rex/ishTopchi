@@ -9,6 +9,7 @@ class LoginController extends GetxController {
 
   final ApiController _apiController = ApiController();
 
+
   Future<void> signInWithGoogle1() async {
     isLoading.value = true;
     final GoogleSignIn _googleSignIn = GoogleSignIn();
