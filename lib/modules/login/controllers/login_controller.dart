@@ -9,12 +9,6 @@ class LoginController extends GetxController {
 
   final ApiController _apiController = ApiController();
 
-
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
   Future<void> signInWithGoogle1() async {
     isLoading.value = true;
     final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -83,25 +77,17 @@ class LoginController extends GetxController {
   Future<void> signInWithApple() async {
     isLoading.value = true;
     try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
+      final credential = await SignInWithApple.getAppleIDCredential(scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName]);
       // Apple'dan kelgan ma'lumotlarni logda ko'rish
       print("Apple User ID: ${credential.userIdentifier}");
       print("Apple Email: ${credential.email}");
       print("Apple Full Name: ${credential.givenName} ${credential.familyName}");
-
       // Backendga yuborish (idToken orqali)
       if (credential.identityToken != null) {
-        await _apiController.sendGoogleIdToken(credential.identityToken!, 'IOS');
+        await _apiController.sendAppleIdToken(credential.identityToken!, 'IOS');
       } else {
         print("Apple Sign-In: identityToken null qaytdi!");
       }
-
     } catch (e) {
       print("Apple Sign-In error: $e");
     } finally {

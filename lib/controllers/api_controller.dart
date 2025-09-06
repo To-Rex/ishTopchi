@@ -98,6 +98,28 @@ class ApiController extends GetxController {
     }
   }
 
+  Future<void> sendAppleIdToken(String idToken, String platform) async {
+    debugPrint('ID Token: $idToken');
+    debugPrint('Platform: $platform');
+    try {
+      final response = await _dio.post('$_baseUrl/oauth/apple', options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}), data: {'idToken': idToken, 'platform': platform});
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('API javobi: ${response.data}');
+        final accessToken = response.data['data']['token']['access_token'];
+        await funcController.saveToken(accessToken);
+        getMe();
+        debugPrint('Access token saqlandi: $accessToken');
+        Get.offNamed(AppRoutes.main);
+      } else {
+        debugPrint('${response.data}');
+        throw Exception('API xatosi: ${response.statusCode} - ${response.data}');
+      }
+    } catch (error) {
+      debugPrint('API so‘rovi xatosi: $error');
+      throw Exception('API so‘rovi xatosi: $error');
+    }
+  }
+
   Future<void> getMe() async {
     debugPrint('getMe token: ${funcController.globalToken.value}');
     try {
