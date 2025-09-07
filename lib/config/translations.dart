@@ -256,6 +256,11 @@ class AppTranslations extends Translations {
       'Ma’lumotlar yangilandi':'Ma’lumotlar yangilandi',
       'Yangi foydalanuvchi? Google yoki Telegram orqali ro‘yxatdan o‘ting':'Yangi foydalanuvchi? Google yoki Telegram orqali ro‘yxatdan o‘ting',
       'Ish va e’lonlar platformasi':'Ish va e’lonlar platformasi',
+      'Ushbu ilova joylashuv ma’lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e’lon joylashuvi uchun zarur.':'Ushbu ilova joylashuv ma’lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e’lon joylashuvi uchun zarur.',
+      'Ok':'Ok',
+      'Joylashuv ruxsati kerak':'Joylashuv ruxsati kerak',
+      'Tilni o‘zgartirish':'Tilni o‘zgartirish',
+      'Apple bilan kirish':'Apple bilan kirish',
     },
     'oz': {
       'Kirish': 'Кириш',
@@ -510,6 +515,12 @@ class AppTranslations extends Translations {
       'Ma’lumotlar yangilandi':'Маълумотлар янгиланди',
       'Yangi foydalanuvchi? Google yoki Telegram orqali ro‘yxatdan o‘ting':'Янги фойдаланувчи? Гоогле ёки Телеграм орқали рўйхатдан ўтинг',
       'Ish va e’lonlar platformasi':'Иш ва эълонлар платформаси',
+      'Ushbu ilova joylashuv ma’lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e’lon joylashuvi uchun zarur.':'Ушбу илова жойлашув маълумотларингизни олиш учун рухсат сўрайди. Бу харита функцияси ва эълон жойлашуви учун зарур.',
+      'Ok':'Ок',
+      'Joylashuv ruxsati kerak':'Жойлашув рухсати керак',
+      'Tilni o‘zgartirish':'Тилни ўзгартириш',
+      'Apple bilan kirish':'Apple билан кириш',
+
     },
     'en': {
       'Kirish': 'Login',
@@ -764,6 +775,12 @@ class AppTranslations extends Translations {
       'Ma’lumotlar yangilandi':'Data updated',
       'Yangi foydalanuvchi? Google yoki Telegram orqali ro‘yxatdan o‘ting':'New user? Register via Google or Telegram',
       'Ish va e’lonlar platformasi':'Job and announcements platform',
+      'Ushbu ilova joylashuv ma’lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e’lon joylashuvi uchun zarur.':'This app requests access to your location data. It is required for the map feature and ad placement.',
+      'Ok':'Ok',
+      'Joylashuv ruxsati kerak':'Location permission required',
+      'Tilni o‘zgartirish':'Change language',
+      'Apple bilan kirish':'Sign in with Apple',
+
     },
     'ru': {
       'Kirish': 'Вход',
@@ -1018,6 +1035,12 @@ class AppTranslations extends Translations {
       'Ma’lumotlar yangilandi':'Данные обновлены',
       'Yangi foydalanuvchi? Google yoki Telegram orqali ro‘yxatdan o‘ting':'Новый пользователь? Зарегистрируйтесь через Google или Telegram',
       'Ish va e’lonlar platformasi':'Платформа работы и объявлений',
+      'Ushbu ilova joylashuv ma’lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e’lon joylashuvi uchun zarur.':'Это приложение запрашивает доступ к вашим данным о местоположении. Это необходимо для функции карты и размещения объявлений.',
+      'Ok':'Ок',
+      'Joylashuv ruxsati kerak':'Требуется доступ к местоположению',
+      'Tilni o‘zgartirish':'Сменить язык',
+      'Apple bilan kirish':'Войти через Apple',
+
     },
   };
 }

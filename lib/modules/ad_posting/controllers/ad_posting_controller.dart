@@ -198,19 +198,15 @@ class AdPostingController extends GetxController {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.onSurface,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context))),
-          title: Text('Joylashuv ruxsati kerak', style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(16, context, ), fontWeight: FontWeight.bold)),
+          title: Text('Joylashuv ruxsati kerak'.tr, style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(16, context, ), fontWeight: FontWeight.bold)),
           content: Text(
-            'Ushbu ilova joylashuv ma\'lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e\'lon joylashuvi uchun zarur.',
-            style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(14, context)),
+            'Ushbu ilova joylashuv ma’lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e’lon joylashuvi uchun zarur.'.tr,
+            style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(14, context))
           ),
           actions: [
-            /*TextButton(
-              onPressed: () => Navigator.of(context).pop(false), // Ruxsat berilmadi
-              child: Text('Bekor qilish', style: TextStyle(color: AppColors.red, fontSize: Responsive.scaleFont(14, context))),
-            ),*/
             TextButton(
               onPressed: () => Navigator.of(context).pop(true), // Ruxsat berildi
-              child: Text('Ruxsat berish', style: TextStyle(color: AppColors.green,
+              child: Text('Ok'.tr, style: TextStyle(color: AppColors.green,
                   fontSize: Responsive.scaleFont(14, context))),
             ),
           ],
