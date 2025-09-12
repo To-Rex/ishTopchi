@@ -83,9 +83,9 @@ class LoginController extends GetxController {
       print("Apple User ID: ${credential.userIdentifier}");
       print("Apple Email: ${credential.email}");
       print("Apple Full Name: ${credential.givenName} ${credential.familyName}");
-      // Backendga yuborish (idToken orqali)
+      var fullName = '${credential.givenName ?? ''} ${credential.familyName ?? ''}';
       if (credential.identityToken != null) {
-        await _apiController.sendAppleIdToken(credential.identityToken!, 'IOS');
+        await _apiController.sendAppleIdToken(credential.identityToken!, 'IOS', fullName);
       } else {
         print("Apple Sign-In: identityToken null qaytdi!");
       }

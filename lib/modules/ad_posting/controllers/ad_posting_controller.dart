@@ -161,13 +161,15 @@ class AdPostingController extends GetxController {
     if (status.isGranted) {debugPrint('✅ Permission GRANTED');return true;}
 
     // Dialog oynasini ko‘rsatish
-    bool? dialogResult = await _showPermissionDialog();
+    //bool? dialogResult = await _showPermissionDialog();
+/*
     if (dialogResult != true) {
       ShowToast.show('Ruxsat berilmadi', 'Joylashuv ruxsatini berish uchun iltimos sozlamalardan ruxsat bering.', 5, 1);
       return false;
     }
+*/
 
-    if (status.isDenied || status.isRestricted) {
+/*    if (status.isDenied || status.isRestricted) {
       final newStatus = await Permission.locationWhenInUse.request();
       debugPrint('Requested permission result: $newStatus');
       if (newStatus.isGranted) {
@@ -178,7 +180,7 @@ class AdPostingController extends GetxController {
         await openAppSettings();
         return false;
       }
-    }
+    }*/
 
     if (status.isPermanentlyDenied) {
       ShowToast.show('Ruxsat kerak', 'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
@@ -205,9 +207,8 @@ class AdPostingController extends GetxController {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(true), // Ruxsat berildi
-              child: Text('Ok'.tr, style: TextStyle(color: AppColors.green,
-                  fontSize: Responsive.scaleFont(14, context))),
+              onPressed: () async => await Permission.locationWhenInUse.request(),
+              child: Text('Continue'.tr, style: TextStyle(color: AppColors.green, fontSize: Responsive.scaleFont(14, context))),
             ),
           ],
         );

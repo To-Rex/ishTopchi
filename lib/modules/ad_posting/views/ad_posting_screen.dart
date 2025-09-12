@@ -8,6 +8,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
@@ -343,7 +344,16 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                       style: IconButton.styleFrom(backgroundColor: AppColors.darkBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius))),
                       icon: Icon(LucideIcons.locate, color: Colors.blue, size: Responsive.scaleFont(20, context)),
                       tooltip: 'Joriy joylashuvni aniqlash'.tr,
-                      onPressed: () => controller.getCurrentLocation(_moveMap)
+                      //onPressed: () => controller.getCurrentLocation(_moveMap)
+                      onPressed: (){
+                        controller.checkLocationPermission().then((value) async {
+                          if (!value) {
+                            await Permission.locationWhenInUse.request();
+                          } else {
+                            controller.getCurrentLocation(_moveMap);
+                          }
+                        });
+                      }
                   )
               )
             ]

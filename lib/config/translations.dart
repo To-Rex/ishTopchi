@@ -261,6 +261,7 @@ class AppTranslations extends Translations {
       'Joylashuv ruxsati kerak':'Joylashuv ruxsati kerak',
       'Tilni o‘zgartirish':'Tilni o‘zgartirish',
       'Apple bilan kirish':'Apple bilan kirish',
+      'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!':'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!',
     },
     'oz': {
       'Kirish': 'Кириш',
@@ -520,7 +521,7 @@ class AppTranslations extends Translations {
       'Joylashuv ruxsati kerak':'Жойлашув рухсати керак',
       'Tilni o‘zgartirish':'Тилни ўзгартириш',
       'Apple bilan kirish':'Apple билан кириш',
-
+      'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!':'Телеграмга келган кодни текшириш учун бу ерга босинг!',
     },
     'en': {
       'Kirish': 'Login',
@@ -780,7 +781,7 @@ class AppTranslations extends Translations {
       'Joylashuv ruxsati kerak':'Location permission required',
       'Tilni o‘zgartirish':'Change language',
       'Apple bilan kirish':'Sign in with Apple',
-
+      'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!':'Click here to check the code received on Telegram!',
     },
     'ru': {
       'Kirish': 'Вход',
@@ -1040,7 +1041,7 @@ class AppTranslations extends Translations {
       'Joylashuv ruxsati kerak':'Требуется доступ к местоположению',
       'Tilni o‘zgartirish':'Сменить язык',
       'Apple bilan kirish':'Войти через Apple',
-
+      'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!':'Нажмите здесь, чтобы проверить код, полученный в Telegram!',
     },
   };
 }

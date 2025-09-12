@@ -98,11 +98,12 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<void> sendAppleIdToken(String idToken, String platform) async {
+  Future<void> sendAppleIdToken(String idToken, String platform, String fullName) async {
     debugPrint('ID Token: $idToken');
     debugPrint('Platform: $platform');
     try {
-      final response = await _dio.post('$_baseUrl/oauth/apple', options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}), data: {'idToken': idToken, 'platform': platform});
+      //final response = await _dio.post('$_baseUrl/oauth/apple', options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}), data: {'idToken': idToken, 'platform': platform});
+      final response = await _dio.post('$_baseUrl/oauth/apple', options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json', 'Authorization': 'Bearer ${funcController.globalToken.value}'}), data: {'idToken': idToken, 'platform': platform, 'fullName': fullName});
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint('API javobi: ${response.data}');
         final accessToken = response.data['data']['token']['access_token'];
@@ -114,9 +115,16 @@ class ApiController extends GetxController {
         debugPrint('${response.data}');
         throw Exception('API xatosi: ${response.statusCode} - ${response.data}');
       }
-    } catch (error) {
-      debugPrint('API so‘rovi xatosi: $error');
-      throw Exception('API so‘rovi xatosi: $error');
+    } catch (e) {
+      debugPrint('API so‘rovi xatosi: $e');
+      //throw Exception('API so‘rovi xatosi: $error');
+      int? statusCode;
+      statusCode = e is DioError ? e.response?.statusCode : null;
+      if (statusCode == 401) {
+        ShowToast.show('Xatolik', e.toString(), 3, 1);
+      } else {
+        ShowToast.show('Xatolik', e.toString(), 3, 1);
+      }
     }
   }
 
@@ -196,7 +204,7 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<void> loginWithOtp({required String otp}) async {
+  Future<bool> loginWithOtp({required String otp}) async {
     final fingerprint = funcController.getOtpToken();
     final phone = funcController.getOtpPhone();
     try {
@@ -208,6 +216,7 @@ class ApiController extends GetxController {
           await funcController.saveToken(token);
           Get.toNamed(AppRoutes.register);
           debugPrint('✅ Login muvaffaqiyatli. Access Token: $token');
+          return true;
         } else {
           final token = response.data['data']['token']['access_token'];
           await funcController.saveToken(token);
@@ -215,12 +224,15 @@ class ApiController extends GetxController {
           Get.offAllNamed(AppRoutes.main);
           getMe();
           debugPrint('✅ Login muvaffaqiyatli. Access Token: $token');
+          return true;
         }
       } else {
         debugPrint('❌ Status: ${response.statusCode}');
+        return false;
       }
     } catch (e) {
       debugPrint('❌ loginWithOtp xatolik: $e');
+      return false;
     }
   }
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:ishtopchi/common/widgets/text_small.dart';
 import 'package:ishtopchi/controllers/funcController.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
 import 'otp_verification_screen.dart';
