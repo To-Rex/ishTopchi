@@ -48,6 +48,9 @@ class ApiController extends GetxController {
   Future<List<Map<String, dynamic>>> fetchRegions() async {
     try {
       final response = await _dio.get('$_baseUrl/regions');
+      print(response.statusCode.toString());
+      print(response.data.toString());
+
       if (response.statusCode == 200) {
         final data = response.data['data']['items'] as List<dynamic>;
         return data.cast<Map<String, dynamic>>();
@@ -200,6 +203,13 @@ class ApiController extends GetxController {
         debugPrint('OTP yuborishda xatolik: ${response.statusCode}');
       }
     } catch (e) {
+      int? statusCode;
+      statusCode = e is DioError ? e.response?.statusCode : null;
+      if (statusCode == 401) {
+        ShowToast.show('Xatolik', e.toString(), 3, 1);
+      } else {
+        ShowToast.show('Xatolik', e.toString(), 3, 1);
+      }
       debugPrint('generateOtp xatolik: $e');
     }
   }

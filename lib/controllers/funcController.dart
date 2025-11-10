@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart' hide Data;
@@ -56,6 +58,18 @@ class FuncController {
 
   final RxnString minPrice = RxnString(); // Yangi: Narxdan
   final RxnString maxPrice = RxnString(); // Yangi: Narxgacha
+
+
+  //save language
+  void saveLanguage(String language) {
+    storage.write('language', language);
+    Get.updateLocale(Locale(language));
+  }
+
+  void getLanguage() {
+    final language = storage.read('language') ?? 'uz';
+    Get.updateLocale(Locale(language));
+  }
 
   void setBarIndex(int index) {
     if (index >= 0 && index < 5) { // 5 ta sahifa bor
@@ -146,7 +160,6 @@ class FuncController {
   String getOtpToken() => otpToken.value;
 
   String getOtpPhone() => '+998${otpPhone.value}';
-
 
   Future<void> saveToken(String token) async {
     await storage.write('token', token);

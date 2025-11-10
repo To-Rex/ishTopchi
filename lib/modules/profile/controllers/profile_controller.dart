@@ -156,8 +156,8 @@ class ProfileController extends GetxController {
         AlertDialog(
             backgroundColor: AppColors.darkBlue,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: Text('Accountdan chiqish', style: TextStyle(fontSize: 18.sp, color: AppColors.red, fontWeight: FontWeight.bold)),
-            content: Text('Rostdan ham hisobingizdan chiqmoqchimisiz?',
+            title: Text('Accountdan chiqish'.tr, style: TextStyle(fontSize: 18.sp, color: AppColors.red, fontWeight: FontWeight.bold)),
+            content: Text('Rostdan ham hisobingizdan chiqmoqchimisiz?'.tr,
               style: TextStyle(fontSize: 12.sp, color: AppColors.lightBlue, fontWeight: FontWeight.w500)),
             actionsAlignment: MainAxisAlignment.end,
             actions: [
@@ -166,7 +166,7 @@ class ProfileController extends GetxController {
                   style: TextButton.styleFrom(
                     overlayColor: AppColors.darkNavy,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
-                  child: Text('Bekor qilish', style: TextStyle(fontSize: 12.sp, color: AppColors.lightGray, fontWeight: FontWeight.w600))
+                  child: Text('Bekor qilish'.tr, style: TextStyle(fontSize: 12.sp, color: AppColors.lightGray, fontWeight: FontWeight.w600))
               ),
               TextButton(
                   onPressed: () async {
@@ -174,10 +174,10 @@ class ProfileController extends GetxController {
                     hasToken.value = false;
                     Get.back();
                     Get.offAllNamed('/login');
-                    ShowToast.show('Muvaffaqiyat', 'Tizimdan chiqildi', 1, 1);
+                    ShowToast.show('Muvaffaqiyatli'.tr, 'Tizimdan chiqildi'.tr, 1, 1);
                   },
                   style: TextButton.styleFrom(backgroundColor: AppColors.red, padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  child: Text('Chiqish', style: TextStyle(fontSize: 12.sp, color: AppColors.white, fontWeight: FontWeight.w600))
+                  child: Text('Chiqish'.tr, style: TextStyle(fontSize: 12.sp, color: AppColors.white, fontWeight: FontWeight.w600))
               )
             ]
         )

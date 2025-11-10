@@ -262,6 +262,7 @@ class AppTranslations extends Translations {
       'Tilni o‘zgartirish':'Tilni o‘zgartirish',
       'Apple bilan kirish':'Apple bilan kirish',
       'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!':'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!',
+      'Rostdan ham hisobingizdan chiqmoqchimisiz?':'Rostdan ham hisobingizdan chiqmoqchimisiz?',
     },
     'oz': {
       'Kirish': 'Кириш',
@@ -522,6 +523,7 @@ class AppTranslations extends Translations {
       'Tilni o‘zgartirish':'Тилни ўзгартириш',
       'Apple bilan kirish':'Apple билан кириш',
       'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!':'Телеграмга келган кодни текшириш учун бу ерга босинг!',
+      'Rostdan ham hisobingizdan chiqmoqchimisiz?':'Ростдан ҳам ҳисобингиздан чиқмоқчимисиз?',
     },
     'en': {
       'Kirish': 'Login',
@@ -671,7 +673,7 @@ class AppTranslations extends Translations {
       'Ijtimoiy tarmoqlar':'Social Networks',
       'Telegram':'Telegram',
       'Instagram':'Instagram',
-      'O‘zbek':'Uzbek',
+      'O‘zbek':'English',
       'Qo‘llanma':'Guide',
       'Ko‘p beriladigan savollar':'Frequently Asked Questions',
       'Yordam so‘rash':'Request Help',
@@ -782,6 +784,7 @@ class AppTranslations extends Translations {
       'Tilni o‘zgartirish':'Change language',
       'Apple bilan kirish':'Sign in with Apple',
       'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!':'Click here to check the code received on Telegram!',
+      'Rostdan ham hisobingizdan chiqmoqchimisiz?':'Are you sure you want to log out of your account?',
     },
     'ru': {
       'Kirish': 'Вход',
@@ -931,7 +934,7 @@ class AppTranslations extends Translations {
       'Ijtimoiy tarmoqlar':'Социальные сети',
       'Telegram':'Telegram',
       'Instagram':'Instagram',
-      'O‘zbek':'Узбекский',
+      'O‘zbek':'Русский',
       'Qo‘llanma':'Руководство',
       'Ko‘p beriladigan savollar':'Часто задаваемые вопросы',
       'Yordam so‘rash':'Запросить помощь',
@@ -1042,6 +1045,7 @@ class AppTranslations extends Translations {
       'Tilni o‘zgartirish':'Сменить язык',
       'Apple bilan kirish':'Войти через Apple',
       'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!':'Нажмите здесь, чтобы проверить код, полученный в Telegram!',
+      'Rostdan ham hisobingizdan chiqmoqchimisiz?':'Вы действительно хотите выйти из своего аккаунта?',
     },
   };
 }

@@ -34,7 +34,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      final cleanPhone = '${phoneFormatter.getUnmaskedText()}';
+      final cleanPhone = phoneFormatter.getUnmaskedText();
       debugPrint('Telefon raqam: $cleanPhone');
       ApiController().generateOtp(cleanPhone);
     }

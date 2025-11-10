@@ -175,7 +175,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                   SizedBox(height: AppDimensions.paddingMedium),
                   _buildMapPicker(context),
                   SizedBox(height: AppDimensions.paddingMedium),
-                  _buildTextField(context, controller.phoneNumberController, '${'Telefon raqami'} *'.tr, '+998 99 534 03 13', maxLines: 1, keyboardType: TextInputType.phone, inputFormatters: [phoneFormatter], validator: _validatePhone, fieldKey: _phoneFieldKey, textInputAction: TextInputAction.next),
+                  _buildTextField(context, controller.phoneNumberController, '${'Telefon raqami'.tr} *', '+998 99 534 03 13', maxLines: 1, keyboardType: TextInputType.phone, inputFormatters: [phoneFormatter], validator: _validatePhone, fieldKey: _phoneFieldKey, textInputAction: TextInputAction.next),
                   SizedBox(height: AppDimensions.paddingMedium),
                   _buildTextField(context, controller.emailController, 'Email'.tr, 'torex.amaki@gmail.com', maxLines: 1, keyboardType: TextInputType.emailAddress, fieldKey: _emailFieldKey),
                   SizedBox(height: AppDimensions.paddingLarge),

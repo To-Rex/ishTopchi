@@ -3,6 +3,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ishtopchi/controllers/api_controller.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../core/services/show_toast.dart';
@@ -31,6 +32,7 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ApiController().fetchRegions();
     return Scaffold(
       appBar: AppBar(
         title: Text('Ro‘yxatdan o‘tish'.tr, style: TextStyle(color: AppColors.lightGray, fontWeight: FontWeight.bold, fontSize: Responsive.scaleFont(19, context))),

@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FuncController().getLanguage();
     return ScreenUtilInit(
         designSize: Size(360, 690),
         minTextAdapt: true,
