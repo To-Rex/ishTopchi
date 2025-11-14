@@ -131,7 +131,7 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                 children: [
                   _buildImagePicker(context),
                   SizedBox(height: AppDimensions.paddingMedium),
-                  _buildTextField(context, controller.titleController, '${'E’lon sarlavhasi'.tr} *'.tr, 'Masalan: Yangi ish imkoniyati'.tr, maxLines: 1, keyboardType: TextInputType.text, validator: (value) => value == null || value.trim().isEmpty ? 'Sarlavha kiritilishi shart'.tr : null, fieldKey: _titleFieldKey),
+                  _buildTextField(context, controller.titleController, '${'E’lon sarlavhasi'.tr} *'.tr, 'Masalan: Shirkat nomi'.tr, maxLines: 1, keyboardType: TextInputType.text, validator: (value) => value == null || value.trim().isEmpty ? 'Sarlavha kiritilishi shart'.tr : null, fieldKey: _titleFieldKey),
                   SizedBox(height: AppDimensions.paddingMedium),
                   _buildTextField(context, controller.contentController, '${'Tavsif'.tr} *'.tr, 'Tavsif yozing...'.tr, maxLines: 4, keyboardType: TextInputType.multiline, validator: (value) => value == null || value.trim().isEmpty ? 'Tavsif kiritilishi shart'.tr : null, fieldKey: _contentFieldKey),
                   SizedBox(height: AppDimensions.paddingMedium),

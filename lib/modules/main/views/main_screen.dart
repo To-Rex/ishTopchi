@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../config/theme/app_colors.dart';
@@ -35,11 +36,50 @@ class MainScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray)),
+      /*appBar: AppBar(
+        *//*title: InkWell(
+          onTap: () => funcController.setBarIndex(0),
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          child: Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray, fontSize: 20.sp))
+        ),*//*
         backgroundColor: AppColors.darkNavy,
-        leading: const Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray),
+        //centerTitle: false,
+        //leading: const Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray, size: 24),
+        //
+          leading: null,
+          title: InkWell(
+            onTap: () => funcController.setBarIndex(0),
+            child: Row(
+              children: [
+                Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray, size: 24),
+                Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray, fontSize: 20.sp))
+              ],
+            )
+        ),
         actions: [IconButton(icon: const Icon(LucideIcons.bell, color: AppColors.lightGray), onPressed: () => Get.toNamed('/notifications'))]
+      ),*/
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(Responsive.scaleHeight(100, context)),
+          child: Container(
+            margin: EdgeInsets.only(top: Responsive.scaleHeight(80, context), left: Responsive.scaleWidth(11, context), right: Responsive.scaleWidth(11, context)),
+            child: Row(
+              children: [
+                ElevatedButton.icon(
+                    onPressed: () => funcController.setBarIndex(0),
+                    icon: Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray, size: 24),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                      elevation: WidgetStateProperty.all(0),
+                      padding: WidgetStateProperty.all(EdgeInsets.all(5)),
+                      shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
+                    label: Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray, fontSize: 20.sp))
+                ),
+                Spacer(),
+                IconButton(icon: const Icon(LucideIcons.bell, color: AppColors.lightGray), onPressed: () => Get.toNamed('/notifications'))
+              ]
+            )
+          )
       ),
       body: Obx(() => IndexedStack(index: funcController.barIndex.value, children: pages)),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
