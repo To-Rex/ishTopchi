@@ -94,7 +94,7 @@ class OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPro
               size: Size(9, 9),
               activeSize: Size(16, 9),
               activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-              spacing: EdgeInsets.symmetric(horizontal: 5),
+              spacing: EdgeInsets.symmetric(horizontal: 5)
             ),
             globalBackgroundColor: Colors.transparent,
             animationDuration: 400

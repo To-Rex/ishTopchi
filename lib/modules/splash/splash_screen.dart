@@ -31,12 +31,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _controller.forward();
 
     // Navigate after 3 seconds
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 2), () {
       final token = funcController.getToken();
       if (token != null && token.isNotEmpty) {
         Get.offAllNamed(AppRoutes.main);
       } else {
-        Get.offAll(() => const OnboardingScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
+        Get.offAllNamed(AppRoutes.main);
+        //Get.offAll(() => const OnboardingScreen(), transition: Transition.fadeIn, duration: const Duration(seconds: 1));
       }
     });
   }
