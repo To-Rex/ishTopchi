@@ -176,7 +176,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         )
                       ),
                     const SizedBox(height: 24),
-                    Center(child: Text('Ishtopchi v1.0', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)))
+                    Center(child: Text('Ishtopchi v1.1', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)))
                   ]
                 )
               )

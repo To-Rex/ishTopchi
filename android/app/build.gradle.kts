@@ -46,7 +46,7 @@ android {
 
     defaultConfig {
         applicationId = "torex.top.ishtopchi"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInt()
         versionName = flutterVersionName

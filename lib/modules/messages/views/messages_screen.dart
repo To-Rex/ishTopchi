@@ -79,11 +79,7 @@ class MessagesScreen extends GetView<MessagesController> {
     if (funcController.getToken() == null || funcController.getToken() == '') {
       return NotLogged();
     }
-    return Container(
-      alignment: Alignment.center,
-      child: Text('Ushbu Bolim yaqinda tayyor boladi.')
-    );
-    /*return Obx(() {
+    return Obx(() {
       return controller.filteredMessages.isEmpty
           ? _buildEmptyState(context)
           : ListView.builder(
@@ -93,7 +89,7 @@ class MessagesScreen extends GetView<MessagesController> {
           return _buildMessageCard(context, controller.filteredMessages[index]);
         },
       );
-    });*/
+    });
   }
 
   Widget _buildEmptyState(BuildContext context) {

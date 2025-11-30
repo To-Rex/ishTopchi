@@ -31,7 +31,7 @@ class MainScreen extends StatelessWidget {
       const MainContent(),
       const FavoritesScreen(),
       const AdPostingScreen(),
-      //MessagesScreen(),
+      MessagesScreen(),
       ProfileScreen()
     ];
 
@@ -87,7 +87,7 @@ class MainScreen extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(LucideIcons.house), label: 'Asosiy'.tr),
           BottomNavigationBarItem(icon: Icon(LucideIcons.heart), label: 'Saqlanganlar'.tr),
           BottomNavigationBarItem(icon: Icon(LucideIcons.circlePlus), label: 'E’lon qo‘shish'.tr),
-          //BottomNavigationBarItem(icon: Icon(LucideIcons.messageCircle), label: 'Xabarlar'.tr),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.messageCircle), label: 'Xabarlar'.tr),
           BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profil'.tr),
         ],
         selectedFontSize: Responsive.scaleFont(12, context),
