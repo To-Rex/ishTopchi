@@ -752,15 +752,7 @@ class ApiController extends GetxController {
 
   Future<ChatRooms> fetchChatRooms({int page = 1, int limit = 10}) async {
     try {
-      final response = await _dio.get(
-        '$_baseUrl/chat-rooms?page=$page&limit=$limit',
-        options: Options(
-          headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer ${funcController.globalToken.value}',
-          },
-        ),
-      );
+      final response = await _dio.get('$_baseUrl/chat-rooms?page=$page&limit=$limit', options: Options(headers: {'accept': 'application/json', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       if (response.statusCode == 200) {
         return ChatRooms.fromJson(response.data);
       } else {
@@ -870,13 +862,7 @@ class ApiController extends GetxController {
   }
 
   // Resume yaratish
-  Future<void> createResume({
-    required String title,
-    required String content,
-    required List<Map<String, dynamic>> education,
-    required List<Map<String, dynamic>> experience,
-    File? file,
-  }) async {
+  Future<void> createResume({required String title, required String content, required List<Map<String, dynamic>> education, required List<Map<String, dynamic>> experience, File? file}) async {
     try {
       funcController.isLoading.value = true;
       String? fileUrl;
@@ -972,14 +958,7 @@ class ApiController extends GetxController {
   }
 
   // Resume yangilash
-  Future<void> updateResume({
-    required int resumeId,
-    required String title,
-    required String content,
-    required List<Map<String, dynamic>> education,
-    required List<Map<String, dynamic>> experience,
-    File? file,
-  }) async {
+  Future<void> updateResume({required int resumeId, required String title, required String content, required List<Map<String, dynamic>> education, required List<Map<String, dynamic>> experience, File? file}) async {
     try {
       funcController.isLoading.value = true;
       String? fileUrl;
@@ -1036,27 +1015,19 @@ class ApiController extends GetxController {
   // Qurilmalarni olish ====================================================================================
 
   Future<void> fetchDevices() async {
-    try {
-      final response = await _dio.get(
-        '$_baseUrl/devices',
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Authorization': 'Bearer ${funcController.globalToken.value}',
-          },
-        ),
-      );
+    if (funcController.getToken() == null || funcController.getToken() == '') {
+      try {
+      final response = await _dio.get('$_baseUrl/devices', options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'}));
       //debugPrint('Devices: ${response.data}');
       if (response.statusCode == 200 || response.statusCode == 201) {
-        funcController.devicesModel.value = DevicesModel.fromJson(
-          response.data,
-        );
+        funcController.devicesModel.value = DevicesModel.fromJson(response.data,);
         funcController.fetchDeviceInfo();
       } else {
         debugPrint('Qurilmalarni yuklashda xato yuz berdi');
       }
     } catch (e) {
       debugPrint('fetchDevices xatolik: $e');
+    }
     }
   }
 
@@ -1151,11 +1122,7 @@ class ApiController extends GetxController {
   }
 
   //murojaat qilish ===============================================================================
-  Future<void> createApplication(
-    int postId,
-    String message,
-    int resumeId,
-  ) async {
+  Future<void> createApplication(int postId, String message, int resumeId) async {
     try {
       funcController.isLoading.value = true;
       final response = await _dio.post(

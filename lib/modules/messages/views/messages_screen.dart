@@ -38,45 +38,25 @@ class MessagesScreen extends GetView<MessagesController> {
         return _buildEmptyState(context);
       }
       final currentUserId = funcController.userMe.value.data?.id ?? 0;
-      final postOwnerRooms =
-          controller.chatRoomsModel.value!.data.postOwnerRooms;
-      final applicationRooms =
-          controller.chatRoomsModel.value!.data.applicationRooms;
+      final postOwnerRooms = controller.chatRoomsModel.value!.data.postOwnerRooms;
+      final applicationRooms = controller.chatRoomsModel.value!.data.applicationRooms;
 
       return ListView(
         padding: EdgeInsets.all(AppDimensions.paddingMedium),
         children: [
           if (postOwnerRooms.isNotEmpty) ...[
-            Text(
-              'Post Owner Rooms',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontSize: Responsive.scaleFont(18, context),
-                color: AppColors.lightBlue,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text('Post Owner Rooms', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: Responsive.scaleFont(18, context), color: AppColors.lightBlue, fontWeight: FontWeight.bold)),
             SizedBox(height: AppDimensions.paddingSmall),
-            ...postOwnerRooms.map(
-              (room) => _buildRoomCard(context, room, currentUserId, true),
-            ),
+            ...postOwnerRooms.map((room) => _buildRoomCard(context, room, currentUserId, true))
           ],
           if (applicationRooms.isNotEmpty) ...[
             if (postOwnerRooms.isNotEmpty)
               SizedBox(height: AppDimensions.paddingMedium),
-            Text(
-              'Application Rooms',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontSize: Responsive.scaleFont(18, context),
-                color: AppColors.lightBlue,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text('Application Rooms', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: Responsive.scaleFont(18, context), color: AppColors.lightBlue, fontWeight: FontWeight.bold)),
             SizedBox(height: AppDimensions.paddingSmall),
-            ...applicationRooms.map(
-              (room) => _buildRoomCard(context, room, currentUserId, false),
-            ),
-          ],
-        ],
+            ...applicationRooms.map((room) => _buildRoomCard(context, room, currentUserId, false))
+          ]
+        ]
       );
     });
   }
@@ -86,51 +66,25 @@ class MessagesScreen extends GetView<MessagesController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.message_outlined,
-            size: AppDimensions.iconSizeLarge,
-            color: AppColors.lightBlue.withOpacity(0.3),
-          ),
+          Icon(Icons.message_outlined, size: AppDimensions.iconSizeLarge, color: AppColors.lightBlue.withOpacity(0.3)),
           SizedBox(height: AppDimensions.paddingMedium),
-          Text(
-            'Hozircha xabarlar yo‘q',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontSize: Responsive.scaleFont(18, context),
-              color: AppColors.lightBlue,
-            ),
-            textAlign: TextAlign.center,
-          ),
+          Text('Hozircha xabarlar yo‘q', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontSize: Responsive.scaleFont(18, context), color: AppColors.lightBlue), textAlign: TextAlign.center,),
           SizedBox(height: AppDimensions.paddingSmall),
-          Text(
-            'Yangi xabar yozish uchun pastdagi tugmani bosing',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: Responsive.scaleFont(14, context),
-              color: AppColors.lightBlue.withOpacity(0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+          Text('Yangi xabar yozish uchun pastdagi tugmani bosing', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: Responsive.scaleFont(14, context), color: AppColors.lightBlue.withOpacity(0.7)), textAlign: TextAlign.center)
+        ]
+      )
     );
   }
 
-  Widget _buildRoomCard(
-    BuildContext context,
-    dynamic room,
-    int currentUserId,
-    bool isPostOwner,
-  ) {
+  Widget _buildRoomCard(BuildContext context, dynamic room, int currentUserId, bool isPostOwner) {
     final otherUser = room.user1.id == currentUserId ? room.user2 : room.user1;
     final sender = '${otherUser.firstName} ${otherUser.lastName ?? ''}'.trim();
-    final preview =
-        isPostOwner ? room.application.post.title : room.application.message;
+    final preview = isPostOwner ? room.application.post.title : room.application.message;
     final time = _formatTime(room.createdAt);
 
     return Card(
       color: AppColors.darkBlue,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius)),
       margin: EdgeInsets.only(bottom: AppDimensions.paddingMedium),
       child:
           isPostOwner
@@ -140,31 +94,19 @@ class MessagesScreen extends GetView<MessagesController> {
                   Get.toNamed(AppRoutes.postOwnerDetail, arguments: room);
                 },
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppDimensions.paddingMedium,
-                    vertical: AppDimensions.paddingSmall,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium, vertical: AppDimensions.paddingSmall),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Post image
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          AppDimensions.cardRadius,
-                        ),
+                        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
                         child: Container(
                           width: Responsive.scaleWidth(80, context),
                           height: Responsive.scaleWidth(80, context),
-                          decoration: BoxDecoration(
-                            color: AppColors.lightGray.withAlpha(50),
-                          ),
+                          decoration: BoxDecoration(color: AppColors.lightGray.withAlpha(50)),
                           child:
-                              room.application.post?.pictureUrl != null &&
-                                      room
-                                          .application
-                                          .post
-                                          .pictureUrl!
-                                          .isNotEmpty
+                              room.application.post?.pictureUrl != null && room.application.post.pictureUrl!.isNotEmpty
                                   ? Image.network(
                                     'https://ishtopchi.uz${room.application.post.pictureUrl}',
                                     fit: BoxFit.cover,

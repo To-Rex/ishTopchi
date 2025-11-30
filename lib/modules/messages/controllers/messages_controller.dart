@@ -20,9 +20,14 @@ class MessagesController extends GetxController {
   Future<void> fetchMessages() async {
     try {
       isLoading.value = true;
-      chatRoomsModel.value = await apiController.fetchChatRooms();
+      if (funcController.getToken() == null || funcController.getToken() == '') {
+        isLoading.value = false;
+      } else {
+        chatRoomsModel.value = await apiController.fetchChatRooms();
+      }
     } catch (e) {
       debugPrint('fetchMessages xatolik: $e');
+      isLoading.value = false;
       // No fallback, just show empty
     } finally {
       isLoading.value = false;

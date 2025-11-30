@@ -159,29 +159,6 @@ class AdPostingController extends GetxController {
 
     var status = await Permission.locationWhenInUse.status;
     if (status.isGranted) {debugPrint('✅ Permission GRANTED');return true;}
-
-    // Dialog oynasini ko‘rsatish
-    //bool? dialogResult = await _showPermissionDialog();
-/*
-    if (dialogResult != true) {
-      ShowToast.show('Ruxsat berilmadi', 'Joylashuv ruxsatini berish uchun iltimos sozlamalardan ruxsat bering.', 5, 1);
-      return false;
-    }
-*/
-
-/*    if (status.isDenied || status.isRestricted) {
-      final newStatus = await Permission.locationWhenInUse.request();
-      debugPrint('Requested permission result: $newStatus');
-      if (newStatus.isGranted) {
-        debugPrint('✅ Permission NOW GRANTED');
-        return true;
-      } else {
-        ShowToast.show('Ruxsat berilmadi', 'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
-        await openAppSettings();
-        return false;
-      }
-    }*/
-
     if (status.isPermanentlyDenied) {
       ShowToast.show('Ruxsat kerak', 'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
       await openAppSettings();
@@ -190,30 +167,6 @@ class AdPostingController extends GetxController {
 
     ShowToast.show('Xato', 'Joylashuv ruxsatini aniqlashda muammo yuz berdi.', 3, 1);
     return false;
-  }
-
-
-  Future<bool?> _showPermissionDialog() async {
-    return showDialog<bool>(
-      context: Get.context!, // Get.context orqali joriy contextni olish
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.onSurface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context))),
-          title: Text('Joylashuv ruxsati kerak'.tr, style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(16, context, ), fontWeight: FontWeight.bold)),
-          content: Text(
-            'Ushbu ilova joylashuv ma’lumotlaringizni olish uchun ruxsat so‘raydi. Bu xarita funksiyasi va e’lon joylashuvi uchun zarur.'.tr,
-            style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: Responsive.scaleFont(14, context))
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async => await Permission.locationWhenInUse.request(),
-              child: Text('Continue'.tr, style: TextStyle(color: AppColors.green, fontSize: Responsive.scaleFont(14, context))),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<void> initializeApp() async {
@@ -405,4 +358,5 @@ class AdPostingController extends GetxController {
     mapController.dispose();
     super.onClose();
   }
+
 }

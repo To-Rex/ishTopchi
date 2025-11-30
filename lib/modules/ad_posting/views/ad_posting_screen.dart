@@ -282,7 +282,6 @@ class _AdPostingScreenState extends State<AdPostingScreen> with TickerProviderSt
                                           },
                                           onMapReady: () {
                                             controller.isMapReady.value = true;
-                                            controller.getCurrentLocation(_moveMap);
                                           },
                                         ),
                                         children: [
