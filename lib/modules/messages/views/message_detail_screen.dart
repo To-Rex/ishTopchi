@@ -1,28 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
-import '../../../core/models/message_model.dart';
+import '../../../controllers/socket_service.dart';
+import '../../../core/models/chat_rooms.dart';
 import '../../../core/utils/responsive.dart';
-import '../controllers/messages_controller.dart';
+import '../../../controllers/funcController.dart';
 
-class MessageDetailScreen extends GetView<MessagesController> {
-  MessageDetailScreen({super.key});
+class MessageDetailScreen extends StatefulWidget {
+  const MessageDetailScreen({super.key});
 
+  @override
+  State<MessageDetailScreen> createState() => _MessageDetailScreenState();
+}
+
+class _MessageDetailScreenState extends State<MessageDetailScreen> {
+  final SocketService _socket = SocketService();
+  final List<Map<String, dynamic>> _messages = [];
   final TextEditingController _textController = TextEditingController();
+  late final dynamic _room;
+  late final User _otherUser;
+  late final int? _currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    _room = Get.arguments;
+    if (_room == null) {
+      Get.snackbar('Error', 'Room not found');
+      Get.back();
+      return;
+    }
+    _currentUserId = Get.find<FuncController>().userMe.value.data!.id;
+    _otherUser = _room.user1.id == _currentUserId ? _room.user2 : _room.user1;
+    _socket.joinChat(_room.id);
+    _socket.onNewMessage(_onNewMessage);
+  }
+
+  @override
+  void dispose() {
+    _socket.leaveChat(_room.id);
+    _textController.dispose();
+    super.dispose();
+  }
+
+  void _onNewMessage(Map<String, dynamic> data) {
+    setState(() {
+      _messages.add(data);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Message message = Get.arguments as Message;
-
-    return Scaffold(
-      backgroundColor: AppColors.darkNavy,
-      appBar: _buildAppBar(context, message),
-      body: _buildBody(context, message),
-    );
+    return _buildChatScreen(context);
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, Message message) {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       backgroundColor: AppColors.darkNavy,
       elevation: 0,
@@ -32,7 +66,7 @@ class MessageDetailScreen extends GetView<MessagesController> {
             backgroundColor: AppColors.midBlue,
             radius: Responsive.scaleWidth(20, context),
             child: Text(
-              message.sender[0].toUpperCase(),
+              _otherUser.firstName[0].toUpperCase(),
               style: TextStyle(
                 color: AppColors.lightGray,
                 fontSize: Responsive.scaleFont(16, context),
@@ -42,7 +76,7 @@ class MessageDetailScreen extends GetView<MessagesController> {
           SizedBox(width: AppDimensions.paddingSmall),
           Expanded(
             child: Text(
-              message.sender,
+              _otherUser.firstName,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 fontSize: Responsive.scaleFont(18, context),
                 color: AppColors.lightGray,
@@ -60,8 +94,12 @@ class MessageDetailScreen extends GetView<MessagesController> {
         IconButton(
           icon: Icon(Icons.call, color: AppColors.lightGray),
           onPressed: () {
-            Get.snackbar('Xabar', 'Qo‘ng‘iroq funksiyasi tez kunda qo‘shiladi!',
-                backgroundColor: AppColors.midBlue, colorText: AppColors.lightGray);
+            Get.snackbar(
+              'Xabar',
+              'Qo‘ng‘iroq funksiyasi tez kunda qo‘shiladi!',
+              backgroundColor: AppColors.midBlue,
+              colorText: AppColors.lightGray,
+            );
           },
         ),
         IconButton(
@@ -74,143 +112,134 @@ class MessageDetailScreen extends GetView<MessagesController> {
     );
   }
 
-  Widget _buildBody(BuildContext context, Message message) {
+  Widget _buildBody(BuildContext context) {
     return Column(
       children: [
+        if (_room.application != null && _room.application.resume != null)
+          _buildResumeCard(context),
         Expanded(
-          child: Obx(() {
-            final chatMessages = controller.chatMessages[message.sender] ?? <ChatMessage>[].obs;
-            return ListView.builder(
-              reverse: true,
-              padding: EdgeInsets.all(AppDimensions.paddingMedium),
-              itemCount: chatMessages.length,
-              itemBuilder: (context, index) {
-                final chatMessage = chatMessages[chatMessages.length - 1 - index];
-                return _buildMessageBubble(context, chatMessage);
-              },
-            );
-          }),
+          child: ListView.builder(
+            reverse: true,
+            itemCount: _messages.length,
+            itemBuilder: (context, index) {
+              final msg = _messages[_messages.length - 1 - index];
+              return _buildMessageBubble(context, msg);
+            },
+          ),
         ),
-        _buildMessageInput(context, message.sender),
+        _buildInputField(context),
       ],
     );
   }
 
-  Widget _buildMessageBubble(BuildContext context, ChatMessage chatMessage) {
+  Widget _buildResumeCard(BuildContext context) {
+    final resume = _room.application!.resume!;
+    return Card(
+      color: AppColors.darkBlue,
+      margin: EdgeInsets.all(AppDimensions.paddingSmall),
+      child: ListTile(
+        leading: Icon(Icons.file_present, color: AppColors.lightBlue),
+        title: Text(
+          resume.title ?? 'Resume',
+          style: TextStyle(color: AppColors.lightGray),
+        ),
+        onTap: () => _showResumeBottomSheet(context),
+      ),
+    );
+  }
+
+  Widget _buildMessageBubble(BuildContext context, Map<String, dynamic> msg) {
+    final isMe = msg['senderId'] == _currentUserId;
     return Align(
-      alignment: chatMessage.isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
         margin: EdgeInsets.symmetric(
           vertical: AppDimensions.paddingSmall,
           horizontal: AppDimensions.paddingMedium,
         ),
         padding: EdgeInsets.all(AppDimensions.paddingMedium),
         decoration: BoxDecoration(
-          color: chatMessage.isMe ? AppColors.midBlue : AppColors.darkBlue,
+          color: isMe ? AppColors.midBlue : AppColors.darkBlue,
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            ),
-          ],
         ),
-        child: Column(
-          crossAxisAlignment: chatMessage.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            Text(
-              chatMessage.sender,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                fontSize: Responsive.scaleFont(14, context),
-                color: AppColors.lightGray.withOpacity(0.9),
-              ),
-            ),
-            SizedBox(height: AppDimensions.paddingSmall / 2),
-            Text(
-              chatMessage.text,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: Responsive.scaleFont(16, context),
-                color: AppColors.lightBlue,
-              ),
-            ),
-            SizedBox(height: AppDimensions.paddingSmall / 2),
-            Text(
-              chatMessage.time,
-              style: TextStyle(
-                fontSize: Responsive.scaleFont(12, context),
-                color: AppColors.lightBlue.withOpacity(0.7),
-              ),
-            ),
-          ],
+        child: Text(
+          msg['content'] ?? '',
+          style: TextStyle(color: AppColors.lightGray),
         ),
       ),
     );
   }
 
-  Widget _buildMessageInput(BuildContext context, String sender) {
+  Widget _buildInputField(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(AppDimensions.paddingMedium),
-      decoration: BoxDecoration(
-        color: AppColors.darkBlue,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 4,
-            offset: Offset(0, -2),
-          ),
-        ],
+      padding: EdgeInsets.only(
+        top: AppDimensions.paddingMedium,
+        bottom: AppDimensions.paddingLarge,
+        left: 15.sp,
+        right: 15.sp,
       ),
+      color: AppColors.darkBlue,
       child: Row(
         children: [
-          IconButton(
-            icon: Icon(Icons.attach_file, color: AppColors.lightGray),
-            onPressed: () {
-              Get.snackbar('Xabar', 'Fayl yuborish funksiyasi tez kunda qo‘shiladi!',
-                  backgroundColor: AppColors.midBlue, colorText: AppColors.lightGray);
-            },
-          ),
           Expanded(
-            child: TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                hintText: 'Xabar yozing...',
-                hintStyle: TextStyle(color: AppColors.lightBlue.withOpacity(0.7)),
-                filled: true,
-                fillColor: AppColors.darkNavy,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingMedium,
-                  vertical: AppDimensions.paddingSmall,
+            child: SizedBox(
+              height: 50,
+              child: TextField(
+                controller: _textController,
+                style: TextStyle(color: AppColors.lightGray),
+                decoration: InputDecoration(
+                  hintText: 'Type a message',
+                  hintStyle: TextStyle(
+                    color: AppColors.lightBlue.withOpacity(0.6),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.darkNavy,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: Responsive.scaleHeight(16, context),
+                    horizontal: Responsive.scaleWidth(20, context),
+                  ),
                 ),
               ),
-              style: TextStyle(color: AppColors.lightGray),
-              onSubmitted: (value) {
-                if (value.isNotEmpty) {
-                  controller.sendMessage(sender, value);
-                  _textController.clear();
-                }
-              },
             ),
           ),
           SizedBox(width: AppDimensions.paddingSmall),
-          FloatingActionButton(
-            mini: true,
-            backgroundColor: AppColors.red,
-            child: Icon(Icons.send, color: AppColors.white),
-            onPressed: () {
-              if (_textController.text.isNotEmpty) {
-                controller.sendMessage(sender, _textController.text);
-                _textController.clear();
-              }
-            },
+          Container(
+            height: 50,
+            width: 60,
+            child: ElevatedButton(
+              onPressed: () {
+                if (_textController.text.isNotEmpty) {
+                  _socket.sendMessage(
+                    chatRoomId: _room.id,
+                    content: _textController.text,
+                  );
+                  _textController.clear();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.darkNavy,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Icon(Icons.send, color: AppColors.lightGray),
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildChatScreen(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.darkNavy,
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
     );
   }
 
@@ -219,7 +248,9 @@ class MessageDetailScreen extends GetView<MessagesController> {
       context: context,
       backgroundColor: AppColors.darkBlue,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.cardRadius)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.cardRadius),
+        ),
       ),
       builder: (context) {
         return Column(
@@ -233,8 +264,12 @@ class MessageDetailScreen extends GetView<MessagesController> {
               ),
               onTap: () {
                 Get.back();
-                Get.snackbar('Xabar', 'Xabar o‘chirildi!',
-                    backgroundColor: AppColors.midBlue, colorText: AppColors.lightGray);
+                Get.snackbar(
+                  'Xabar',
+                  'Xabar o‘chirildi!',
+                  backgroundColor: AppColors.midBlue,
+                  colorText: AppColors.lightGray,
+                );
               },
             ),
             ListTile(
@@ -245,8 +280,12 @@ class MessageDetailScreen extends GetView<MessagesController> {
               ),
               onTap: () {
                 Get.back();
-                Get.snackbar('Xabar', 'Foydalanuvchi bloklandi!',
-                    backgroundColor: AppColors.midBlue, colorText: AppColors.lightGray);
+                Get.snackbar(
+                  'Xabar',
+                  'Foydalanuvchi bloklandi!',
+                  backgroundColor: AppColors.midBlue,
+                  colorText: AppColors.lightGray,
+                );
               },
             ),
             ListTile(
@@ -257,11 +296,204 @@ class MessageDetailScreen extends GetView<MessagesController> {
               ),
               onTap: () {
                 Get.back();
-                Get.snackbar('Xabar', 'Shikoyat yuborildi!',
-                    backgroundColor: AppColors.midBlue, colorText: AppColors.lightGray);
+                Get.snackbar(
+                  'Xabar',
+                  'Shikoyat yuborildi!',
+                  backgroundColor: AppColors.midBlue,
+                  colorText: AppColors.lightGray,
+                );
               },
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showResumeBottomSheet(BuildContext context) {
+    final resume = _room.application?.resume;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.darkBlue,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.cardRadius),
+        ),
+      ),
+      builder: (context) {
+        if (resume == null) {
+          return Padding(
+            padding: EdgeInsets.all(AppDimensions.paddingMedium),
+            child: Text(
+              'Resume mavjud emas',
+              style: TextStyle(color: AppColors.lightGray),
+            ),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.all(AppDimensions.paddingMedium),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (resume.title != null && resume.title!.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Sarlavha',
+                      style: TextStyle(
+                        color: AppColors.lightBlue,
+                        fontSize: Responsive.scaleFont(18, context),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingSmall),
+                    Text(
+                      resume.title!,
+                      style: TextStyle(
+                        color: AppColors.lightGray,
+                        fontSize: Responsive.scaleFont(16, context),
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingMedium),
+                  ],
+                ),
+              if (resume.content != null && resume.content!.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Tarkib',
+                      style: TextStyle(
+                        color: AppColors.lightBlue,
+                        fontSize: Responsive.scaleFont(18, context),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingSmall),
+                    Text(
+                      resume.content!,
+                      style: TextStyle(
+                        color: AppColors.lightGray,
+                        fontSize: Responsive.scaleFont(16, context),
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingMedium),
+                  ],
+                ),
+              if (resume.education != null && resume.education!.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ta\'lim',
+                      style: TextStyle(
+                        color: AppColors.lightBlue,
+                        fontSize: Responsive.scaleFont(18, context),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingSmall),
+                    ...resume.education!.map(
+                      (edu) => Container(
+                        margin: EdgeInsets.only(
+                          bottom: AppDimensions.paddingSmall,
+                        ),
+                        padding: EdgeInsets.all(AppDimensions.paddingSmall),
+                        decoration: BoxDecoration(
+                          color: AppColors.darkNavy,
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (edu.degree != null)
+                              Text(
+                                'Daraja: ${edu.degree}',
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                            if (edu.field != null)
+                              Text(
+                                'Soha: ${edu.field}',
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                            if (edu.institution != null)
+                              Text(
+                                'Muassasa: ${edu.institution}',
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                            if (edu.period != null)
+                              Text(
+                                'Davri: ${edu.period}',
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingMedium),
+                  ],
+                ),
+              if (resume.experience != null && resume.experience!.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Tajriba',
+                      style: TextStyle(
+                        color: AppColors.lightBlue,
+                        fontSize: Responsive.scaleFont(18, context),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingSmall),
+                    ...resume.experience!.map(
+                      (exp) => Container(
+                        margin: EdgeInsets.only(
+                          bottom: AppDimensions.paddingSmall,
+                        ),
+                        padding: EdgeInsets.all(AppDimensions.paddingSmall),
+                        decoration: BoxDecoration(
+                          color: AppColors.darkNavy,
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (exp.position != null)
+                              Text(
+                                'Lavozim: ${exp.position}',
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                            if (exp.company != null)
+                              Text(
+                                'Kompaniya: ${exp.company}',
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                            if (exp.period != null)
+                              Text(
+                                'Davri: ${exp.period}',
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                            if (exp.description != null)
+                              Text(
+                                'Tavsif: ${exp.description}',
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         );
       },
     );

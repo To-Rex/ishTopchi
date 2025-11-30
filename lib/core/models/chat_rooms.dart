@@ -26,10 +26,19 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
-      postOwnerRooms: (json['postOwnerRooms'] as List).map((e) => PostOwnerRoom.fromJson(e)).toList(),
-      applicationRooms: (json['applicationRooms'] as List).map((e) => ApplicationRoom.fromJson(e)).toList(),
-      otherRooms: (json['otherRooms'] as List).map((e) => OtherRoom.fromJson(e)).toList(),
-      meta: Meta.fromJson(json['meta'])
+      postOwnerRooms:
+          (json['postOwnerRooms'] as List)
+              .map((e) => PostOwnerRoom.fromJson(e))
+              .toList(),
+      applicationRooms:
+          (json['applicationRooms'] as List)
+              .map((e) => ApplicationRoom.fromJson(e))
+              .toList(),
+      otherRooms:
+          (json['otherRooms'] as List)
+              .map((e) => OtherRoom.fromJson(e))
+              .toList(),
+      meta: Meta.fromJson(json['meta']),
     );
   }
 }
@@ -87,7 +96,7 @@ class ApplicationRoom {
       user2: User.fromJson(json['user2']),
       application: Application.fromJson(json['application']),
       createdAt: json['created_at'],
-      updatedAt: json['updated_at']
+      updatedAt: json['updated_at'],
     );
   }
 }
@@ -106,7 +115,7 @@ class OtherRoom {
     required this.user2,
     this.application,
     required this.createdAt,
-    required this.updatedAt
+    required this.updatedAt,
   });
 
   factory OtherRoom.fromJson(Map<String, dynamic> json) {
@@ -114,9 +123,12 @@ class OtherRoom {
       id: json['id'],
       user1: User.fromJson(json['user1']),
       user2: User.fromJson(json['user2']),
-      application: json['application'] != null ? Application.fromJson(json['application']) : null,
+      application:
+          json['application'] != null
+              ? Application.fromJson(json['application'])
+              : null,
       createdAt: json['created_at'],
-      updatedAt: json['updated_at']
+      updatedAt: json['updated_at'],
     );
   }
 }
@@ -124,9 +136,9 @@ class OtherRoom {
 class User {
   final int id;
   final String firstName;
-  final String lastName;
-  final String profilePicture;
-  final String birthDate;
+  final String? lastName;
+  final String? profilePicture;
+  final String? birthDate;
   final String? gender;
   final bool verified;
   final bool isBlocked;
@@ -138,9 +150,9 @@ class User {
   User({
     required this.id,
     required this.firstName,
-    required this.lastName,
-    required this.profilePicture,
-    required this.birthDate,
+    this.lastName,
+    this.profilePicture,
+    this.birthDate,
     this.gender,
     required this.verified,
     required this.isBlocked,
@@ -154,16 +166,16 @@ class User {
     return User(
       id: json['id'],
       firstName: json['first_name'],
-      lastName: json['last_name'],
-      profilePicture: json['profile_picture'],
-      birthDate: json['birth_date'],
-      gender: json['gender'],
+      lastName: json['last_name'] as String?,
+      profilePicture: json['profile_picture'] as String?,
+      birthDate: json['birth_date'] as String?,
+      gender: json['gender'] as String?,
       verified: json['verified'],
       isBlocked: json['is_blocked'],
       role: json['role'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
-      deletedAt: json['deletedAt'],
+      deletedAt: json['deletedAt'] as String?,
     );
   }
 }
@@ -174,7 +186,7 @@ class Application {
   final String message;
   final User applicant;
   final Post post;
-  final Resumes resume;
+  final ResumesData? resume;
   final String createdAt;
   final String updatedAt;
 
@@ -184,7 +196,7 @@ class Application {
     required this.message,
     required this.applicant,
     required this.post,
-    required this.resume,
+    this.resume,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -196,7 +208,7 @@ class Application {
       message: json['message'],
       applicant: User.fromJson(json['applicant']),
       post: Post.fromJson(json['post']),
-      resume: Resumes.fromJson(json['resume']),
+      resume: json['resume'] != null ? ResumesData.fromJson(json['resume']) : null,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
