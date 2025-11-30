@@ -143,7 +143,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           resume.title ?? 'Resume',
           style: TextStyle(color: AppColors.lightGray),
         ),
-        onTap: () => _showResumeBottomSheet(context),
+        onTap: () => _showResumeDialog(context),
       ),
     );
   }
@@ -310,192 +310,339 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     );
   }
 
-  void _showResumeBottomSheet(BuildContext context) {
+  void _showResumeDialog(BuildContext context) {
     final resume = _room.application?.resume;
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      backgroundColor: AppColors.darkBlue,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimensions.cardRadius),
-        ),
-      ),
-      builder: (context) {
-        if (resume == null) {
-          return Padding(
-            padding: EdgeInsets.all(AppDimensions.paddingMedium),
-            child: Text(
-              'Resume mavjud emas',
-              style: TextStyle(color: AppColors.lightGray),
+      builder:
+          (context) => Dialog.fullscreen(
+            backgroundColor: AppColors.darkNavy,
+            child: Scaffold(
+              backgroundColor: AppColors.darkNavy,
+              appBar: AppBar(
+                backgroundColor: AppColors.darkNavy,
+                elevation: 0,
+                leading: IconButton(
+                  icon: Icon(Icons.close, color: AppColors.lightGray),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                title: Text(
+                  'Resume',
+                  style: TextStyle(color: AppColors.lightGray),
+                ),
+              ),
+              body: SingleChildScrollView(
+                padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                child: Column(
+                  children: [
+                    // User header card
+                    Card(
+                      color: AppColors.darkBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.cardRadius,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: AppColors.midBlue,
+                              radius: Responsive.scaleWidth(30, context),
+                              child: Text(
+                                _otherUser.firstName[0].toUpperCase(),
+                                style: TextStyle(color: AppColors.lightGray),
+                              ),
+                            ),
+                            SizedBox(width: AppDimensions.paddingMedium),
+                            Text(
+                              _otherUser.firstName,
+                              style: TextStyle(
+                                color: AppColors.lightGray,
+                                fontSize: Responsive.scaleFont(18, context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingMedium),
+                    // Title card
+                    if (resume?.title != null && resume!.title!.isNotEmpty)
+                      Card(
+                        color: AppColors.darkBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.title, color: AppColors.lightBlue),
+                                  SizedBox(width: AppDimensions.paddingSmall),
+                                  Text(
+                                    'Sarlavha',
+                                    style: TextStyle(
+                                      color: AppColors.lightBlue,
+                                      fontSize: Responsive.scaleFont(
+                                        18,
+                                        context,
+                                      ),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: AppDimensions.paddingSmall),
+                              Text(
+                                resume.title!,
+                                style: TextStyle(
+                                  color: AppColors.lightGray,
+                                  fontSize: Responsive.scaleFont(16, context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    SizedBox(height: AppDimensions.paddingMedium),
+                    // Content card
+                    if (resume?.content != null && resume!.content!.isNotEmpty)
+                      Card(
+                        color: AppColors.darkBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.description,
+                                    color: AppColors.lightBlue,
+                                  ),
+                                  SizedBox(width: AppDimensions.paddingSmall),
+                                  Text(
+                                    'Tarkib',
+                                    style: TextStyle(
+                                      color: AppColors.lightBlue,
+                                      fontSize: Responsive.scaleFont(
+                                        18,
+                                        context,
+                                      ),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: AppDimensions.paddingSmall),
+                              Text(
+                                resume.content!,
+                                style: TextStyle(
+                                  color: AppColors.lightGray,
+                                  fontSize: Responsive.scaleFont(16, context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    SizedBox(height: AppDimensions.paddingMedium),
+                    // Education card
+                    if (resume?.education != null &&
+                        resume!.education!.isNotEmpty)
+                      Card(
+                        color: AppColors.darkBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.school,
+                                    color: AppColors.lightBlue,
+                                  ),
+                                  SizedBox(width: AppDimensions.paddingSmall),
+                                  Text(
+                                    'Ta\'lim',
+                                    style: TextStyle(
+                                      color: AppColors.lightBlue,
+                                      fontSize: Responsive.scaleFont(
+                                        18,
+                                        context,
+                                      ),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: AppDimensions.paddingSmall),
+                              ...resume.education!.map(
+                                (edu) => Container(
+                                  margin: EdgeInsets.only(
+                                    bottom: AppDimensions.paddingSmall,
+                                  ),
+                                  padding: EdgeInsets.all(
+                                    AppDimensions.paddingSmall,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.darkNavy,
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.cardRadius,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (edu.degree != null)
+                                        Text(
+                                          'Daraja: ${edu.degree}',
+                                          style: TextStyle(
+                                            color: AppColors.lightGray,
+                                          ),
+                                        ),
+                                      if (edu.field != null)
+                                        Text(
+                                          'Soha: ${edu.field}',
+                                          style: TextStyle(
+                                            color: AppColors.lightGray,
+                                          ),
+                                        ),
+                                      if (edu.institution != null)
+                                        Text(
+                                          'Muassasa: ${edu.institution}',
+                                          style: TextStyle(
+                                            color: AppColors.lightGray,
+                                          ),
+                                        ),
+                                      if (edu.period != null)
+                                        Text(
+                                          'Davri: ${edu.period}',
+                                          style: TextStyle(
+                                            color: AppColors.lightGray,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    SizedBox(height: AppDimensions.paddingMedium),
+                    // Experience card
+                    if (resume?.experience != null &&
+                        resume!.experience!.isNotEmpty)
+                      Card(
+                        color: AppColors.darkBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.work, color: AppColors.lightBlue),
+                                  SizedBox(width: AppDimensions.paddingSmall),
+                                  Text(
+                                    'Tajriba',
+                                    style: TextStyle(
+                                      color: AppColors.lightBlue,
+                                      fontSize: Responsive.scaleFont(
+                                        18,
+                                        context,
+                                      ),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: AppDimensions.paddingSmall),
+                              ...resume.experience!.map(
+                                (exp) => Container(
+                                  margin: EdgeInsets.only(
+                                    bottom: AppDimensions.paddingSmall,
+                                  ),
+                                  padding: EdgeInsets.all(
+                                    AppDimensions.paddingSmall,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.darkNavy,
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.cardRadius,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (exp.position != null)
+                                        Text(
+                                          'Lavozim: ${exp.position}',
+                                          style: TextStyle(
+                                            color: AppColors.lightGray,
+                                          ),
+                                        ),
+                                      if (exp.company != null)
+                                        Text(
+                                          'Kompaniya: ${exp.company}',
+                                          style: TextStyle(
+                                            color: AppColors.lightGray,
+                                          ),
+                                        ),
+                                      if (exp.period != null)
+                                        Text(
+                                          'Davri: ${exp.period}',
+                                          style: TextStyle(
+                                            color: AppColors.lightGray,
+                                          ),
+                                        ),
+                                      if (exp.description != null)
+                                        Text(
+                                          'Tavsif: ${exp.description}',
+                                          style: TextStyle(
+                                            color: AppColors.lightGray,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
-          );
-        }
-
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(AppDimensions.paddingMedium),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (resume.title != null && resume.title!.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Sarlavha',
-                      style: TextStyle(
-                        color: AppColors.lightBlue,
-                        fontSize: Responsive.scaleFont(18, context),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: AppDimensions.paddingSmall),
-                    Text(
-                      resume.title!,
-                      style: TextStyle(
-                        color: AppColors.lightGray,
-                        fontSize: Responsive.scaleFont(16, context),
-                      ),
-                    ),
-                    SizedBox(height: AppDimensions.paddingMedium),
-                  ],
-                ),
-              if (resume.content != null && resume.content!.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Tarkib',
-                      style: TextStyle(
-                        color: AppColors.lightBlue,
-                        fontSize: Responsive.scaleFont(18, context),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: AppDimensions.paddingSmall),
-                    Text(
-                      resume.content!,
-                      style: TextStyle(
-                        color: AppColors.lightGray,
-                        fontSize: Responsive.scaleFont(16, context),
-                      ),
-                    ),
-                    SizedBox(height: AppDimensions.paddingMedium),
-                  ],
-                ),
-              if (resume.education != null && resume.education!.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Ta\'lim',
-                      style: TextStyle(
-                        color: AppColors.lightBlue,
-                        fontSize: Responsive.scaleFont(18, context),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: AppDimensions.paddingSmall),
-                    ...resume.education!.map(
-                      (edu) => Container(
-                        margin: EdgeInsets.only(
-                          bottom: AppDimensions.paddingSmall,
-                        ),
-                        padding: EdgeInsets.all(AppDimensions.paddingSmall),
-                        decoration: BoxDecoration(
-                          color: AppColors.darkNavy,
-                          borderRadius: BorderRadius.circular(
-                            AppDimensions.cardRadius,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (edu.degree != null)
-                              Text(
-                                'Daraja: ${edu.degree}',
-                                style: TextStyle(color: AppColors.lightGray),
-                              ),
-                            if (edu.field != null)
-                              Text(
-                                'Soha: ${edu.field}',
-                                style: TextStyle(color: AppColors.lightGray),
-                              ),
-                            if (edu.institution != null)
-                              Text(
-                                'Muassasa: ${edu.institution}',
-                                style: TextStyle(color: AppColors.lightGray),
-                              ),
-                            if (edu.period != null)
-                              Text(
-                                'Davri: ${edu.period}',
-                                style: TextStyle(color: AppColors.lightGray),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: AppDimensions.paddingMedium),
-                  ],
-                ),
-              if (resume.experience != null && resume.experience!.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Tajriba',
-                      style: TextStyle(
-                        color: AppColors.lightBlue,
-                        fontSize: Responsive.scaleFont(18, context),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: AppDimensions.paddingSmall),
-                    ...resume.experience!.map(
-                      (exp) => Container(
-                        margin: EdgeInsets.only(
-                          bottom: AppDimensions.paddingSmall,
-                        ),
-                        padding: EdgeInsets.all(AppDimensions.paddingSmall),
-                        decoration: BoxDecoration(
-                          color: AppColors.darkNavy,
-                          borderRadius: BorderRadius.circular(
-                            AppDimensions.cardRadius,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (exp.position != null)
-                              Text(
-                                'Lavozim: ${exp.position}',
-                                style: TextStyle(color: AppColors.lightGray),
-                              ),
-                            if (exp.company != null)
-                              Text(
-                                'Kompaniya: ${exp.company}',
-                                style: TextStyle(color: AppColors.lightGray),
-                              ),
-                            if (exp.period != null)
-                              Text(
-                                'Davri: ${exp.period}',
-                                style: TextStyle(color: AppColors.lightGray),
-                              ),
-                            if (exp.description != null)
-                              Text(
-                                'Tavsif: ${exp.description}',
-                                style: TextStyle(color: AppColors.lightGray),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-            ],
           ),
-        );
-      },
     );
   }
 }
