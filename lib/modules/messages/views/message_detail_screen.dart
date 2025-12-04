@@ -34,6 +34,16 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     }
     _currentUserId = Get.find<FuncController>().userMe.value.data!.id;
     _otherUser = _room.user1.id == _currentUserId ? _room.user2 : _room.user1;
+    // Add initial application message
+    if (_room.application != null &&
+        _room.application.message != null &&
+        _room.application.message.isNotEmpty) {
+      _messages.add({
+        'content': _room.application.message,
+        'senderId': _room.application.applicant.id,
+        'createdAt': _room.application.createdAt,
+      });
+    }
     _socket.joinChat(_room.id);
     _socket.onNewMessage(_onNewMessage);
   }

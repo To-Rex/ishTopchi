@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:ishtopchi/core/models/post_model.dart';
 import 'package:ishtopchi/core/models/resumes_model.dart';
 
@@ -208,7 +209,8 @@ class Application {
       message: json['message'],
       applicant: User.fromJson(json['applicant']),
       post: Post.fromJson(json['post']),
-      resume: json['resume'] != null ? ResumesData.fromJson(json['resume']) : null,
+      resume:
+          json['resume'] != null ? ResumesData.fromJson(json['resume']) : null,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
