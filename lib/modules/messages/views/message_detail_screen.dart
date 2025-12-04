@@ -34,6 +34,14 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     }
     _currentUserId = Get.find<FuncController>().userMe.value.data!.id;
     _otherUser = _room.user1.id == _currentUserId ? _room.user2 : _room.user1;
+    // Add resume as file message first
+    if (_room.application != null && _room.application.resume != null) {
+      _messages.add({
+        'resume': _room.application.resume,
+        'senderId': _room.application.applicant.id,
+        'createdAt': _room.application.createdAt,
+      });
+    }
     // Add initial application message
     if (_room.application != null &&
         _room.application.message != null &&
@@ -125,8 +133,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        if (_room.application != null && _room.application.resume != null)
-          _buildResumeCard(context),
         Expanded(
           child: ListView.builder(
             reverse: true,
@@ -142,23 +148,40 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     );
   }
 
-  Widget _buildResumeCard(BuildContext context) {
-    final resume = _room.application!.resume!;
-    return Card(
-      color: AppColors.darkBlue,
-      margin: EdgeInsets.all(AppDimensions.paddingSmall),
-      child: ListTile(
-        leading: Icon(Icons.file_present, color: AppColors.lightBlue),
-        title: Text(
-          resume.title ?? 'Resume',
-          style: TextStyle(color: AppColors.lightGray),
+  Widget _buildResumeMessageBubble(
+    BuildContext context,
+    Map<String, dynamic> msg,
+  ) {
+    final resume = msg['resume'];
+    final isMe = msg['senderId'] == _currentUserId;
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          vertical: AppDimensions.paddingSmall,
+          horizontal: AppDimensions.paddingMedium,
         ),
-        onTap: () => _showResumeDialog(context),
+        padding: EdgeInsets.all(AppDimensions.paddingMedium),
+        decoration: BoxDecoration(
+          color: isMe ? AppColors.midBlue : AppColors.darkBlue,
+          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+        ),
+        child: ListTile(
+          leading: Icon(Icons.file_present, color: AppColors.lightBlue),
+          title: Text(
+            resume.title ?? 'Resume',
+            style: TextStyle(color: AppColors.lightGray),
+          ),
+          onTap: () => _showResumeDialog(context),
+        ),
       ),
     );
   }
 
   Widget _buildMessageBubble(BuildContext context, Map<String, dynamic> msg) {
+    if (msg.containsKey('resume')) {
+      return _buildResumeMessageBubble(context, msg);
+    }
     final isMe = msg['senderId'] == _currentUserId;
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
