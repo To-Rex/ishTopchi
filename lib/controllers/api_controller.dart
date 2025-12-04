@@ -134,11 +134,7 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<void> sendAppleIdToken(
-    String idToken,
-    String platform,
-    String fullName,
-  ) async {
+  Future<void> sendAppleIdToken(String idToken, String platform, String fullName) async {
     debugPrint('ID Token: $idToken');
     debugPrint('Platform: $platform');
     try {
@@ -334,14 +330,7 @@ class ApiController extends GetxController {
     }
   }
 
-  Future completeRegistration({
-    required String firstName,
-    required String lastName,
-    required int districtId,
-    required String birthDate,
-    required String gender,
-    required File? image,
-  }) async {
+  Future completeRegistration({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, required File? image}) async {
     try {
       String? imageUrl;
       if (image != null) {
@@ -388,14 +377,7 @@ class ApiController extends GetxController {
   }
 
   // Profilni yangilash
-  Future<bool> updateProfile({
-    required String firstName,
-    required String lastName,
-    required int districtId,
-    required String birthDate,
-    required String gender,
-    File? image,
-  }) async {
+  Future<bool> updateProfile({required String firstName, required String lastName, required int districtId, required String birthDate, required String gender, File? image}) async {
     try {
       if (funcController.globalToken.value == '')
         throw Exception('updateProfile Token mavjud emas');
@@ -475,11 +457,7 @@ class ApiController extends GetxController {
   }
 
   // Posts
-  Future<void> fetchPosts({
-    int page = 1,
-    int limit = 10,
-    String? search,
-  }) async {
+  Future<void> fetchPosts({int page = 1, int limit = 10, String? search}) async {
     try {
       funcController.isLoading.value = true;
       if (page == 1) {
@@ -593,11 +571,7 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<void> fetchMyPosts({
-    int page = 1,
-    int limit = 10,
-    String? search,
-  }) async {
+  Future<void> fetchMyPosts({int page = 1, int limit = 10, String? search}) async {
     try {
       funcController.isLoading.value = true;
       if (page == 1) {
@@ -1125,35 +1099,21 @@ class ApiController extends GetxController {
   Future<void> createApplication(int postId, String message, int resumeId) async {
     try {
       funcController.isLoading.value = true;
-      final response = await _dio.post(
-        '$_baseUrl/applications',
-        data: {'post_id': postId, 'message': message, 'resume_id': resumeId},
-        options: Options(
-          headers: {
-            'accept': '*/*',
-            'Authorization': 'Bearer ${funcController.globalToken.value}',
-          },
-        ),
+      print('$_baseUrl/applications?post_id=$postId&message=$message&resume_id=$resumeId');
+      final response = await _dio.post('$_baseUrl/applications', data: {'post_id': postId, 'message': message, 'resume_id': resumeId},
+        options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'})
       );
       debugPrint(response.data);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ShowToast.show(
-          'Muvaffaqiyatli',
-          'Murojaat muvaffaqiyatli yuborildi',
-          2,
-          1,
-        );
+        ShowToast.show('Muvaffaqiyatli', 'Murojaat muvaffaqiyatli yuborildi', 2, 1);
       } else {
-        ShowToast.show(
-          'Xatolik',
-          'Murojaat yuborishda xato: ${response.statusCode}',
-          3,
-          1,
-        );
+        ShowToast.show('Xatolik', 'Murojaat yuborishda xato: ${response.statusCode}', 3, 1);
       }
     } catch (e) {
       ShowToast.show('Xatolik', 'Murojaat oldin yuborilgan', 3, 1);
       debugPrint('createApplication xatolik: $e');
     }
   }
+
+
 }

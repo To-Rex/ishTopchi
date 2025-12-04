@@ -60,7 +60,7 @@ class ProfileController extends GetxController {
     }
   }
 
-  void onLoginTap() => Get.toNamed('/login');
+  void onLoginTap() => Get.offNamed('/login');
 
 
   Future<void> _checkTokenAndLoadUser() async {

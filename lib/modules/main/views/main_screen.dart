@@ -36,29 +36,6 @@ class MainScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      /*appBar: AppBar(
-        *//*title: InkWell(
-          onTap: () => funcController.setBarIndex(0),
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          child: Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray, fontSize: 20.sp))
-        ),*//*
-        backgroundColor: AppColors.darkNavy,
-        //centerTitle: false,
-        //leading: const Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray, size: 24),
-        //
-          leading: null,
-          title: InkWell(
-            onTap: () => funcController.setBarIndex(0),
-            child: Row(
-              children: [
-                Icon(LucideIcons.briefcaseBusiness, color: AppColors.lightGray, size: 24),
-                Text('Ishtopchi', style: TextStyle(color: AppColors.lightGray, fontSize: 20.sp))
-              ],
-            )
-        ),
-        actions: [IconButton(icon: const Icon(LucideIcons.bell, color: AppColors.lightGray), onPressed: () => Get.toNamed('/notifications'))]
-      ),*/
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(Responsive.scaleHeight(100, context)),
           child: Container(

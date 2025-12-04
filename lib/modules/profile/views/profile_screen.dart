@@ -48,11 +48,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     return Scaffold(
       backgroundColor: AppColors.darkNavy,
       body: Obx(() {
-        if (funcController.isLoading.value &&
-            funcController.getToken()!.isNotEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(color: AppColors.lightBlue),
-          );
+        if (funcController.isLoading.value && funcController.getToken()!.isNotEmpty) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.lightBlue));
         }
         return CustomScrollView(
           slivers: [
@@ -78,7 +75,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                             children: [
                               CircleAvatar(radius: 16, backgroundImage: NetworkImage(_getProfileUrl(funcController.userMe.value.data?.profilePicture))),
                               const SizedBox(width: 10),
-                              Text(funcController.userMe.value.data?.firstName ?? 'Ism kiritilmagan'.tr, style: TextStyle(fontSize: Responsive.scaleFont(14, context), color: Colors.white))
+                              Text(funcController.userMe.value.data?.firstName ?? 'Ism kiritilmagan'.tr, style: TextStyle(fontSize: Responsive.scaleFont(14, context), color: Colors.white)),
+                              Spacer()
                             ]))
                         : Center(child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -155,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                   scale: _buttonScale,
                                                   duration: const Duration(milliseconds: 100),
                                                   child: ElevatedButton(
-                                                    onPressed: () {},
+                                                    onPressed: controller.onLoginTap,
                                                     // Handled by GestureDetector
                                                     style: ElevatedButton.styleFrom(
                                                       minimumSize: Size(Responsive.scaleWidth(200, context), 50),
@@ -316,53 +314,26 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ),
                       ),
                     const SizedBox(height: 24),
-                    Center(
-                      child: Text(
-                        'Ishtopchi v1.1',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+                    Center(child: Text('Ishtopchi v1.1', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)))
+                  ]
+                )
+              )
+            )
+          ]
         );
-      }),
+      })
     );
   }
 
   Widget _buildLoginButton() {
     return ElevatedButton(
       onPressed: controller.onLoginTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.darkNavy,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        elevation: 5,
-      ),
-      child: Text(
-        'Kirish'.tr,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: Responsive.scaleFont(14, context),
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      style: ElevatedButton.styleFrom(backgroundColor: AppColors.darkNavy, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), elevation: 0),
+      child: Text('Kirish'.tr, style: TextStyle(color: Colors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600))
     );
   }
 
-  Widget _buildMenuItem(
-    IconData icon,
-    String title,
-    VoidCallback onTap, {
-    bool lang = false,
-  }) {
+  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, {bool lang = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Material(
@@ -375,33 +346,20 @@ class _ProfileScreenState extends State<ProfileScreen>
           highlightColor: Colors.white10,
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: AppColors.darkBlue,
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: AppColors.darkBlue),
             child: Row(
               children: [
                 Icon(icon, color: Colors.white),
                 const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    title.tr,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-                if (lang)
-                  Text('O‘zbek'.tr, style: TextStyle(color: Colors.white)),
+                Expanded(child: Text(title.tr, style: const TextStyle(color: Colors.white))),
+                if (lang)Text('O‘zbek'.tr, style: TextStyle(color: Colors.white)),
                 const SizedBox(width: 6),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: Colors.white60,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+                const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white60)
+              ]
+            )
+          )
+        )
+      )
     );
   }
 }
