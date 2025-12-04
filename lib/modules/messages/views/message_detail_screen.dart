@@ -41,6 +41,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         'resume': _room.application.resume,
         'senderId': _room.application.applicant.id,
         'createdAt': _room.application.createdAt,
+        'status': 'sent', // Assume initial status
       });
     }
     // Add initial application message
@@ -51,10 +52,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         'content': _room.application.message,
         'senderId': _room.application.applicant.id,
         'createdAt': _room.application.createdAt,
+        'status': 'sent', // Assume initial status
       });
     }
     _socket.joinChat(_room.id);
     _socket.onNewMessage(_onNewMessage);
+    _socket.onMessageStatus(_onMessageStatus);
     _messages.sort(
       (a, b) => DateTime.parse(
         b['createdAt'],
@@ -137,6 +140,17 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         ).compareTo(DateTime.parse(a['createdAt'])),
       );
       _scrollToBottom();
+    });
+  }
+
+  void _onMessageStatus(Map<String, dynamic> data) {
+    setState(() {
+      final messageId = data['messageId'];
+      final status = data['status'];
+      final index = _messages.indexWhere((msg) => msg['id'] == messageId);
+      if (index != -1) {
+        _messages[index]['status'] = status;
+      }
     });
   }
 
@@ -272,6 +286,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     }
     final isMe = msg['senderId'] == _currentUserId;
     final time = _formatTime(msg['createdAt']);
+    final status = msg['status'] ?? 'sent';
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -293,12 +308,34 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               style: TextStyle(color: AppColors.lightGray),
             ),
             SizedBox(height: AppDimensions.paddingSmall / 2),
-            Text(
-              time,
-              style: TextStyle(
-                color: AppColors.lightBlue.withOpacity(0.7),
-                fontSize: Responsive.scaleFont(12, context),
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  time,
+                  style: TextStyle(
+                    color: AppColors.lightBlue.withOpacity(0.7),
+                    fontSize: Responsive.scaleFont(12, context),
+                  ),
+                ),
+                if (isMe) ...[
+                  SizedBox(width: AppDimensions.paddingSmall / 2),
+                  Text(
+                    status == 'seen'
+                        ? 'Seen'
+                        : status == 'delivered'
+                        ? 'Delivered'
+                        : '',
+                    style: TextStyle(
+                      color:
+                          status == 'seen'
+                              ? AppColors.lightBlue
+                              : AppColors.lightGray.withOpacity(0.7),
+                      fontSize: Responsive.scaleFont(10, context),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ],
         ),
@@ -349,6 +386,22 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             child: ElevatedButton(
               onPressed: () {
                 if (_textController.text.isNotEmpty) {
+                  final message = {
+                    'content': _textController.text,
+                    'senderId': _currentUserId,
+                    'createdAt': DateTime.now().toIso8601String(),
+                    'status': 'sent',
+                    'id': DateTime.now().millisecondsSinceEpoch, // Temporary id
+                  };
+                  setState(() {
+                    _messages.add(message);
+                    _messages.sort(
+                      (a, b) => DateTime.parse(
+                        b['createdAt'],
+                      ).compareTo(DateTime.parse(a['createdAt'])),
+                    );
+                    _scrollToBottom();
+                  });
                   _socket.sendMessage(
                     chatRoomId: _room.id,
                     content: _textController.text,
