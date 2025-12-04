@@ -1100,10 +1100,11 @@ class ApiController extends GetxController {
     try {
       funcController.isLoading.value = true;
       print('$_baseUrl/applications?post_id=$postId&message=$message&resume_id=$resumeId');
-      final response = await _dio.post('$_baseUrl/applications', data: {'post_id': postId, 'message': message, 'resume_id': resumeId},
+      final response = await _dio.post('$_baseUrl/applications',
+          data: {'post_id': postId, 'message': message, 'resume_id': resumeId},
         options: Options(headers: {'accept': '*/*', 'Authorization': 'Bearer ${funcController.globalToken.value}'})
       );
-      debugPrint(response.data);
+      debugPrint(response.data.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         ShowToast.show('Muvaffaqiyatli', 'Murojaat muvaffaqiyatli yuborildi', 2, 1);
       } else {
@@ -1115,5 +1116,5 @@ class ApiController extends GetxController {
     }
   }
 
-
+  
 }
