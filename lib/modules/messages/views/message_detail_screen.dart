@@ -23,6 +23,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   late final dynamic _room;
   late final User _otherUser;
   late final int? _currentUserId;
+  late final dynamic _currentUser;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       return;
     }
     _currentUserId = Get.find<FuncController>().userMe.value.data!.id;
+    _currentUser = Get.find<FuncController>().userMe.value.data!;
     _otherUser = _room.user1.id == _currentUserId ? _room.user2 : _room.user1;
     // Add resume as file message first
     if (_room.application != null && _room.application.resume != null) {
@@ -250,31 +252,65 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     );
   }
 
-  Widget _buildResumeMessageBubble(
-    BuildContext context,
-    Map<String, dynamic> msg,
-  ) {
+  Widget _buildResumeMessageBubble(BuildContext context, Map<String, dynamic> msg) {
     final resume = msg['resume'];
     final isMe = msg['senderId'] == _currentUserId;
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.symmetric(
-          vertical: AppDimensions.paddingSmall,
-          horizontal: AppDimensions.paddingMedium,
-        ),
-        padding: EdgeInsets.all(AppDimensions.paddingMedium),
-        decoration: BoxDecoration(
-          color: isMe ? AppColors.midBlue : AppColors.darkBlue,
-          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        ),
-        child: ListTile(
-          leading: Icon(Icons.file_present, color: AppColors.lightBlue),
-          title: Text(
-            resume.title ?? 'Resume',
-            style: TextStyle(color: AppColors.lightGray),
-          ),
-          onTap: () => _showResumeDialog(context),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
+      child: Align(
+        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isMe) ...[
+              CircleAvatar(
+                backgroundColor: AppColors.midBlue,
+                radius: Responsive.scaleWidth(16, context),
+                child: Text(
+                  _otherUser.firstName[0].toUpperCase(),
+                  style: TextStyle(
+                    color: AppColors.lightGray,
+                    fontSize: Responsive.scaleFont(14, context),
+                  ),
+                ),
+              ),
+              SizedBox(width: AppDimensions.paddingSmall),
+            ],
+            Flexible(
+              child: Container(
+                margin: EdgeInsets.symmetric(
+                  vertical: AppDimensions.paddingSmall,
+                ),
+                padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                decoration: BoxDecoration(
+                  color: isMe ? AppColors.midBlue : AppColors.darkBlue,
+                  borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+                ),
+                child: ListTile(
+                  leading: Icon(Icons.file_present, color: AppColors.lightBlue),
+                  title: Text(
+                    resume.title ?? 'Resume',
+                    style: TextStyle(color: AppColors.lightGray),
+                  ),
+                  onTap: () => _showResumeDialog(context),
+                ),
+              ),
+            ),
+            if (isMe) ...[
+              SizedBox(width: AppDimensions.paddingSmall),
+              CircleAvatar(
+                backgroundColor: AppColors.midBlue,
+                radius: Responsive.scaleWidth(16, context),
+                child: Text(
+                  _currentUser.firstName[0].toUpperCase(),
+                  style: TextStyle(
+                    color: AppColors.lightGray,
+                    fontSize: Responsive.scaleFont(14, context),
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -287,56 +323,94 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     final isMe = msg['senderId'] == _currentUserId;
     final time = _formatTime(msg['createdAt']);
     final status = msg['status'] ?? 'sent';
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.symmetric(
-          vertical: AppDimensions.paddingSmall,
-          horizontal: AppDimensions.paddingMedium,
-        ),
-        padding: EdgeInsets.all(AppDimensions.paddingMedium),
-        decoration: BoxDecoration(
-          color: isMe ? AppColors.midBlue : AppColors.darkBlue,
-          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        ),
-        child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
+      child: Align(
+        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              msg['content'] ?? '',
-              style: TextStyle(color: AppColors.lightGray),
-            ),
-            SizedBox(height: AppDimensions.paddingSmall / 2),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  time,
+            if (!isMe) ...[
+              CircleAvatar(
+                backgroundColor: AppColors.midBlue,
+                radius: Responsive.scaleWidth(16, context),
+                child: Text(
+                  _otherUser.firstName[0].toUpperCase(),
                   style: TextStyle(
-                    color: AppColors.lightBlue.withOpacity(0.7),
-                    fontSize: Responsive.scaleFont(12, context),
+                    color: AppColors.lightGray,
+                    fontSize: Responsive.scaleFont(14, context),
                   ),
                 ),
-                if (isMe) ...[
-                  SizedBox(width: AppDimensions.paddingSmall / 2),
-                  Text(
-                    status == 'seen'
-                        ? 'Seen'
-                        : status == 'delivered'
-                        ? 'Delivered'
-                        : '',
-                    style: TextStyle(
-                      color:
-                          status == 'seen'
-                              ? AppColors.lightBlue
-                              : AppColors.lightGray.withOpacity(0.7),
-                      fontSize: Responsive.scaleFont(10, context),
+              ),
+              SizedBox(width: AppDimensions.paddingSmall),
+            ],
+            Flexible(
+              child: Container(
+                margin: EdgeInsets.symmetric(
+                  vertical: AppDimensions.paddingSmall,
+                ),
+                padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                decoration: BoxDecoration(
+                  color: isMe ? AppColors.midBlue : AppColors.darkBlue,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(isMe ? AppDimensions.cardRadius : 0),
+                    topRight: Radius.circular(AppDimensions.cardRadius),
+                    bottomLeft: Radius.circular( AppDimensions.cardRadius,),
+                    bottomRight: Radius.circular(isMe ? 0 : AppDimensions.cardRadius)
+                  )
+                ),
+                child: Column(
+                  crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  children: [
+                    Text(msg['content'] ?? '', style: TextStyle(color: AppColors.lightGray)),
+                    SizedBox(height: AppDimensions.paddingSmall / 2),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          time,
+                          style: TextStyle(
+                            color: AppColors.lightBlue.withOpacity(0.7),
+                            fontSize: Responsive.scaleFont(12, context),
+                          ),
+                        ),
+                        if (isMe) ...[
+                          SizedBox(width: AppDimensions.paddingSmall / 2),
+                          Text(
+                            status == 'seen'
+                                ? 'Seen'
+                                : status == 'delivered'
+                                ? 'Delivered'
+                                : '',
+                            style: TextStyle(
+                              color:
+                                  status == 'seen'
+                                      ? AppColors.lightBlue
+                                      : AppColors.lightGray.withOpacity(0.7),
+                              fontSize: Responsive.scaleFont(10, context),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                  ),
-                ],
-              ],
+                  ],
+                ),
+              ),
             ),
+            if (isMe) ...[
+              SizedBox(width: AppDimensions.paddingSmall),
+              CircleAvatar(
+                backgroundColor: AppColors.midBlue,
+                radius: Responsive.scaleWidth(16, context),
+                child: Text(
+                  _currentUser.firstName[0].toUpperCase(),
+                  style: TextStyle(
+                    color: AppColors.lightGray,
+                    fontSize: Responsive.scaleFont(14, context),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
