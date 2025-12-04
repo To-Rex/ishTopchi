@@ -19,6 +19,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   final SocketService _socket = SocketService();
   final List<Map<String, dynamic>> _messages = [];
   final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   late final dynamic _room;
   late final User _otherUser;
   late final int? _currentUserId;
@@ -54,18 +55,88 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     }
     _socket.joinChat(_room.id);
     _socket.onNewMessage(_onNewMessage);
+    _messages.sort(
+      (a, b) => DateTime.parse(
+        b['createdAt'],
+      ).compareTo(DateTime.parse(a['createdAt'])),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
 
   @override
   void dispose() {
     _socket.leaveChat(_room.id);
     _textController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0);
+    }
+  }
+
+  String _getDateString(String createdAt) {
+    try {
+      final dateTime = DateTime.parse(createdAt).toLocal();
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+      final difference = today.difference(messageDate).inDays;
+      if (difference == 0) {
+        return 'Today';
+      } else if (difference == 1) {
+        return 'Yesterday';
+      } else {
+        return '${messageDate.day}/${messageDate.month}/${messageDate.year}';
+      }
+    } catch (e) {
+      return createdAt;
+    }
+  }
+
+  Widget _buildDateHeader(BuildContext context, String date) {
+    return Center(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: AppDimensions.paddingSmall),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppDimensions.paddingMedium,
+          vertical: AppDimensions.paddingSmall,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.darkBlue,
+          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+        ),
+        child: Text(
+          date,
+          style: TextStyle(
+            color: AppColors.lightGray,
+            fontSize: Responsive.scaleFont(14, context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatTime(String createdAt) {
+    try {
+      final dateTime = DateTime.parse(createdAt).toLocal();
+      return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return '';
+    }
   }
 
   void _onNewMessage(Map<String, dynamic> data) {
     setState(() {
       _messages.add(data);
+      _messages.sort(
+        (a, b) => DateTime.parse(
+          b['createdAt'],
+        ).compareTo(DateTime.parse(a['createdAt'])),
+      );
+      _scrollToBottom();
     });
   }
 
@@ -135,11 +206,28 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       children: [
         Expanded(
           child: ListView.builder(
+            controller: _scrollController,
             reverse: true,
             itemCount: _messages.length,
             itemBuilder: (context, index) {
               final msg = _messages[_messages.length - 1 - index];
-              return _buildMessageBubble(context, msg);
+              final currentDate = _getDateString(msg['createdAt']);
+              final previousDate =
+                  index < _messages.length - 1
+                      ? _getDateString(
+                        _messages[_messages.length -
+                            1 -
+                            index -
+                            1]['createdAt'],
+                      )
+                      : null;
+              final showDate = currentDate != previousDate;
+              return Column(
+                children: [
+                  if (showDate) _buildDateHeader(context, currentDate),
+                  _buildMessageBubble(context, msg),
+                ],
+              );
             },
           ),
         ),
@@ -183,6 +271,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       return _buildResumeMessageBubble(context, msg);
     }
     final isMe = msg['senderId'] == _currentUserId;
+    final time = _formatTime(msg['createdAt']);
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -195,9 +284,23 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           color: isMe ? AppColors.midBlue : AppColors.darkBlue,
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
         ),
-        child: Text(
-          msg['content'] ?? '',
-          style: TextStyle(color: AppColors.lightGray),
+        child: Column(
+          crossAxisAlignment:
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Text(
+              msg['content'] ?? '',
+              style: TextStyle(color: AppColors.lightGray),
+            ),
+            SizedBox(height: AppDimensions.paddingSmall / 2),
+            Text(
+              time,
+              style: TextStyle(
+                color: AppColors.lightBlue.withOpacity(0.7),
+                fontSize: Responsive.scaleFont(12, context),
+              ),
+            ),
+          ],
         ),
       ),
     );
