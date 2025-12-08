@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ishtopchi/common/widgets/text_small.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
@@ -47,13 +48,11 @@ class MessagesScreen extends GetView<MessagesController> {
         padding: EdgeInsets.all(AppDimensions.paddingMedium),
         children: [
           if (postOwnerRooms.isNotEmpty) ...[
-            Text(
-              'Post Owner Rooms',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontSize: Responsive.scaleFont(18, context),
-                color: AppColors.lightBlue,
-                fontWeight: FontWeight.bold,
-              ),
+            TextSmall(
+              text: 'Post Owner Rooms'.tr,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppColors.white,
             ),
             SizedBox(height: AppDimensions.paddingSmall),
             ...postOwnerRooms.map(
@@ -63,13 +62,11 @@ class MessagesScreen extends GetView<MessagesController> {
           if (applicationRooms.isNotEmpty) ...[
             if (postOwnerRooms.isNotEmpty)
               SizedBox(height: AppDimensions.paddingMedium),
-            Text(
-              'Application Rooms',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontSize: Responsive.scaleFont(18, context),
-                color: AppColors.lightBlue,
-                fontWeight: FontWeight.bold,
-              ),
+            TextSmall(
+              text: 'Application Rooms'.tr,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppColors.white,
             ),
             SizedBox(height: AppDimensions.paddingSmall),
             ...applicationRooms.map(

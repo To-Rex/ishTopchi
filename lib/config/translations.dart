@@ -101,6 +101,11 @@ class AppTranslations extends Translations {
       'Joriy joylashuvni aniqlash': 'Joriy joylashuvni aniqlash',
       'ko‘rish': 'ko‘rish',
       'Shikoyat qilish': 'Shikoyat qilish',
+      'Shikoyat matnini kiriting': 'Shikoyat matnini kiriting',
+      'Shikoyat muvaffaqiyatli yuborildi': 'Shikoyat muvaffaqiyatli yuborildi',
+      'Shikoyat yuborishda xato': 'Shikoyat yuborishda xato',
+      'Shikoyat yuborishda xato yuz berdi':
+          'Shikoyat yuborishda xato yuz berdi',
       'Bildirishnomalar': 'Bildirishnomalar',
       'Asosiy': 'Asosiy',
       'Saqlanganlar': 'Saqlanganlar',
@@ -300,6 +305,8 @@ class AppTranslations extends Translations {
       'Rostdan ham hisobingizdan chiqmoqchimisiz?':
           'Rostdan ham hisobingizdan chiqmoqchimisiz?',
       'Ro‘yxatdan o‘ting va boshlang!': 'Ro‘yxatdan o‘ting va boshlang!',
+      'Post Owner Rooms': 'E’lonlar va murojaatlar',
+      'Application Rooms': 'Javoblar va taklifnomalar',
     },
     'oz': {
       'Kirish': 'Кириш',
@@ -399,6 +406,10 @@ class AppTranslations extends Translations {
       'Joriy joylashuvni aniqlash': 'Жорий жойлашувни аниқлаш',
       'ko‘rish': 'кўриш',
       'Shikoyat qilish': 'Шикоят қилиш',
+      'Shikoyat matnini kiriting': 'Шикоят матнини киритинг',
+      'Shikoyat muvaffaqiyatli yuborildi': 'Шикоят муваффақиятли юборилди',
+      'Shikoyat yuborishda xato': 'Шикоят юборишда хато',
+      'Shikoyat yuborishda xato yuz berdi': 'Шикоят юборишда хато юз берди',
       'Bildirishnomalar': 'Билдиришномалар',
       'Asosiy': 'Асосий',
       'Saqlanganlar': 'Сақланганлар',
@@ -597,6 +608,8 @@ class AppTranslations extends Translations {
       'Rostdan ham hisobingizdan chiqmoqchimisiz?':
           'Ростдан ҳам ҳисобингиздан чиқмоқчимисиз?',
       'Ro‘yxatdan o‘ting va boshlang!': 'Рўйхатдан ўтинг ва бошланг!',
+      'Post Owner Rooms': 'Эълонлар ва мурожаатлар',
+      'Application Rooms': 'Жавоблар ва таклифномалар',
     },
     'en': {
       'Kirish': 'Login',
@@ -694,6 +707,11 @@ class AppTranslations extends Translations {
       'Joriy joylashuvni aniqlash': 'Determine current location',
       'ko‘rish': 'view',
       'Shikoyat qilish': 'Complain',
+      'Shikoyat matnini kiriting': 'Enter complaint text',
+      'Shikoyat muvaffaqiyatli yuborildi': 'Complaint sent successfully',
+      'Shikoyat yuborishda xato': 'Error sending complaint',
+      'Shikoyat yuborishda xato yuz berdi':
+          'An error occurred while sending the complaint',
       'Bildirishnomalar': 'Notifications',
       'Asosiy': 'Main',
       'Saqlanganlar': 'Saved',
@@ -889,6 +907,8 @@ class AppTranslations extends Translations {
       'Rostdan ham hisobingizdan chiqmoqchimisiz?':
           'Are you sure you want to log out of your account?',
       'Ro‘yxatdan o‘ting va boshlang!': 'Register and Start!',
+      'Post Owner Rooms': 'Posts and Applications',
+      'Application Rooms': 'Responses and Offers',
     },
     'ru': {
       'Kirish': 'Вход',
@@ -988,6 +1008,11 @@ class AppTranslations extends Translations {
       'Joriy joylashuvni aniqlash': 'Определить текущее местоположение',
       'ko‘rish': 'просмотр',
       'Shikoyat qilish': 'Пожаловаться',
+      'Shikoyat matnini kiriting': 'Введите текст жалобы',
+      'Shikoyat muvaffaqiyatli yuborildi': 'Жалоба отправлена успешно',
+      'Shikoyat yuborishda xato': 'Ошибка отправки жалобы',
+      'Shikoyat yuborishda xato yuz berdi':
+          'Произошла ошибка при отправке жалобы',
       'Bildirishnomalar': 'Уведомления',
       'Asosiy': 'Главная',
       'Saqlanganlar': 'Сохраненные',
@@ -1186,6 +1211,8 @@ class AppTranslations extends Translations {
       'Rostdan ham hisobingizdan chiqmoqchimisiz?':
           'Вы действительно хотите выйти из своего аккаунта?',
       'Ro‘yxatdan o‘ting va boshlang!': 'Зарегистрируйтесь и начинайте!',
+      'Post Owner Rooms': 'Посты и заявки',
+      'Application Rooms': 'Ответы и предложения',
     },
   };
 }
