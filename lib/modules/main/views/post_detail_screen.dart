@@ -89,7 +89,12 @@ class _PostDetailScreenState extends State<PostDetailScreen>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextSmall(text: 'Shikoyat qilish'.tr, color: AppColors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w800),
+                TextSmall(
+                  text: 'Shikoyat qilish'.tr,
+                  color: AppColors.white,
+                  fontSize: Responsive.scaleFont(18, context),
+                  fontWeight: FontWeight.w800,
+                ),
                 SizedBox(height: AppDimensions.paddingSmall),
                 // Shikoyat matnini yozish
                 TextField(
@@ -97,41 +102,201 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                   maxLines: 4,
                   maxLength: 500,
                   decoration: InputDecoration(
-                    labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+                    labelStyle: TextStyle(
+                      color: AppColors.lightGray,
+                      fontSize: Responsive.scaleFont(14, context),
+                    ),
                     hintText: 'Shikoyat matnini kiriting'.tr,
-                    hintStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context)),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: BorderSide(color: AppColors.lightBlue)),
+                    hintStyle: TextStyle(
+                      color: AppColors.lightGray,
+                      fontSize: Responsive.scaleFont(12, context),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.cardRadius,
+                      ),
+                      borderSide: BorderSide(color: AppColors.lightBlue),
+                    ),
                     filled: true,
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius), borderSide: const BorderSide(color: AppColors.lightBlue, width: 1.5)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.cardRadius,
+                      ),
+                      borderSide: const BorderSide(
+                        color: AppColors.lightBlue,
+                        width: 1.5,
+                      ),
+                    ),
                     fillColor: AppColors.darkNavy,
                   ),
-                  style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context))
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: Responsive.scaleFont(14, context),
+                  ),
                 ),
                 SizedBox(height: AppDimensions.paddingMedium),
                 // Tugmalar
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(onPressed: () => Get.back(), child: TextSmall(text: 'Bekor qilish'.tr, color: AppColors.red, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600)),
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      child: TextSmall(
+                        text: 'Bekor qilish'.tr,
+                        color: AppColors.red,
+                        fontSize: Responsive.scaleFont(14, context),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     SizedBox(width: AppDimensions.paddingSmall),
                     TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: AppColors.lightBlue,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.cardRadius)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         alignment: Alignment.center,
-                        fixedSize: Size(Responsive.scaleWidth(100, context), Responsive.scaleHeight(40, context))
+                        fixedSize: Size(
+                          Responsive.scaleWidth(100, context),
+                          Responsive.scaleHeight(40, context),
+                        ),
                       ),
                       onPressed: () async {
                         if (complaintController.text.trim().isEmpty) {
-                          ShowToast.show('Xatolik'.tr, 'Iltimos, shikoyat matnini kiriting'.tr, 1, 1);
+                          ShowToast.show(
+                            'Xatolik'.tr,
+                            'Iltimos, shikoyat matnini kiriting'.tr,
+                            1,
+                            1,
+                          );
                           return;
                         }
                         Get.back();
                       },
-                      child: TextSmall(text: 'Yuborish'.tr, color: AppColors.white, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w600,)
+                      child: TextSmall(
+                        text: 'Yuborish'.tr,
+                        color: AppColors.white,
+                        fontSize: Responsive.scaleFont(14, context),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showLoginPromptDialog(BuildContext context) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: AppColors.darkNavy,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 600),
+          decoration: BoxDecoration(
+            color: AppColors.darkNavy,
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                spreadRadius: 1,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(AppDimensions.paddingMedium),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Icon
+                Icon(
+                  LucideIcons.lock,
+                  size: Responsive.scaleFont(48, context),
+                  color: AppColors.lightBlue,
+                ),
+                SizedBox(height: AppDimensions.paddingMedium),
+                // Sarlavha
+                TextSmall(
+                  text: 'Ro\'yxatdan o\'tish talab qilinadi'.tr,
+                  color: AppColors.white,
+                  maxLines: 2,
+                  fontSize: Responsive.scaleFont(18, context),
+                  fontWeight: FontWeight.w800,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: AppDimensions.paddingSmall),
+                // Tavsif
+                TextSmall(
+                  text:
+                      'Telefon raqamini ko\'rish uchun ro\'yxatdan o\'ting yoki hisobingizga kiring.'
+                          .tr,
+                  color: AppColors.lightGray,
+                  maxLines: 100,
+                  fontSize: Responsive.scaleFont(14, context),
+                  fontWeight: FontWeight.w400,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: AppDimensions.paddingMedium),
+                // Tugmalar
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        backgroundColor: AppColors.darkBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppDimensions.paddingMedium,
+                          vertical: AppDimensions.paddingSmall,
+                        ),
+                      ),
+                      child: TextSmall(
+                        text: 'Bekor qilish'.tr,
+                        color: AppColors.red,
+                        fontSize: Responsive.scaleFont(14, context),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: AppDimensions.paddingSmall),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: AppColors.lightBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.cardRadius,
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppDimensions.paddingMedium,
+                          vertical: AppDimensions.paddingSmall,
+                        ),
+                      ),
+                      onPressed: () {
+                        Get.back();
+                        Get.offNamed('/login');
+                      },
+                      child: TextSmall(
+                        text: 'Kirish'.tr,
+                        color: AppColors.white,
+                        fontSize: Responsive.scaleFont(14, context),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -396,6 +561,16 @@ class _PostDetailScreenState extends State<PostDetailScreen>
         ),
       ),
     );
+  }
+
+  String _maskPhoneNumber(String phone) {
+    // Uzbek phone format: +998 XX XXX XX XX
+    if (phone.startsWith('+998')) {
+      return '+998 ** *** ** **';
+    } else {
+      // Fallback for other formats
+      return phone.replaceAll(RegExp(r'\d'), '*');
+    }
   }
 
   void _moveMap(LatLng point, double zoom) => mapController.animateTo(
@@ -682,11 +857,18 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                 if (widget.post.phoneNumber != null)
                   GestureDetector(
                     onTap: () async {
-                      final url = Uri.parse('tel:${widget.post.phoneNumber}');
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
+                      if (funcController.globalToken.value.isNotEmpty) {
+                        final url = Uri.parse('tel:${widget.post.phoneNumber}');
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        } else {
+                          Get.snackbar(
+                            'Xato'.tr,
+                            'Qo‘ng‘iroq qilib bo‘lmadi'.tr,
+                          );
+                        }
                       } else {
-                        Get.snackbar('Xato'.tr, 'Qo‘ng‘iroq qilib bo‘lmadi'.tr);
+                        _showLoginPromptDialog(context);
                       }
                     },
                     child: Row(
@@ -698,7 +880,9 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                         ),
                         SizedBox(width: Responsive.scaleWidth(6, context)),
                         Text(
-                          widget.post.phoneNumber!,
+                          funcController.globalToken.value.isNotEmpty
+                              ? widget.post.phoneNumber!
+                              : _maskPhoneNumber(widget.post.phoneNumber!),
                           style: TextStyle(
                             fontSize: Responsive.scaleFont(13, context),
                             color: AppColors.white,

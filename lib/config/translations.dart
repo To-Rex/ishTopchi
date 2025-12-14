@@ -5,6 +5,10 @@ class AppTranslations extends Translations {
   Map<String, Map<String, String>> get keys => {
     'uz': {
       'Kirish': 'Kirish',
+      'Ro\'yxatdan o\'tish talab qilinadi':
+          'Ro\'yxatdan o\'tish talab qilinadi',
+      'Telefon raqamini ko\'rish uchun ro\'yxatdan o\'ting yoki hisobingizga kiring.':
+          'Telefon raqamini ko\'rish uchun ro\'yxatdan o\'ting yoki hisobingizga kiring.',
       'Mening Profilim': 'Mening Profilim',
       'Ishtopchi bilan ish toping!': 'Ishtopchi bilan ish toping!',
       'Eng yaxshi ish e’lonlarini toping va o‘z karyerangizni boshlang.':
@@ -310,6 +314,9 @@ class AppTranslations extends Translations {
     },
     'oz': {
       'Kirish': 'Кириш',
+      'Ro\'yxatdan o\'tish talab qilinadi': 'Рўйхатдан ўтиш талаб қилинади',
+      'Telefon raqamini ko\'rish uchun ro\'yxatdan o\'ting yoki hisobingizga kiring.':
+          'Телефон рақамини кўриш учун рўйхатдан ўтинг ёки ҳисобингизга киринг.',
       'Mening Profilim': 'Менинг Профилим',
       'Ishtopchi bilan ish toping!': 'Иштопчи билан иш топинг!',
       'Eng yaxshi ish e’lonlarini toping va o‘z karyerangizni boshlang.':
@@ -613,6 +620,9 @@ class AppTranslations extends Translations {
     },
     'en': {
       'Kirish': 'Login',
+      'Ro\'yxatdan o\'tish talab qilinadi': 'Registration required',
+      'Telefon raqamini ko\'rish uchun ro\'yxatdan o\'ting yoki hisobingizga kiring.':
+          'Register or log in to view the phone number.',
       'Mening Profilim': 'My Profile',
       'Ishtopchi bilan ish toping!': 'Find a job with Ishtopchi!',
       'Eng yaxshi ish e’lonlarini toping va o‘z karyerangizni boshlang.':
@@ -912,6 +922,9 @@ class AppTranslations extends Translations {
     },
     'ru': {
       'Kirish': 'Вход',
+      'Ro\'yxatdan o\'tish talab qilinadi': 'Требуется регистрация',
+      'Telefon raqamini ko\'rish uchun ro\'yxatdan o\'ting yoki hisobingizga kiring.':
+          'Зарегистрируйтесь или войдите в систему, чтобы просмотреть номер телефона.',
       'Mening Profilim': 'Мой профиль',
       'Ishtopchi bilan ish toping!': 'Найдите работу с Ishtopchi!',
       'Eng yaxshi ish e’lonlarini toping va o‘z karyerangizni boshlang.':
