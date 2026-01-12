@@ -10,6 +10,7 @@ import 'config/routes/app_routes.dart';
 import 'config/translations.dart';
 import 'controllers/api_controller.dart';
 import 'controllers/funcController.dart';
+import 'controllers/theme_controller.dart';
 import 'firebase_options.dart';
 import 'modules/ad_posting/controllers/ad_posting_controller.dart';
 import 'modules/favorites/controllers/favorites_controller.dart';
@@ -19,7 +20,10 @@ import 'modules/profile/controllers/profile_controller.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init(); // GetStorage ni ishga tushirish
-  runApp(MyApp());
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize controllers before runApp
+  Get.put(ThemeController());
   Get.put(FuncController());
   Get.put(ProfileController());
   Get.put(ApiController());
@@ -27,7 +31,8 @@ Future<void> main() async {
   Get.put(AdPostingController());
   Get.put(FavoritesController());
   Get.put(MessagesController());
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -35,16 +40,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FuncController().getLanguage();
+    final themeController = Get.find<ThemeController>();
+
     return ScreenUtilInit(
-        designSize: Size(360, 690),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) {
+      designSize: Size(360, 690),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return Obx(() {
           return GetMaterialApp(
             title: 'Ishtopchi',
-            theme: AppTheme.theme,
-            darkTheme: AppTheme.theme,
+            theme: themeController.lightTheme,
+            darkTheme: themeController.darkTheme,
+            themeMode: themeController.themeMode.value,
             initialRoute: AppRoutes.splash,
             getPages: AppPages.pages,
             debugShowCheckedModeBanner: false,
@@ -52,7 +60,8 @@ class MyApp extends StatelessWidget {
             locale: const Locale('uz'),
             fallbackLocale: const Locale('uz'),
           );
-        }
+        });
+      },
     );
   }
 }

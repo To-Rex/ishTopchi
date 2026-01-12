@@ -29,9 +29,9 @@ class OtpController extends GetxController {
 
   @override
   void onClose() {
-    pinTEC.dispose();
-    errorCtrl.close();
     super.onClose();
+    //pinTEC.dispose();
+    errorCtrl.close();
   }
 
   void startTimer() {

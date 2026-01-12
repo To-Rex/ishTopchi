@@ -12,4 +12,5 @@ class AppRoutes {
   static const messagesDetail = '/messages_detail';
   static const postOwnerDetail = '/post_owner_detail';
   static const myPosts = '/my_posts';
+  static const settings = '/settings';
 }

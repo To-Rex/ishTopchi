@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../config/theme/app_colors.dart';
+import '../../controllers/theme_controller.dart';
 import '../../core/utils/responsive.dart';
 
 class NotLogged extends StatefulWidget {
@@ -44,69 +45,78 @@ class _NotLoggedState extends State<NotLogged>
   }
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        FadeTransition(
-          opacity: _fadeAnimation,
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Icon(
-              LucideIcons.userCheck,
-              size: 80.sp,
-              color: AppColors.white,
-            ),
-          ),
-        ),
-        SizedBox(height: 20.sp),
-        Text(
-          'Siz ro‘yxatdan o‘tmagansiz'.tr,
-          style: TextStyle(
-            fontSize: Responsive.scaleFont(20, context),
-            color: AppColors.white,
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 10.sp),
-        Text(
-          'Iltimos, hisobingizga kiring yoki ro‘yxatdan o‘ting'.tr,
-          style: TextStyle(
-            fontSize: Responsive.scaleFont(16, context),
-            color: AppColors.white,
-            fontWeight: FontWeight.w400,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 30.sp),
-        GestureDetector(
-          onTap: () => Get.offNamed('/login'),
-          onTapDown: (_) => setState(() => _isPressed = true),
-          onTapUp: (_) => setState(() => _isPressed = false),
-          child: AnimatedScale(
-            scale: _isPressed ? 0.95 : 1.0,
-            duration: const Duration(milliseconds: 100),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.midBlue, AppColors.lightBlue],
-                ),
-                borderRadius: BorderRadius.circular(12.sp),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 40.sp, vertical: 12.sp),
-              child: Text(
-                'Ro‘yxatdan o‘ting va boshlang!'.tr,
-                style: TextStyle(
-                  fontSize: Responsive.scaleFont(16, context),
-                  color: AppColors.white,
-                  fontWeight: FontWeight.w500,
+  Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
+
+    return Obx(
+      () => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: Icon(
+                  LucideIcons.userCheck,
+                  size: 80.sp,
+                  color: AppColors.textColor,
                 ),
               ),
             ),
-          ),
+            SizedBox(height: 20.sp),
+            Text(
+              "Siz ro'yxatdan o'tmagansiz".tr,
+              style: TextStyle(
+                fontSize: Responsive.scaleFont(20, context),
+                color: AppColors.textColor,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10.sp),
+            Text(
+              "Iltimos, hisobingizga kiring yoki ro'yxatdan o'ting".tr,
+              style: TextStyle(
+                fontSize: Responsive.scaleFont(16, context),
+                color: AppColors.textColor,
+                fontWeight: FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 30.sp),
+            GestureDetector(
+              onTap: () => Get.offNamed('/login'),
+              onTapDown: (_) => setState(() => _isPressed = true),
+              onTapUp: (_) => setState(() => _isPressed = false),
+              child: AnimatedScale(
+                scale: _isPressed ? 0.95 : 1.0,
+                duration: const Duration(milliseconds: 100),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.midBlue, AppColors.lightBlue],
+                    ),
+                    borderRadius: BorderRadius.circular(12.sp),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40.sp,
+                    vertical: 12.sp,
+                  ),
+                  child: Text(
+                    "Ro'yxatdan o'ting va boshlang!".tr,
+                    style: TextStyle(
+                      fontSize: Responsive.scaleFont(16, context),
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }

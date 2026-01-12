@@ -6,6 +6,7 @@ import '../../../config/theme/app_dimensions.dart';
 import '../../../core/models/chat_rooms.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../controllers/funcController.dart';
+import '../../../controllers/theme_controller.dart';
 import '../controllers/messages_controller.dart';
 
 class PostOwnerDetailScreen extends StatefulWidget {
@@ -42,18 +43,18 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.darkNavy,
+      backgroundColor: AppColors.backgroundColor,
       elevation: 0,
       title: Text(
         _room.application.post.title,
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
           fontSize: Responsive.scaleFont(18, context),
-          color: AppColors.lightGray,
+          color: AppColors.textColor,
         ),
         overflow: TextOverflow.ellipsis,
       ),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: AppColors.lightGray),
+        icon: Icon(Icons.arrow_back, color: AppColors.textColor),
         onPressed: () => Get.back(),
       ),
     );
@@ -61,7 +62,7 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
 
   Widget _buildApplicationsScreen(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkNavy,
+      backgroundColor: AppColors.backgroundColor,
       appBar: _buildAppBar(context),
       body: _buildApplicationsList(context),
     );
@@ -80,7 +81,7 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
         return Center(
           child: Text(
             'No applications found',
-            style: TextStyle(color: AppColors.lightGray),
+            style: TextStyle(color: AppColors.textColor),
           ),
         );
       }
@@ -106,10 +107,10 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
         vertical: AppDimensions.paddingSmall,
       ),
       leading: CircleAvatar(
-        backgroundColor: AppColors.midBlue,
+        backgroundColor: AppColors.primaryColor,
         child: Text(
           sender[0].toUpperCase(),
-          style: TextStyle(color: AppColors.lightGray),
+          style: TextStyle(color: AppColors.white),
         ),
       ),
       title: Text(
@@ -124,14 +125,14 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontSize: Responsive.scaleFont(14, context),
-          color: AppColors.lightBlue.withOpacity(0.8),
+          color: AppColors.iconColor.withOpacity(0.8),
         ),
       ),
       trailing: Text(
         time,
         style: TextStyle(
           fontSize: Responsive.scaleFont(12, context),
-          color: AppColors.lightBlue,
+          color: AppColors.iconColor,
         ),
       ),
       onTap: () {
@@ -160,7 +161,7 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
   void _showMoreOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.darkBlue,
+      backgroundColor: AppColors.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppDimensions.cardRadius),
@@ -173,16 +174,16 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
             ListTile(
               leading: Icon(Icons.delete, color: AppColors.red),
               title: Text(
-                'Xabarni o‘chirish',
-                style: TextStyle(color: AppColors.lightGray),
+                'Xabarni o\'chirish',
+                style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
                 Get.back();
                 Get.snackbar(
                   'Xabar',
                   'Xabar o‘chirildi!',
-                  backgroundColor: AppColors.midBlue,
-                  colorText: AppColors.lightGray,
+                  backgroundColor: AppColors.primaryColor,
+                  colorText: AppColors.textColor,
                 );
               },
             ),
@@ -190,15 +191,15 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
               leading: Icon(Icons.block, color: AppColors.red),
               title: Text(
                 'Foydalanuvchini bloklash',
-                style: TextStyle(color: AppColors.lightGray),
+                style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
                 Get.back();
                 Get.snackbar(
                   'Xabar',
                   'Foydalanuvchi bloklandi!',
-                  backgroundColor: AppColors.midBlue,
-                  colorText: AppColors.lightGray,
+                  backgroundColor: AppColors.primaryColor,
+                  colorText: AppColors.textColor,
                 );
               },
             ),
@@ -206,15 +207,15 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
               leading: Icon(Icons.report, color: AppColors.red),
               title: Text(
                 'Shikoyat qilish',
-                style: TextStyle(color: AppColors.lightGray),
+                style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
                 Get.back();
                 Get.snackbar(
                   'Xabar',
                   'Shikoyat yuborildi!',
-                  backgroundColor: AppColors.midBlue,
-                  colorText: AppColors.lightGray,
+                  backgroundColor: AppColors.primaryColor,
+                  colorText: AppColors.textColor,
                 );
               },
             ),

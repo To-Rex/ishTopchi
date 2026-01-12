@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:ishtopchi/modules/profile/views/my_posts_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../common/widgets/bottom_sheets.dart';
+import '../../../config/routes/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
+import '../../../controllers/theme_controller.dart';
 import '../views/about_app_screen.dart';
 import '../views/devices_screen.dart';
 import '../views/edit_profile_screen.dart';
 import '../views/help_center_screen.dart';
 import '../views/my_profile_screen.dart';
 import '../views/my_resumes_screen.dart';
-import '../views/notifications_screen.dart';
 import '../views/privacy_screen.dart';
 import '../views/support_screen.dart';
 import '../../../core/services/show_toast.dart';
@@ -50,7 +51,6 @@ class ProfileController extends GetxController {
     });
   }
 
-
   void launchUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -61,7 +61,6 @@ class ProfileController extends GetxController {
   }
 
   void onLoginTap() => Get.offNamed('/login');
-
 
   Future<void> _checkTokenAndLoadUser() async {
     final token = funcController.getToken();
@@ -78,7 +77,9 @@ class ProfileController extends GetxController {
     try {
       final user = funcController.userMe.value;
       funcController.setUserMe(user);
-      if (user.data != null && user.data!.district != null && user.data!.district!.region != null) {
+      if (user.data != null &&
+          user.data!.district != null &&
+          user.data!.district!.region != null) {
         selectedRegionId.value = user.data!.district!.region!.id.toString();
         selectedDistrictId.value = user.data!.district!.id.toString();
         selectedGender.value = user.data!.gender == 'MALE' ? '1' : '2';
@@ -137,6 +138,8 @@ class ProfileController extends GetxController {
 
   void onLanguagesTap() => BottomSheets().showLanguageBottomSheet();
 
+  void onSettingsTap() => Get.toNamed(AppRoutes.settings);
+
   void onDevicesTap() => Get.to(() => DevicesScreen());
 
   void onSupportTap() => Get.to(() => SupportScreen());
@@ -145,42 +148,76 @@ class ProfileController extends GetxController {
 
   void onPrivacyTap() => Get.to(() => PrivacyScreen());
 
-  void onNotificationsTap() => Get.to(() => NotificationsScreen());
-
   void onHelpTap() => Get.to(() => HelpCenterScreen());
 
-
-
   void onLogoutTap() {
+    final ThemeController themeController = Get.find<ThemeController>();
     Get.dialog(
-        AlertDialog(
-            backgroundColor: AppColors.darkBlue,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: Text('Accountdan chiqish'.tr, style: TextStyle(fontSize: 18.sp, color: AppColors.red, fontWeight: FontWeight.bold)),
-            content: Text('Rostdan ham hisobingizdan chiqmoqchimisiz?'.tr,
-              style: TextStyle(fontSize: 12.sp, color: AppColors.lightBlue, fontWeight: FontWeight.w500)),
-            actionsAlignment: MainAxisAlignment.end,
-            actions: [
-              TextButton(
-                  onPressed: () => Get.back(),
-                  style: TextButton.styleFrom(
-                    overlayColor: AppColors.darkNavy,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
-                  child: Text('Bekor qilish'.tr, style: TextStyle(fontSize: 12.sp, color: AppColors.lightGray, fontWeight: FontWeight.w600))
+      AlertDialog(
+        backgroundColor: AppColors.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Accountdan chiqish'.tr,
+          style: TextStyle(
+            fontSize: 18.sp,
+            color: AppColors.red,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'Rostdan ham hisobingizdan chiqmoqchimisiz?'.tr,
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: AppColors.textSecondaryColor,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.end,
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            style: TextButton.styleFrom(
+              overlayColor: AppColors.textColor.withOpacity(0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              TextButton(
-                  onPressed: () async {
-                    await funcController.deleteToken();
-                    hasToken.value = false;
-                    Get.back();
-                    Get.offAllNamed('/login');
-                    ShowToast.show('Muvaffaqiyatli'.tr, 'Tizimdan chiqildi'.tr, 1, 1);
-                  },
-                  style: TextButton.styleFrom(backgroundColor: AppColors.red, padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  child: Text('Chiqish'.tr, style: TextStyle(fontSize: 12.sp, color: AppColors.white, fontWeight: FontWeight.w600))
-              )
-            ]
-        )
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            child: Text(
+              'Bekor qilish'.tr,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: AppColors.textColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              await funcController.deleteToken();
+              hasToken.value = false;
+              Get.back();
+              Get.offAllNamed('/login');
+              ShowToast.show('Muvaffaqiyatli'.tr, 'Tizimdan chiqildi'.tr, 1, 1);
+            },
+            style: TextButton.styleFrom(
+              backgroundColor: AppColors.red,
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Chiqish'.tr,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: AppColors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
+import '../../../controllers/theme_controller.dart';
 import 'otp_verification_screen.dart';
 
 class PhoneScreen extends StatefulWidget {
@@ -20,7 +21,10 @@ class _PhoneScreenState extends State<PhoneScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
 
-  final phoneFormatter = MaskTextInputFormatter(mask: '## ### ## ##', filter: { "#": RegExp(r'[0-9]') });
+  final phoneFormatter = MaskTextInputFormatter(
+    mask: '## ### ## ##',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
   String? _validatePhone(String? value) {
     if (value == null || value.isEmpty) {
@@ -50,81 +54,121 @@ class _PhoneScreenState extends State<PhoneScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    final ThemeController themeController = Get.find<ThemeController>();
 
-    return Scaffold(
-      backgroundColor: AppColors.darkNavy,
-      appBar: AppBar(title: Text('Telefon raqam'.tr, style: TextStyle(color: AppColors.white)), backgroundColor: AppColors.darkNavy, foregroundColor: AppColors.white),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.phone_android, size: 60, color: AppColors.lightBlue),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Telefon raqam kiriting'.tr,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.white,
+    return Obx(
+      () => Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        appBar: AppBar(
+          title: Text(
+            'Telefon raqam'.tr,
+            style: TextStyle(color: AppColors.textColor),
+          ),
+          backgroundColor: AppColors.backgroundColor,
+          foregroundColor: AppColors.textColor,
+          elevation: 0,
+        ),
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.phone_android,
+                      size: 60,
+                      color: AppColors.iconColor,
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Telegramdan ro‘yxatdan o‘tgan raqam bo‘lishi kerak'.tr,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.lightBlue,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 28),
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    inputFormatters: [phoneFormatter],
-                    style: const TextStyle(fontSize: 16, color: AppColors.white),
-                    decoration: InputDecoration(
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 6),
-                        child: Text('+998', style: TextStyle(fontSize: 16, color: AppColors.white)),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Telefon raqam kiriting'.tr,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textColor,
                       ),
-                      prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-                      hintText: '90 123 45 67',
-                      hintStyle: const TextStyle(color: AppColors.lightBlue),
-                      filled: true,
-                      fillColor: AppColors.darkBlue,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                     ),
-                    validator: _validatePhone,
-                    onChanged: (val) => setState(() {}),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: size.width,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.midBlue,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+                    const SizedBox(height: 12),
+                    Text(
+                      'Telegramdan ro‘yxatdan o‘tgan raqam bo‘lishi kerak'.tr,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondaryColor,
                       ),
-                      onPressed: _submit,
-                      child: Text('Kodni yuborish'.tr, style: TextStyle(fontSize: 16, color: AppColors.white)),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  SizedBox(height: 150)
-                ]
-              )
-            )
-          )
-        )
-      )
+                    const SizedBox(height: 28),
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      inputFormatters: [phoneFormatter],
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.textColor,
+                      ),
+                      decoration: InputDecoration(
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 12, right: 6),
+                          child: Text(
+                            '+998',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.textColor,
+                            ),
+                          ),
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
+                        hintText: '90 123 45 67',
+                        hintStyle: TextStyle(
+                          color: AppColors.textSecondaryColor,
+                        ),
+                        filled: true,
+                        fillColor: AppColors.cardColor,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
+                        ),
+                      ),
+                      validator: _validatePhone,
+                      onChanged: (val) => setState(() {}),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: size.width,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: _submit,
+                        child: Text(
+                          'Kodni yuborish'.tr,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 150),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

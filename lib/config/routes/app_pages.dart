@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ishtopchi/modules/login/views/register_screen.dart';
 import 'package:ishtopchi/modules/main/bindings/notifications_binding.dart';
+import 'package:ishtopchi/modules/profile/bindings/settings_binding.dart';
 import 'package:ishtopchi/modules/splash/bindings/splash_binding.dart';
 import 'package:ishtopchi/modules/splash/splash_screen.dart';
 import '../../modules/ad_posting/bindings/ad_posting_binding.dart';
@@ -23,6 +24,7 @@ import '../../modules/profile/bindings/my_posts_binding.dart';
 import '../../modules/profile/bindings/profile_binding.dart';
 import '../../modules/profile/views/my_posts_screen.dart';
 import '../../modules/profile/views/profile_screen.dart';
+import '../../modules/profile/views/settings_screen.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -115,6 +117,13 @@ class AppPages {
       name: AppRoutes.myPosts,
       page: () => MyPostsScreen(),
       binding: MyPostsBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 400),
+    ),
+    GetPage(
+      name: AppRoutes.settings,
+      page: () => SettingsScreen(),
+      binding: SettingsBinding(),
       transition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 400),
     ),

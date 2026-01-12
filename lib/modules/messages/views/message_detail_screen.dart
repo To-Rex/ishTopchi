@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../controllers/socket_service.dart';
+import '../../../controllers/theme_controller.dart';
 import '../../../core/models/chat_rooms.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../controllers/funcController.dart';
@@ -110,13 +111,13 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           vertical: AppDimensions.paddingSmall,
         ),
         decoration: BoxDecoration(
-          color: AppColors.darkBlue,
+          color: AppColors.cardColor,
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
         ),
         child: Text(
           date,
           style: TextStyle(
-            color: AppColors.lightGray,
+            color: AppColors.textColor,
             fontSize: Responsive.scaleFont(14, context),
           ),
         ),
@@ -163,17 +164,17 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.darkNavy,
+      backgroundColor: AppColors.backgroundColor,
       elevation: 0,
       title: Row(
         children: [
           CircleAvatar(
-            backgroundColor: AppColors.midBlue,
+            backgroundColor: AppColors.primaryColor,
             radius: Responsive.scaleWidth(20, context),
             child: Text(
               _otherUser.firstName[0].toUpperCase(),
               style: TextStyle(
-                color: AppColors.lightGray,
+                color: AppColors.white,
                 fontSize: Responsive.scaleFont(16, context),
               ),
             ),
@@ -184,7 +185,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               _otherUser.firstName,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 fontSize: Responsive.scaleFont(18, context),
-                color: AppColors.lightGray,
+                color: AppColors.textColor,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -192,23 +193,23 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         ],
       ),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: AppColors.lightGray),
+        icon: Icon(Icons.arrow_back, color: AppColors.textColor),
         onPressed: () => Get.back(),
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.call, color: AppColors.lightGray),
+          icon: Icon(Icons.call, color: AppColors.textColor),
           onPressed: () {
             Get.snackbar(
               'Xabar',
-              'Qo‘ng‘iroq funksiyasi tez kunda qo‘shiladi!',
-              backgroundColor: AppColors.midBlue,
-              colorText: AppColors.lightGray,
+              'Qo\'ng\'iroq funksiyasi tez kunda qo\'shiladi!',
+              backgroundColor: AppColors.primaryColor,
+              colorText: AppColors.textColor,
             );
           },
         ),
         IconButton(
-          icon: Icon(Icons.more_vert, color: AppColors.lightGray),
+          icon: Icon(Icons.more_vert, color: AppColors.textColor),
           onPressed: () {
             _showMoreOptions(context);
           },
@@ -252,9 +253,17 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     );
   }
 
-  Widget _buildResumeMessageBubble(BuildContext context, Map<String, dynamic> msg) {
+  Widget _buildResumeMessageBubble(
+    BuildContext context,
+    Map<String, dynamic> msg,
+  ) {
     final resume = msg['resume'];
     final isMe = msg['senderId'] == _currentUserId;
+    final bubbleTextColor = isMe ? AppColors.white : AppColors.textColor;
+    final iconColor = isMe ? AppColors.white : AppColors.iconColor;
+    final avatarTextColor =
+        isMe ? AppColors.white : AppColors.textSecondaryColor;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
       child: Align(
@@ -264,12 +273,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           children: [
             if (!isMe) ...[
               CircleAvatar(
-                backgroundColor: AppColors.midBlue,
+                backgroundColor: AppColors.primaryColor,
                 radius: Responsive.scaleWidth(16, context),
                 child: Text(
                   _otherUser.firstName[0].toUpperCase(),
                   style: TextStyle(
-                    color: AppColors.lightGray,
+                    color: avatarTextColor,
                     fontSize: Responsive.scaleFont(14, context),
                   ),
                 ),
@@ -283,14 +292,14 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 ),
                 padding: EdgeInsets.all(AppDimensions.paddingMedium),
                 decoration: BoxDecoration(
-                  color: isMe ? AppColors.midBlue : AppColors.darkBlue,
+                  color: isMe ? AppColors.primaryColor : AppColors.cardColor,
                   borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
                 ),
                 child: ListTile(
-                  leading: Icon(Icons.file_present, color: AppColors.lightBlue),
+                  leading: Icon(Icons.file_present, color: iconColor),
                   title: Text(
                     resume.title ?? 'Resume',
-                    style: TextStyle(color: AppColors.lightGray),
+                    style: TextStyle(color: bubbleTextColor),
                   ),
                   onTap: () => _showResumeDialog(context),
                 ),
@@ -299,12 +308,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             if (isMe) ...[
               SizedBox(width: AppDimensions.paddingSmall),
               CircleAvatar(
-                backgroundColor: AppColors.midBlue,
+                backgroundColor: AppColors.primaryColor,
                 radius: Responsive.scaleWidth(16, context),
                 child: Text(
                   _currentUser.firstName[0].toUpperCase(),
                   style: TextStyle(
-                    color: AppColors.lightGray,
+                    color: avatarTextColor,
                     fontSize: Responsive.scaleFont(14, context),
                   ),
                 ),
@@ -323,6 +332,14 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     final isMe = msg['senderId'] == _currentUserId;
     final time = _formatTime(msg['createdAt']);
     final status = msg['status'] ?? 'sent';
+    final bubbleTextColor = isMe ? AppColors.white : AppColors.textColor;
+    final timeColor =
+        isMe
+            ? AppColors.white.withOpacity(0.7)
+            : AppColors.iconColor.withOpacity(0.7);
+    final avatarTextColor =
+        isMe ? AppColors.white : AppColors.textSecondaryColor;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
       child: Align(
@@ -332,12 +349,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           children: [
             if (!isMe) ...[
               CircleAvatar(
-                backgroundColor: AppColors.midBlue,
+                backgroundColor: AppColors.primaryColor,
                 radius: Responsive.scaleWidth(16, context),
                 child: Text(
                   _otherUser.firstName[0].toUpperCase(),
                   style: TextStyle(
-                    color: AppColors.lightGray,
+                    color: avatarTextColor,
                     fontSize: Responsive.scaleFont(14, context),
                   ),
                 ),
@@ -351,18 +368,26 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 ),
                 padding: EdgeInsets.all(AppDimensions.paddingMedium),
                 decoration: BoxDecoration(
-                  color: isMe ? AppColors.midBlue : AppColors.darkBlue,
+                  color: isMe ? AppColors.primaryColor : AppColors.cardColor,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(isMe ? AppDimensions.cardRadius : 0),
+                    topLeft: Radius.circular(
+                      isMe ? AppDimensions.cardRadius : 0,
+                    ),
                     topRight: Radius.circular(AppDimensions.cardRadius),
-                    bottomLeft: Radius.circular( AppDimensions.cardRadius,),
-                    bottomRight: Radius.circular(isMe ? 0 : AppDimensions.cardRadius)
-                  )
+                    bottomLeft: Radius.circular(AppDimensions.cardRadius),
+                    bottomRight: Radius.circular(
+                      isMe ? 0 : AppDimensions.cardRadius,
+                    ),
+                  ),
                 ),
                 child: Column(
-                  crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
-                    Text(msg['content'] ?? '', style: TextStyle(color: AppColors.lightGray)),
+                    Text(
+                      msg['content'] ?? '',
+                      style: TextStyle(color: bubbleTextColor),
+                    ),
                     SizedBox(height: AppDimensions.paddingSmall / 2),
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -370,7 +395,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                         Text(
                           time,
                           style: TextStyle(
-                            color: AppColors.lightBlue.withOpacity(0.7),
+                            color: timeColor,
                             fontSize: Responsive.scaleFont(12, context),
                           ),
                         ),
@@ -385,8 +410,8 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                             style: TextStyle(
                               color:
                                   status == 'seen'
-                                      ? AppColors.lightBlue
-                                      : AppColors.lightGray.withOpacity(0.7),
+                                      ? AppColors.white
+                                      : AppColors.white.withOpacity(0.7),
                               fontSize: Responsive.scaleFont(10, context),
                             ),
                           ),
@@ -400,12 +425,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             if (isMe) ...[
               SizedBox(width: AppDimensions.paddingSmall),
               CircleAvatar(
-                backgroundColor: AppColors.midBlue,
+                backgroundColor: AppColors.primaryColor,
                 radius: Responsive.scaleWidth(16, context),
                 child: Text(
                   _currentUser.firstName[0].toUpperCase(),
                   style: TextStyle(
-                    color: AppColors.lightGray,
+                    color: avatarTextColor,
                     fontSize: Responsive.scaleFont(14, context),
                   ),
                 ),
@@ -425,7 +450,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         left: 15.sp,
         right: 15.sp,
       ),
-      color: AppColors.darkBlue,
+      color: AppColors.cardColor,
       child: Row(
         children: [
           Expanded(
@@ -433,14 +458,14 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               height: 50,
               child: TextField(
                 controller: _textController,
-                style: TextStyle(color: AppColors.lightGray),
+                style: TextStyle(color: AppColors.textColor),
                 decoration: InputDecoration(
                   hintText: 'Type a message',
                   hintStyle: TextStyle(
-                    color: AppColors.lightBlue.withOpacity(0.6),
+                    color: AppColors.iconColor.withOpacity(0.6),
                   ),
                   filled: true,
-                  fillColor: AppColors.darkNavy,
+                  fillColor: AppColors.backgroundColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -484,13 +509,13 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.darkNavy,
+                backgroundColor: AppColors.backgroundColor,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Icon(Icons.send, color: AppColors.lightGray),
+              child: Icon(Icons.send, color: AppColors.textColor),
             ),
           ),
         ],
@@ -500,7 +525,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
   Widget _buildChatScreen(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkNavy,
+      backgroundColor: AppColors.backgroundColor,
       appBar: _buildAppBar(context),
       body: _buildBody(context),
     );
@@ -509,7 +534,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   void _showMoreOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.darkBlue,
+      backgroundColor: AppColors.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppDimensions.cardRadius),
@@ -522,16 +547,16 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             ListTile(
               leading: Icon(Icons.delete, color: AppColors.red),
               title: Text(
-                'Xabarni o‘chirish',
-                style: TextStyle(color: AppColors.lightGray),
+                'Xabarni o\'chirish',
+                style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
                 Get.back();
                 Get.snackbar(
                   'Xabar',
                   'Xabar o‘chirildi!',
-                  backgroundColor: AppColors.midBlue,
-                  colorText: AppColors.lightGray,
+                  backgroundColor: AppColors.primaryColor,
+                  colorText: AppColors.textColor,
                 );
               },
             ),
@@ -539,15 +564,15 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               leading: Icon(Icons.block, color: AppColors.red),
               title: Text(
                 'Foydalanuvchini bloklash',
-                style: TextStyle(color: AppColors.lightGray),
+                style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
                 Get.back();
                 Get.snackbar(
                   'Xabar',
                   'Foydalanuvchi bloklandi!',
-                  backgroundColor: AppColors.midBlue,
-                  colorText: AppColors.lightGray,
+                  backgroundColor: AppColors.primaryColor,
+                  colorText: AppColors.textColor,
                 );
               },
             ),
@@ -555,15 +580,15 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               leading: Icon(Icons.report, color: AppColors.red),
               title: Text(
                 'Shikoyat qilish',
-                style: TextStyle(color: AppColors.lightGray),
+                style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
                 Get.back();
                 Get.snackbar(
                   'Xabar',
                   'Shikoyat yuborildi!',
-                  backgroundColor: AppColors.midBlue,
-                  colorText: AppColors.lightGray,
+                  backgroundColor: AppColors.primaryColor,
+                  colorText: AppColors.textColor,
                 );
               },
             ),
@@ -575,24 +600,25 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
   void _showResumeDialog(BuildContext context) {
     final resume = _room.application?.resume;
+    final avatarTextColor = AppColors.white;
 
     showDialog(
       context: context,
       builder:
           (context) => Dialog.fullscreen(
-            backgroundColor: AppColors.darkNavy,
+            backgroundColor: AppColors.backgroundColor,
             child: Scaffold(
-              backgroundColor: AppColors.darkNavy,
+              backgroundColor: AppColors.backgroundColor,
               appBar: AppBar(
-                backgroundColor: AppColors.darkNavy,
+                backgroundColor: AppColors.backgroundColor,
                 elevation: 0,
                 leading: IconButton(
-                  icon: Icon(Icons.close, color: AppColors.lightGray),
+                  icon: Icon(Icons.close, color: AppColors.textColor),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 title: Text(
                   'Resume',
-                  style: TextStyle(color: AppColors.lightGray),
+                  style: TextStyle(color: AppColors.textColor),
                 ),
               ),
               body: SingleChildScrollView(
@@ -601,7 +627,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                   children: [
                     // User header card
                     Card(
-                      color: AppColors.darkBlue,
+                      color: AppColors.cardColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                           AppDimensions.cardRadius,
@@ -612,18 +638,18 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                         child: Row(
                           children: [
                             CircleAvatar(
-                              backgroundColor: AppColors.midBlue,
+                              backgroundColor: AppColors.primaryColor,
                               radius: Responsive.scaleWidth(30, context),
                               child: Text(
                                 _otherUser.firstName[0].toUpperCase(),
-                                style: TextStyle(color: AppColors.lightGray),
+                                style: TextStyle(color: avatarTextColor),
                               ),
                             ),
                             SizedBox(width: AppDimensions.paddingMedium),
                             Text(
                               _otherUser.firstName,
                               style: TextStyle(
-                                color: AppColors.lightGray,
+                                color: AppColors.textColor,
                                 fontSize: Responsive.scaleFont(18, context),
                               ),
                             ),
@@ -635,7 +661,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     // Title card
                     if (resume?.title != null && resume!.title!.isNotEmpty)
                       Card(
-                        color: AppColors.darkBlue,
+                        color: AppColors.cardColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             AppDimensions.cardRadius,
@@ -648,12 +674,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.title, color: AppColors.lightBlue),
+                                  Icon(Icons.title, color: AppColors.iconColor),
                                   SizedBox(width: AppDimensions.paddingSmall),
                                   Text(
                                     'Sarlavha',
                                     style: TextStyle(
-                                      color: AppColors.lightBlue,
+                                      color: AppColors.iconColor,
                                       fontSize: Responsive.scaleFont(
                                         18,
                                         context,
@@ -667,7 +693,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                               Text(
                                 resume.title!,
                                 style: TextStyle(
-                                  color: AppColors.lightGray,
+                                  color: AppColors.textColor,
                                   fontSize: Responsive.scaleFont(16, context),
                                 ),
                               ),
@@ -679,7 +705,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     // Content card
                     if (resume?.content != null && resume!.content!.isNotEmpty)
                       Card(
-                        color: AppColors.darkBlue,
+                        color: AppColors.cardColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             AppDimensions.cardRadius,
@@ -694,13 +720,13 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                 children: [
                                   Icon(
                                     Icons.description,
-                                    color: AppColors.lightBlue,
+                                    color: AppColors.iconColor,
                                   ),
                                   SizedBox(width: AppDimensions.paddingSmall),
                                   Text(
                                     'Tarkib',
                                     style: TextStyle(
-                                      color: AppColors.lightBlue,
+                                      color: AppColors.iconColor,
                                       fontSize: Responsive.scaleFont(
                                         18,
                                         context,
@@ -714,7 +740,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                               Text(
                                 resume.content!,
                                 style: TextStyle(
-                                  color: AppColors.lightGray,
+                                  color: AppColors.textColor,
                                   fontSize: Responsive.scaleFont(16, context),
                                 ),
                               ),
@@ -727,7 +753,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     if (resume?.education != null &&
                         resume!.education!.isNotEmpty)
                       Card(
-                        color: AppColors.darkBlue,
+                        color: AppColors.cardColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             AppDimensions.cardRadius,
@@ -742,13 +768,13 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                 children: [
                                   Icon(
                                     Icons.school,
-                                    color: AppColors.lightBlue,
+                                    color: AppColors.iconColor,
                                   ),
                                   SizedBox(width: AppDimensions.paddingSmall),
                                   Text(
                                     'Ta\'lim',
                                     style: TextStyle(
-                                      color: AppColors.lightBlue,
+                                      color: AppColors.iconColor,
                                       fontSize: Responsive.scaleFont(
                                         18,
                                         context,
@@ -768,7 +794,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                     AppDimensions.paddingSmall,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.darkNavy,
+                                    color: AppColors.backgroundColor,
                                     borderRadius: BorderRadius.circular(
                                       AppDimensions.cardRadius,
                                     ),
@@ -781,28 +807,28 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                         Text(
                                           'Daraja: ${edu.degree}',
                                           style: TextStyle(
-                                            color: AppColors.lightGray,
+                                            color: AppColors.textColor,
                                           ),
                                         ),
                                       if (edu.field != null)
                                         Text(
                                           'Soha: ${edu.field}',
                                           style: TextStyle(
-                                            color: AppColors.lightGray,
+                                            color: AppColors.textColor,
                                           ),
                                         ),
                                       if (edu.institution != null)
                                         Text(
                                           'Muassasa: ${edu.institution}',
                                           style: TextStyle(
-                                            color: AppColors.lightGray,
+                                            color: AppColors.textColor,
                                           ),
                                         ),
                                       if (edu.period != null)
                                         Text(
                                           'Davri: ${edu.period}',
                                           style: TextStyle(
-                                            color: AppColors.lightGray,
+                                            color: AppColors.textColor,
                                           ),
                                         ),
                                     ],
@@ -818,7 +844,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     if (resume?.experience != null &&
                         resume!.experience!.isNotEmpty)
                       Card(
-                        color: AppColors.darkBlue,
+                        color: AppColors.cardColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             AppDimensions.cardRadius,
@@ -831,12 +857,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.work, color: AppColors.lightBlue),
+                                  Icon(Icons.work, color: AppColors.iconColor),
                                   SizedBox(width: AppDimensions.paddingSmall),
                                   Text(
                                     'Tajriba',
                                     style: TextStyle(
-                                      color: AppColors.lightBlue,
+                                      color: AppColors.iconColor,
                                       fontSize: Responsive.scaleFont(
                                         18,
                                         context,
@@ -856,7 +882,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                     AppDimensions.paddingSmall,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.darkNavy,
+                                    color: AppColors.backgroundColor,
                                     borderRadius: BorderRadius.circular(
                                       AppDimensions.cardRadius,
                                     ),
@@ -869,28 +895,28 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                         Text(
                                           'Lavozim: ${exp.position}',
                                           style: TextStyle(
-                                            color: AppColors.lightGray,
+                                            color: AppColors.textColor,
                                           ),
                                         ),
                                       if (exp.company != null)
                                         Text(
                                           'Kompaniya: ${exp.company}',
                                           style: TextStyle(
-                                            color: AppColors.lightGray,
+                                            color: AppColors.textColor,
                                           ),
                                         ),
                                       if (exp.period != null)
                                         Text(
                                           'Davri: ${exp.period}',
                                           style: TextStyle(
-                                            color: AppColors.lightGray,
+                                            color: AppColors.textColor,
                                           ),
                                         ),
                                       if (exp.description != null)
                                         Text(
                                           'Tavsif: ${exp.description}',
                                           style: TextStyle(
-                                            color: AppColors.lightGray,
+                                            color: AppColors.textColor,
                                           ),
                                         ),
                                     ],

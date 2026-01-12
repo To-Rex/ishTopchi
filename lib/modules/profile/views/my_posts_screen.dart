@@ -24,7 +24,9 @@ class MyPostsScreen extends StatefulWidget {
 class MyPostsScreenState extends State<MyPostsScreen> {
   final FuncController funcController = Get.put(FuncController());
   final ApiController apiController = Get.find<ApiController>();
-  final RefreshController refreshController = RefreshController(initialRefresh: false);
+  final RefreshController refreshController = RefreshController(
+    initialRefresh: false,
+  );
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -73,17 +75,30 @@ class MyPostsScreenState extends State<MyPostsScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkNavy,
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.darkNavy,
+        backgroundColor: AppColors.backgroundColor,
         elevation: 0,
-        leading: IconButton(icon: Icon(LucideIcons.arrowLeft, color: AppColors.white, size: 24), onPressed: () => Get.back()),
-        title: Text('Mening e’lonlarim'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(20, context), fontWeight: FontWeight.w600)),
-        centerTitle: true
+        leading: IconButton(
+          icon: Icon(
+            LucideIcons.arrowLeft,
+            color: AppColors.textColor,
+            size: 24,
+          ),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          'Mening e’lonlarim'.tr,
+          style: TextStyle(
+            color: AppColors.textColor,
+            fontSize: Responsive.scaleFont(20, context),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -95,18 +110,32 @@ class MyPostsScreenState extends State<MyPostsScreen> {
               top: Responsive.scaleHeight(10, context),
               left: Responsive.scaleWidth(16, context),
               right: Responsive.scaleWidth(16, context),
-              bottom: Responsive.scaleHeight(10, context)
+              bottom: Responsive.scaleHeight(10, context),
             ),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Qidirish...'.tr,
-                hintStyle: TextStyle(color: AppColors.lightGray),
-                prefixIcon: Icon(LucideIcons.search, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(8, context)), borderSide: BorderSide.none),
+                hintStyle: TextStyle(
+                  color: AppColors.iconColor.withOpacity(0.6),
+                ),
+                prefixIcon: Icon(
+                  LucideIcons.search,
+                  color: AppColors.iconColor,
+                  size: Responsive.scaleFont(20, context),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(
+                    Responsive.scaleWidth(8, context),
+                  ),
+                  borderSide: BorderSide.none,
+                ),
                 filled: true,
-                fillColor: AppColors.darkBlue
+                fillColor: AppColors.cardColor,
               ),
-              style: TextStyle(fontSize: Responsive.scaleFont(16, context), color: AppColors.lightGray),
+              style: TextStyle(
+                fontSize: Responsive.scaleFont(16, context),
+                color: AppColors.textColor,
+              ),
               onChanged: (value) async {
                 funcController.searchQuery.value = value;
                 funcController.currentPage.value = 1;
@@ -114,8 +143,8 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                 funcController.mePosts.clear();
                 await _loadMyPosts();
                 refreshController.refreshCompleted();
-              }
-            )
+              },
+            ),
           ),
           // Filtr va ko‘rinish tugmalari
           Container(
@@ -124,56 +153,100 @@ class MyPostsScreenState extends State<MyPostsScreen> {
             margin: EdgeInsets.only(
               left: Responsive.scaleWidth(16, context),
               right: Responsive.scaleWidth(16, context),
-              bottom: Responsive.scaleHeight(10, context)
+              bottom: Responsive.scaleHeight(10, context),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(12, context), vertical: Responsive.scaleHeight(10, context)),
-                  decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Responsive.scaleWidth(12, context),
+                    vertical: Responsive.scaleHeight(10, context),
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardColor,
+                    borderRadius: BorderRadius.circular(8.sp),
+                  ),
                   child: Row(
                     children: [
-                      Icon(LucideIcons.mapPin, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
+                      Icon(
+                        LucideIcons.mapPin,
+                        color: AppColors.iconColor,
+                        size: Responsive.scaleFont(20, context),
+                      ),
                       SizedBox(width: 6.sp),
-                      Obx(() => Text(funcController.userMe.value.data?.district?.name ?? 'Viloyat'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context), fontWeight: FontWeight.w500)))
-                    ]
-                  )
+                      Obx(
+                        () => Text(
+                          funcController.userMe.value.data?.district?.name ??
+                              'Viloyat'.tr,
+                          style: TextStyle(
+                            color: AppColors.textColor,
+                            fontSize: Responsive.scaleFont(14, context),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Obx(() => Expanded(
+                Obx(
+                  () => Expanded(
                     child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(LucideIcons.megaphone, color: AppColors.lightGray, size: Responsive.scaleFont(20, context)),
-                          SizedBox(width: 6.sp),
-                          Text('${funcController.totalMePosts} ${'ta e’lon'.tr}', style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(12, context), fontWeight: FontWeight.w500))
-                        ]
-                    )
-                )),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          LucideIcons.megaphone,
+                          color: AppColors.iconColor,
+                          size: Responsive.scaleFont(20, context),
+                        ),
+                        SizedBox(width: 6.sp),
+                        Text(
+                          '${funcController.totalMePosts} ${'ta e’lon'.tr}',
+                          style: TextStyle(
+                            color: AppColors.textColor,
+                            fontSize: Responsive.scaleFont(12, context),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {
-                    funcController.isGridView.value = !funcController.isGridView.value;
+                    funcController.isGridView.value =
+                        !funcController.isGridView.value;
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(16, context), vertical: Responsive.scaleHeight(10, context)),
-                    decoration: BoxDecoration(color: AppColors.darkBlue, borderRadius: BorderRadius.circular(8.sp)),
-                    child: Obx(() => Icon(
-                      !funcController.isGridView.value ? LucideIcons.grid2x2 : LucideIcons.list,
-                      color: AppColors.lightGray,
-                      size: Responsive.scaleFont(20, context)
-                    ))
-                  )
-                )
-              ]
-            )
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Responsive.scaleWidth(16, context),
+                      vertical: Responsive.scaleHeight(10, context),
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardColor,
+                      borderRadius: BorderRadius.circular(8.sp),
+                    ),
+                    child: Obx(
+                      () => Icon(
+                        !funcController.isGridView.value
+                            ? LucideIcons.grid2x2
+                            : LucideIcons.list,
+                        color: AppColors.iconColor,
+                        size: Responsive.scaleFont(20, context),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           // E‘lonlar ro‘yxati
           Expanded(
             child: RefreshComponent(
               refreshController: refreshController,
               scrollController: scrollController,
-              color: AppColors.lightGray,
+              color: AppColors.iconColor,
               onRefresh: _onRefresh,
               onLoading: _onLoading,
               enablePullUp: funcController.hasMore.value,
@@ -184,12 +257,17 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
+                    padding: EdgeInsets.only(
+                      left: Responsive.scaleWidth(16, context),
+                      right: Responsive.scaleWidth(16, context),
+                      bottom: Responsive.scaleHeight(16, context),
+                    ),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: Responsive().getCrossAxisCount(context),
                       crossAxisSpacing: Responsive.scaleWidth(16, context),
                       mainAxisSpacing: Responsive.scaleHeight(16, context),
-                      childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.6,
+                      childAspectRatio:
+                          Responsive.screenWidth(context) < 300 ? 0.9 : 0.6,
                     ),
                     itemCount: 6,
                     itemBuilder: (context, index) => const SkeletonPostCard(),
@@ -200,64 +278,124 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(LucideIcons.fileX, size: 64.sp, color: AppColors.lightGray.withAlpha(150)),
+                          Icon(
+                            LucideIcons.fileX,
+                            size: 64.sp,
+                            color: AppColors.iconColor.withAlpha(150),
+                          ),
                           SizedBox(height: 16.sp),
-                          Text('Hozircha e’lonlaringiz yo‘q'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(18, context), fontWeight: FontWeight.w500)),
+                          Text(
+                            'Hozircha e’lonlaringiz yo‘q'.tr,
+                            style: TextStyle(
+                              color: AppColors.textColor,
+                              fontSize: Responsive.scaleFont(18, context),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                           SizedBox(height: 8.sp),
-                          Text('Yangi e’lon qo‘shish uchun quyidagi tugmani bosing'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)), textAlign: TextAlign.center),
+                          Text(
+                            'Yangi e’lon qo‘shish uchun quyidagi tugmani bosing'
+                                .tr,
+                            style: TextStyle(
+                              color: AppColors.textSecondaryColor,
+                              fontSize: Responsive.scaleFont(14, context),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                           SizedBox(height: 16.sp),
                           ElevatedButton(
                             onPressed: () {
                               Get.back();
                               funcController.setBarIndex(2);
                             },
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, padding: EdgeInsets.zero, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)), elevation: 0),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: Responsive.scaleWidth(24, context), vertical: Responsive.scaleHeight(12, context)),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: [AppColors.lightBlue, AppColors.darkBlue], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12.sp),
-                                boxShadow: [BoxShadow(color: AppColors.darkNavy, blurRadius: 8, offset: const Offset(0, 2))]
                               ),
-                              child: Text('E’lon qo‘shish'.tr, style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(16, context), fontWeight: FontWeight.w600))
-                            )
-                          )
-                        ]
-                      )
-                    )
+                              elevation: 0,
+                            ),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: Responsive.scaleWidth(24, context),
+                                vertical: Responsive.scaleHeight(12, context),
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.primaryColor,
+                                    AppColors.secondaryColor,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12.sp),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.shadowColor,
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                'E’lon qo‘shish'.tr,
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: Responsive.scaleFont(16, context),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 }
                 // E‘lonlar ro‘yxati
-                return funcController.isGridView.value ?  GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: Responsive().getCrossAxisCount(context),
-                    crossAxisSpacing: Responsive.scaleWidth(16, context),
-                    mainAxisSpacing: Responsive.scaleHeight(16, context),
-                    childAspectRatio: Responsive.screenWidth(context) < 300 ? 0.9 : 0.535,
-                  ),
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    final post = posts[index];
-                    return PostCard(post: post, mePost: true);
-                  }
-                ) : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(left: Responsive.scaleWidth(16, context), right: Responsive.scaleWidth(16, context), bottom: Responsive.scaleHeight(16, context)),
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    final post = posts[index];
-                    return PostCard(post: post,mePost: true);
-                  }
-                );
-              })
-            )
-          )
-        ]
-      )
+                return funcController.isGridView.value
+                    ? GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.only(
+                        left: Responsive.scaleWidth(16, context),
+                        right: Responsive.scaleWidth(16, context),
+                        bottom: Responsive.scaleHeight(16, context),
+                      ),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: Responsive().getCrossAxisCount(context),
+                        crossAxisSpacing: Responsive.scaleWidth(16, context),
+                        mainAxisSpacing: Responsive.scaleHeight(16, context),
+                        childAspectRatio:
+                            Responsive.screenWidth(context) < 300 ? 0.9 : 0.53,
+                      ),
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        final post = posts[index];
+                        return PostCard(post: post, mePost: true);
+                      },
+                    )
+                    : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.only(
+                        left: Responsive.scaleWidth(16, context),
+                        right: Responsive.scaleWidth(16, context),
+                        bottom: Responsive.scaleHeight(16, context),
+                      ),
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        final post = posts[index];
+                        return PostCard(post: post, mePost: true);
+                      },
+                    );
+              }),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

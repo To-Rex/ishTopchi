@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/theme/app_colors.dart';
+import '../../../config/theme/app_dimensions.dart';
+import '../../../controllers/theme_controller.dart';
 import '../../../core/models/resumes_model.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/create_resume_controller.dart';
@@ -14,121 +16,188 @@ class CreateResumeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Kontrollerni yaratish yoki topish
     final controller = Get.put(CreateResumeController());
+    final ThemeController themeController = Get.find<ThemeController>();
     controller.loadResumeData(resume); // Resume ma'lumotlarini yuklash
 
-    return Scaffold(
-      backgroundColor: AppColors.darkNavy,
-      appBar: AppBar(
-        backgroundColor: AppColors.darkNavy,
-        centerTitle: true,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.lightGray, size: Responsive.scaleFont(25, context)),
-          onPressed: () => Get.back(),
+    return Obx(
+      () => Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: AppColors.textColor,
+              size: Responsive.scaleFont(25, context),
+            ),
+            onPressed: () => Get.back(),
+          ),
+          title: Text(
+            'Rezyume yaratish'.tr,
+            style: TextStyle(
+              color: AppColors.textColor,
+              fontSize: Responsive.scaleFont(20, context),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        title: Text('Rezyume yaratish'.tr, style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(20, context), fontWeight: FontWeight.bold)),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Sarlavha
-              _buildTextField(
-                context,
-                label: 'Sarlavha'.tr,
-                initialValue: controller.titleController.value,
-                onChanged: (value) => controller.titleController.value = value,
-              ),
-              SizedBox(height: Responsive.scaleHeight(16, context)),
-              // Tavsif
-              _buildTextField(
-                context,
-                label: 'Tavsif'.tr,
-                initialValue: controller.contentController.value,
-                maxLines: 4,
-                onChanged: (value) => controller.contentController.value = value,
-              ),
-              SizedBox(height: Responsive.scaleHeight(16, context)),
-              // Fayl tanlash
-              _buildFilePicker(context, controller),
-              SizedBox(height: Responsive.scaleHeight(16, context)),
-              // Ta'lim bo'limi
-              _buildSectionTitle(context, 'Ta’lim'.tr, () => controller.addEducation()),
-              Obx(() => Column(
-                children: controller.educationList.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final education = entry.value;
-                  return _buildEducationField(context, controller, index, education);
-                }).toList(),
-              )),
-              SizedBox(height: Responsive.scaleHeight(16, context)),
-              // Tajriba bo'limi
-              _buildSectionTitle(context, 'Tajriba'.tr, () => controller.addExperience()),
-              Obx(() => Column(
-                children: controller.experienceList.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final experience = entry.value;
-                  return _buildExperienceField(context, controller, index, experience);
-                }).toList(),
-              )),
-              SizedBox(height: Responsive.scaleHeight(20, context)),
-              // Saqlash/Yangilash tugmasi
-              Obx(() => Center(
-                child: controller.isLoading.value
-                    ? CircularProgressIndicator(color: AppColors.lightBlue)
-                    : ElevatedButton(
-                  onPressed: controller.saveResume,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.lightBlue,
-                    fixedSize: Size(double.infinity, Responsive.scaleHeight(48, context)),
-                    minimumSize: Size(double.infinity, Responsive.scaleHeight(48, context)),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Responsive.scaleWidth(40, context),
-                      vertical: Responsive.scaleHeight(12, context),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context)),
-                    ),
-                    elevation: 5,
-                  ),
-                  child: Text(
-                    controller.isEditing.value ? 'Yangilash'.tr : 'Saqlash'.tr,
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: Responsive.scaleFont(16, context),
-                      fontWeight: FontWeight.w600,
-                    ),
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Sarlavha
+                _buildTextField(
+                  context,
+                  label: 'Sarlavha'.tr,
+                  initialValue: controller.titleController.value,
+                  onChanged:
+                      (value) => controller.titleController.value = value,
+                ),
+                SizedBox(height: AppDimensions.paddingMedium),
+                // Tavsif
+                _buildTextField(
+                  context,
+                  label: 'Tavsif'.tr,
+                  initialValue: controller.contentController.value,
+                  maxLines: 4,
+                  onChanged:
+                      (value) => controller.contentController.value = value,
+                ),
+                SizedBox(height: AppDimensions.paddingMedium),
+                // Fayl tanlash
+                _buildFilePicker(context, controller),
+                SizedBox(height: AppDimensions.paddingMedium),
+                // Ta'lim bo'limi
+                _buildSectionTitle(
+                  context,
+                  'Ta\'lim'.tr,
+                  () => controller.addEducation(),
+                ),
+                Obx(
+                  () => Column(
+                    children:
+                        controller.educationList.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final education = entry.value;
+                          return _buildEducationField(
+                            context,
+                            controller,
+                            index,
+                            education,
+                          );
+                        }).toList(),
                   ),
                 ),
-              )),
-              SizedBox(height: Responsive.scaleHeight(60, context)),
-            ],
+                SizedBox(height: AppDimensions.paddingMedium),
+                // Tajriba bo'limi
+                _buildSectionTitle(
+                  context,
+                  'Tajriba'.tr,
+                  () => controller.addExperience(),
+                ),
+                Obx(
+                  () => Column(
+                    children:
+                        controller.experienceList.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final experience = entry.value;
+                          return _buildExperienceField(
+                            context,
+                            controller,
+                            index,
+                            experience,
+                          );
+                        }).toList(),
+                  ),
+                ),
+                SizedBox(height: AppDimensions.paddingLarge),
+                // Saqlash/Yangilash tugmasi
+                Obx(
+                  () => Center(
+                    child:
+                        controller.isLoading.value
+                            ? CircularProgressIndicator(
+                              color: AppColors.primaryColor,
+                            )
+                            : ElevatedButton(
+                              onPressed: controller.saveResume,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryColor,
+                                fixedSize: Size(
+                                  double.infinity,
+                                  Responsive.scaleHeight(48, context),
+                                ),
+                                minimumSize: Size(
+                                  double.infinity,
+                                  Responsive.scaleHeight(48, context),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: AppDimensions.paddingLarge,
+                                  vertical: AppDimensions.paddingSmall,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    AppDimensions.cardRadius,
+                                  ),
+                                ),
+                                elevation: 5,
+                              ),
+                              child: Text(
+                                controller.isEditing.value
+                                    ? 'Yangilash'.tr
+                                    : 'Saqlash'.tr,
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: Responsive.scaleFont(16, context),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                  ),
+                ),
+                SizedBox(height: AppDimensions.paddingLarge),
+              ],
+            ),
           ),
-        )
+        ),
       ),
     );
   }
 
-  Widget _buildTextField(BuildContext context, {required String label, String? initialValue, int maxLines = 1, required Function(String) onChanged}) {
+  Widget _buildTextField(
+    BuildContext context, {
+    required String label,
+    String? initialValue,
+    int maxLines = 1,
+    required Function(String) onChanged,
+  }) {
     final textController = TextEditingController(text: initialValue);
     return TextField(
       maxLines: maxLines,
       controller: textController,
-      style: TextStyle(color: AppColors.white, fontSize: Responsive.scaleFont(14, context)),
+      style: TextStyle(
+        color: AppColors.textColor,
+        fontSize: Responsive.scaleFont(14, context),
+      ),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+        labelStyle: TextStyle(
+          color: AppColors.textSecondaryColor,
+          fontSize: Responsive.scaleFont(14, context),
+        ),
         filled: true,
-        fillColor: AppColors.lightBlue.withOpacity(0.1),
+        fillColor: AppColors.cardColor,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context)),
+          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
           borderSide: BorderSide.none,
         ),
         contentPadding: EdgeInsets.symmetric(
-          horizontal: Responsive.scaleWidth(16, context),
-          vertical: Responsive.scaleHeight(12, context),
+          horizontal: AppDimensions.paddingMedium,
+          vertical: AppDimensions.paddingSmall,
         ),
       ),
       onChanged: (value) {
@@ -137,66 +206,92 @@ class CreateResumeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFilePicker(BuildContext context, CreateResumeController controller) {
-    return Obx(() => GestureDetector(
-      onTap: controller.pickFile,
-      child: Container(
-        padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
-        decoration: BoxDecoration(
-          color: AppColors.lightBlue.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.attach_file, color: AppColors.lightBlue, size: Responsive.scaleFont(20, context)),
-            SizedBox(width: Responsive.scaleWidth(10, context)),
-            Expanded(
-              child: Text(
-                controller.selectedFile.value == null
-                    ? resume?.fileUrl != null
-                    ? resume!.fileUrl!.split('/').last
-                    : 'Fayl tanlash'.tr
-                    : controller.selectedFile.value!.path.split('/').last,
-                style: TextStyle(color: AppColors.lightGray, fontSize: Responsive.scaleFont(14, context)),
+  Widget _buildFilePicker(
+    BuildContext context,
+    CreateResumeController controller,
+  ) {
+    return Obx(
+      () => GestureDetector(
+        onTap: controller.pickFile,
+        child: Container(
+          padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
+          decoration: BoxDecoration(
+            color: AppColors.cardColor,
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+            border: Border.all(color: AppColors.dividerColor),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.attach_file,
+                color: AppColors.primaryColor,
+                size: Responsive.scaleFont(20, context),
               ),
-            ),
-          ],
+              SizedBox(width: Responsive.scaleWidth(10, context)),
+              Expanded(
+                child: Text(
+                  controller.selectedFile.value == null
+                      ? resume?.fileUrl != null
+                          ? resume!.fileUrl!.split('/').last
+                          : 'Fayl tanlash'.tr
+                      : controller.selectedFile.value!.path.split('/').last,
+                  style: TextStyle(
+                    color: AppColors.textColor,
+                    fontSize: Responsive.scaleFont(14, context),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, VoidCallback onAdd) {
+  Widget _buildSectionTitle(
+    BuildContext context,
+    String title,
+    VoidCallback onAdd,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
           style: TextStyle(
-            color: AppColors.white,
+            color: AppColors.textColor,
             fontSize: Responsive.scaleFont(16, context),
             fontWeight: FontWeight.w600,
           ),
         ),
         IconButton(
-          icon: Icon(Icons.add_circle, color: AppColors.lightBlue, size: Responsive.scaleFont(24, context)),
+          icon: Icon(
+            Icons.add_circle,
+            color: AppColors.primaryColor,
+            size: Responsive.scaleFont(24, context),
+          ),
           onPressed: onAdd,
         ),
       ],
     );
   }
 
-  Widget _buildEducationField(BuildContext context, CreateResumeController controller, int index, Education education) {
+  Widget _buildEducationField(
+    BuildContext context,
+    CreateResumeController controller,
+    int index,
+    Education education,
+  ) {
     return Padding(
-      padding: EdgeInsets.only(bottom: Responsive.scaleHeight(12, context)),
+      padding: EdgeInsets.only(bottom: AppDimensions.paddingMedium),
       child: Container(
         padding: EdgeInsets.all(Responsive.scaleWidth(12, context)),
         decoration: BoxDecoration(
-          color: AppColors.darkBlue.withAlpha(100),
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context)),
+          color: AppColors.cardColor,
+          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
           boxShadow: [
             BoxShadow(
-              color: AppColors.darkNavy.withOpacity(0.1),
+              color: AppColors.shadowColor,
               blurRadius: 4,
               offset: Offset(0, 2),
             ),
@@ -210,21 +305,21 @@ class CreateResumeScreen extends StatelessWidget {
               initialValue: education.degree,
               onChanged: (value) => education.degree = value,
             ),
-            SizedBox(height: Responsive.scaleHeight(16, context)),
+            SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
-              label: 'Yo‘nalish'.tr,
+              label: 'Yo\'nalish'.tr,
               initialValue: education.field,
               onChanged: (value) => education.field = value,
             ),
-            SizedBox(height: Responsive.scaleHeight(16, context)),
+            SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Muassasa'.tr,
               initialValue: education.institution,
               onChanged: (value) => education.institution = value,
             ),
-            SizedBox(height: Responsive.scaleHeight(16, context)),
+            SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Davri (masalan, 2018-2022)'.tr,
@@ -234,7 +329,11 @@ class CreateResumeScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: IconButton(
-                icon: Icon(Icons.delete, color: Colors.redAccent, size: Responsive.scaleFont(20, context)),
+                icon: Icon(
+                  Icons.delete,
+                  color: AppColors.red,
+                  size: Responsive.scaleFont(20, context),
+                ),
                 onPressed: () => controller.removeEducation(index),
               ),
             ),
@@ -244,17 +343,22 @@ class CreateResumeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildExperienceField(BuildContext context, CreateResumeController controller, int index, Experience experience) {
+  Widget _buildExperienceField(
+    BuildContext context,
+    CreateResumeController controller,
+    int index,
+    Experience experience,
+  ) {
     return Padding(
-      padding: EdgeInsets.only(bottom: Responsive.scaleHeight(12, context)),
+      padding: EdgeInsets.only(bottom: AppDimensions.paddingMedium),
       child: Container(
         padding: EdgeInsets.all(Responsive.scaleWidth(12, context)),
         decoration: BoxDecoration(
-          color: AppColors.darkBlue.withAlpha(100),
-          borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context)),
+          color: AppColors.cardColor,
+          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
           boxShadow: [
             BoxShadow(
-              color: AppColors.darkNavy.withOpacity(0.1),
+              color: AppColors.shadowColor,
               blurRadius: 4,
               offset: Offset(0, 2),
             ),
@@ -268,21 +372,21 @@ class CreateResumeScreen extends StatelessWidget {
               initialValue: experience.position,
               onChanged: (value) => experience.position = value,
             ),
-            SizedBox(height: Responsive.scaleHeight(16, context)),
+            SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Kompaniya'.tr,
               initialValue: experience.company,
               onChanged: (value) => experience.company = value,
             ),
-            SizedBox(height: Responsive.scaleHeight(16, context)),
+            SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Davri (masalan, 2022-Hozir)'.tr,
               initialValue: experience.period,
               onChanged: (value) => experience.period = value,
             ),
-            SizedBox(height: Responsive.scaleHeight(16, context)),
+            SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Tavsif'.tr,
@@ -293,7 +397,11 @@ class CreateResumeScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: IconButton(
-                icon: Icon(Icons.delete, color: Colors.redAccent, size: Responsive.scaleFont(20, context)),
+                icon: Icon(
+                  Icons.delete,
+                  color: AppColors.red,
+                  size: Responsive.scaleFont(20, context),
+                ),
                 onPressed: () => controller.removeExperience(index),
               ),
             ),

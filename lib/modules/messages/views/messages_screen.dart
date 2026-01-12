@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ishtopchi/common/widgets/text_small.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
+import '../../../config/theme/app_theme.dart';
 import '../../../controllers/funcController.dart';
 import '../../../controllers/socket_service.dart';
+import '../../../controllers/theme_controller.dart';
 import '../../../core/models/chat_rooms.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/messages_controller.dart';
@@ -16,14 +19,27 @@ class MessagesScreen extends GetView<MessagesController> {
   MessagesScreen({super.key});
   final FuncController funcController = Get.find<FuncController>();
 
-  //final SocketService _socketService = SocketService();
-  //final WebSocketService _socketService = WebSocketService();
+  final SocketService _socketService = SocketService();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.darkNavy,
-      body: _buildBody(context),
+    final ThemeController themeController = Get.find<ThemeController>();
+
+    // final socket = SocketService();
+    // socket.onNewMessage((msg) => print('newMessage: $msg'));
+    // socket.onMessageStatus((st) => print('messageStatus: $st'));
+    // socket.onError((e) => print('SOCKET ERROR: $e'));
+    // socket.connect(token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEyLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1NDU2Nzg4NCwiZXhwIjoxNzg2MTAzODg0fQ.oRzyoRtRkuls_4ObF4XrDlMmOCQ6YE9r_3u065bKtMY');
+    // socket.joinChat(64);
+    // socket.sendMessage(chatRoomId: 64, content: 'Salom!');
+    // socket.sendMessage(chatRoomId: 64, content: 'Salom!');
+    // socket.updatePresence(true);
+
+    return Obx(
+      () => Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        body: _buildBody(context),
+      ),
     );
   }
 
@@ -33,7 +49,9 @@ class MessagesScreen extends GetView<MessagesController> {
     }
     return Obx(() {
       if (controller.isLoading.value) {
-        return Center(child: CircularProgressIndicator());
+        return Center(
+          child: CircularProgressIndicator(color: AppColors.iconColor),
+        );
       }
       if (controller.chatRoomsModel.value == null) {
         return _buildEmptyState(context);
@@ -44,6 +62,11 @@ class MessagesScreen extends GetView<MessagesController> {
       final applicationRooms =
           controller.chatRoomsModel.value!.data.applicationRooms;
 
+      // Check if both lists are empty
+      if (postOwnerRooms.isEmpty && applicationRooms.isEmpty) {
+        return _buildEmptyState(context);
+      }
+
       return ListView(
         padding: EdgeInsets.all(AppDimensions.paddingMedium),
         children: [
@@ -52,7 +75,7 @@ class MessagesScreen extends GetView<MessagesController> {
               text: 'Post Owner Rooms'.tr,
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: AppColors.white,
+              color: AppColors.textColor,
             ),
             SizedBox(height: AppDimensions.paddingSmall),
             ...postOwnerRooms.map(
@@ -66,7 +89,7 @@ class MessagesScreen extends GetView<MessagesController> {
               text: 'Application Rooms'.tr,
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: AppColors.white,
+              color: AppColors.textColor,
             ),
             SizedBox(height: AppDimensions.paddingSmall),
             ...applicationRooms.map(
@@ -80,33 +103,51 @@ class MessagesScreen extends GetView<MessagesController> {
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.message_outlined,
-            size: AppDimensions.iconSizeLarge,
-            color: AppColors.lightBlue.withOpacity(0.3),
-          ),
-          SizedBox(height: AppDimensions.paddingMedium),
-          Text(
-            'Hozircha xabarlar yo‘q',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontSize: Responsive.scaleFont(18, context),
-              color: AppColors.lightBlue,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.message_outlined,
+              size: 54.sp,
+              color: AppColors.textSecondaryColor,
             ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppDimensions.paddingSmall),
-          Text(
-            'Yangi xabar yozish uchun pastdagi tugmani bosing',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: Responsive.scaleFont(14, context),
-              color: AppColors.lightBlue.withOpacity(0.7),
+            SizedBox(height: 16),
+            Text(
+              'Hozircha xabarlar yo\'q'.tr,
+              style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
+                color: AppColors.textColor,
+                fontFamily: 'Poppins',
+                fontSize: 12.sp,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            SizedBox(height: 8),
+            Text(
+              'Xabarlar bo‘lishi uchun e’lonlarga ariza yuboring'.tr,
+              style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
+                color: AppColors.textSecondaryColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 24),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+                backgroundColor: AppColors.cardColor,
+              ),
+              onPressed: () => Get.toNamed(AppRoutes.main),
+              child: Text(
+                'Asosiy sahifaga o‘tish'.tr,
+                style: TextStyle(color: AppColors.textColor, fontSize: 14.sp),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -124,7 +165,7 @@ class MessagesScreen extends GetView<MessagesController> {
     final time = _formatTime(room.createdAt);
 
     return Card(
-      color: AppColors.darkBlue,
+      color: AppColors.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
       ),
@@ -153,7 +194,7 @@ class MessagesScreen extends GetView<MessagesController> {
                           width: Responsive.scaleWidth(80, context),
                           height: Responsive.scaleWidth(80, context),
                           decoration: BoxDecoration(
-                            color: AppColors.lightGray.withAlpha(50),
+                            color: AppColors.textSecondaryColor.withAlpha(50),
                           ),
                           child:
                               room.application.post?.pictureUrl != null &&
@@ -166,19 +207,18 @@ class MessagesScreen extends GetView<MessagesController> {
                                     'https://ishtopchi.uz${room.application.post.pictureUrl}',
                                     fit: BoxFit.cover,
                                     errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Center(
-                                              child: Icon(
-                                                LucideIcons.imageOff,
-                                                color: AppColors.darkBlue,
-                                                size: 40,
-                                              ),
-                                            ),
+                                        (context, error, stackTrace) => Center(
+                                          child: Icon(
+                                            LucideIcons.imageOff,
+                                            color: AppColors.textSecondaryColor,
+                                            size: 40,
+                                          ),
+                                        ),
                                   )
-                                  : const Center(
+                                  : Center(
                                     child: Icon(
                                       LucideIcons.imageOff,
-                                      color: AppColors.darkBlue,
+                                      color: AppColors.textSecondaryColor,
                                       size: 40,
                                     ),
                                   ),
@@ -198,7 +238,7 @@ class MessagesScreen extends GetView<MessagesController> {
                               style: TextStyle(
                                 fontSize: Responsive.scaleFont(16, context),
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.white,
+                                color: AppColors.textColor,
                               ),
                             ),
                             SizedBox(height: AppDimensions.paddingSmall),
@@ -210,7 +250,7 @@ class MessagesScreen extends GetView<MessagesController> {
                                   Icon(
                                     LucideIcons.wallet,
                                     size: Responsive.scaleFont(14, context),
-                                    color: AppColors.lightBlue,
+                                    color: AppColors.iconColor,
                                   ),
                                   SizedBox(width: 4),
                                   Expanded(
@@ -223,7 +263,7 @@ class MessagesScreen extends GetView<MessagesController> {
                                           12,
                                           context,
                                         ),
-                                        color: AppColors.lightBlue,
+                                        color: AppColors.iconColor,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -236,7 +276,7 @@ class MessagesScreen extends GetView<MessagesController> {
                               time,
                               style: TextStyle(
                                 fontSize: Responsive.scaleFont(12, context),
-                                color: AppColors.lightBlue,
+                                color: AppColors.iconColor,
                               ),
                             ),
                           ],
@@ -252,14 +292,14 @@ class MessagesScreen extends GetView<MessagesController> {
                   vertical: AppDimensions.paddingSmall,
                 ),
                 leading: CircleAvatar(
-                  backgroundColor: AppColors.midBlue,
+                  backgroundColor: AppColors.primaryColor,
                   backgroundImage:
                       isPostOwner && room.application.post.pictureUrl != null
                           ? NetworkImage(room.application.post.pictureUrl!)
                           : null,
                   child: Text(
                     sender[0].toUpperCase(),
-                    style: TextStyle(color: AppColors.lightGray),
+                    style: TextStyle(color: AppColors.white),
                   ),
                 ),
                 title: Text(
@@ -274,14 +314,14 @@ class MessagesScreen extends GetView<MessagesController> {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontSize: Responsive.scaleFont(14, context),
-                    color: AppColors.lightBlue.withOpacity(0.8),
+                    color: AppColors.iconColor.withOpacity(0.8),
                   ),
                 ),
                 trailing: Text(
                   time,
                   style: TextStyle(
                     fontSize: Responsive.scaleFont(12, context),
-                    color: AppColors.lightBlue,
+                    color: AppColors.iconColor,
                   ),
                 ),
                 onTap: () {

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart' hide Data;
 import '../core/models/devices_model.dart';
@@ -13,7 +14,7 @@ import '../core/models/wish_list.dart';
 import '../core/services/show_toast.dart';
 import 'api_controller.dart';
 
-class FuncController {
+class FuncController extends GetxController {
   final GetStorage storage = GetStorage();
 
   final barIndex = 0.obs;
@@ -42,8 +43,6 @@ class FuncController {
   final RxString platform = ''.obs;
   final RxBool hasToken = false.obs;
 
-
-
   final RxList<Map<String, dynamic>> regions = <Map<String, dynamic>>[].obs;
   final RxList<Map<String, dynamic>> districts = <Map<String, dynamic>>[].obs;
   final RxList<Map<String, dynamic>> categories = <Map<String, dynamic>>[].obs;
@@ -59,7 +58,6 @@ class FuncController {
   final RxnString minPrice = RxnString(); // Yangi: Narxdan
   final RxnString maxPrice = RxnString(); // Yangi: Narxgacha
 
-
   //save language
   void saveLanguage(String language) {
     storage.write('language', language);
@@ -72,7 +70,8 @@ class FuncController {
   }
 
   void setBarIndex(int index) {
-    if (index >= 0 && index < 5) { // 5 ta sahifa bor
+    if (index >= 0 && index < 5) {
+      // 5 ta sahifa bor
       barIndex.value = index;
     } else {
       print('Noto‘g‘ri index: $index');
@@ -95,7 +94,9 @@ class FuncController {
         deviceId.value = iosInfo.identifierForVendor ?? 'Noma’lum';
         platform.value = 'iOS';
       }
-      print('Qurilma ma’lumotlari: deviceName=${deviceName.value}, deviceModel=${deviceModel.value}, deviceId=${deviceId.value}, platform=${platform.value}');
+      print(
+        'Qurilma ma’lumotlari: deviceName=${deviceName.value}, deviceModel=${deviceModel.value}, deviceId=${deviceId.value}, platform=${platform.value}',
+      );
     } catch (e) {
       print('Qurilma ma’lumotlarini olishda xato: $e');
     }
@@ -106,7 +107,12 @@ class FuncController {
       await fetchDeviceInfo();
       if (deviceId.value.isEmpty) {
         print('Qurilma ID topilmadi');
-        ShowToast.show('Xatolik', 'Qurilma ID sini olishda xato yuz berdi', 3, 1);
+        ShowToast.show(
+          'Xatolik',
+          'Qurilma ID sini olishda xato yuz berdi',
+          3,
+          1,
+        );
         return;
       }
       // 2. Serverdagi qurilmalarni olish
@@ -115,10 +121,14 @@ class FuncController {
 
       // 3. Qurilma deviceId sini tekshirish
       final devices = devicesModel.value.data ?? [];
-      final matchingDevice = devices.firstWhereOrNull((device) => device.deviceId == deviceId.value);
+      final matchingDevice = devices.firstWhereOrNull(
+        (device) => device.deviceId == deviceId.value,
+      );
 
       if (matchingDevice != null && matchingDevice.id != null) {
-        print('Qurilma topildi: deviceId=${matchingDevice.deviceId}, id=${matchingDevice.id}, login amali bajarilmoqda');
+        print(
+          'Qurilma topildi: deviceId=${matchingDevice.deviceId}, id=${matchingDevice.id}, login amali bajarilmoqda',
+        );
         await apiController.loginDevice(matchingDevice.id!);
       } else {
         print('Qurilma topilmadi, yangi qurilma yaratilmoqda');
@@ -136,7 +146,9 @@ class FuncController {
       return 'https://help.tithe.ly/hc/article_attachments/18804144460951';
     }
     url = url.trim();
-    return url.startsWith('http') ? url : '$base/${url.replaceAll(RegExp(r'^(file://)?/+'), '')}';
+    return url.startsWith('http')
+        ? url
+        : '$base/${url.replaceAll(RegExp(r'^(file://)?/+'), '')}';
   }
 
   void clearWishList() => wishList.clear();
@@ -192,5 +204,4 @@ class FuncController {
     jobType.value = null;
     districts.clear();
   }
-
 }
