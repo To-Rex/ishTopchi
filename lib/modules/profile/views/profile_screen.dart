@@ -566,7 +566,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           top: 10,
                           left: 16.w,
                           right: 16.w,
-                          bottom: 150.h,
+                          bottom: 60.h,
                         ),
                         child: Column(
                           children: [

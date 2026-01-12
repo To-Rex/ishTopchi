@@ -7,17 +7,52 @@ import '../../../core/models/resumes_model.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/create_resume_controller.dart';
 
-class CreateResumeScreen extends StatelessWidget {
+class CreateResumeScreen extends StatefulWidget {
   final ResumesData? resume;
 
   const CreateResumeScreen({super.key, this.resume});
+
+  @override
+  State<CreateResumeScreen> createState() => _CreateResumeScreenState();
+}
+
+class _CreateResumeScreenState extends State<CreateResumeScreen> {
+  late final TextEditingController titleController;
+  late final TextEditingController contentController;
+
+  @override
+  void initState() {
+    super.initState();
+    titleController = TextEditingController();
+    contentController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final controller = Get.find<CreateResumeController>();
+    // Update controllers when controller values change
+    if (controller.titleController.value != titleController.text) {
+      titleController.text = controller.titleController.value;
+    }
+    if (controller.contentController.value != contentController.text) {
+      contentController.text = controller.contentController.value;
+    }
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    contentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     // Kontrollerni yaratish yoki topish
     final controller = Get.put(CreateResumeController());
     final ThemeController themeController = Get.find<ThemeController>();
-    controller.loadResumeData(resume); // Resume ma'lumotlarini yuklash
+    controller.loadResumeData(widget.resume); // Resume ma'lumotlarini yuklash
 
     return Obx(
       () => Scaffold(
@@ -53,7 +88,7 @@ class CreateResumeScreen extends StatelessWidget {
                 _buildTextField(
                   context,
                   label: 'Sarlavha'.tr,
-                  initialValue: controller.titleController.value,
+                  controller: titleController,
                   onChanged:
                       (value) => controller.titleController.value = value,
                 ),
@@ -62,7 +97,7 @@ class CreateResumeScreen extends StatelessWidget {
                 _buildTextField(
                   context,
                   label: 'Tavsif'.tr,
-                  initialValue: controller.contentController.value,
+                  controller: contentController,
                   maxLines: 4,
                   onChanged:
                       (value) => controller.contentController.value = value,
@@ -171,14 +206,13 @@ class CreateResumeScreen extends StatelessWidget {
   Widget _buildTextField(
     BuildContext context, {
     required String label,
-    String? initialValue,
+    required TextEditingController controller,
     int maxLines = 1,
     required Function(String) onChanged,
   }) {
-    final textController = TextEditingController(text: initialValue);
     return TextField(
       maxLines: maxLines,
-      controller: textController,
+      controller: controller,
       style: TextStyle(
         color: AppColors.textColor,
         fontSize: Responsive.scaleFont(14, context),
@@ -200,9 +234,7 @@ class CreateResumeScreen extends StatelessWidget {
           vertical: AppDimensions.paddingSmall,
         ),
       ),
-      onChanged: (value) {
-        onChanged(value);
-      },
+      onChanged: onChanged,
     );
   }
 
@@ -231,8 +263,8 @@ class CreateResumeScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   controller.selectedFile.value == null
-                      ? resume?.fileUrl != null
-                          ? resume!.fileUrl!.split('/').last
+                      ? widget.resume?.fileUrl != null
+                          ? widget.resume!.fileUrl!.split('/').last
                           : 'Fayl tanlash'.tr
                       : controller.selectedFile.value!.path.split('/').last,
                   style: TextStyle(
@@ -302,28 +334,40 @@ class CreateResumeScreen extends StatelessWidget {
             _buildTextField(
               context,
               label: 'Daraja (masalan, Bakalavr)'.tr,
-              initialValue: education.degree,
+              controller: TextEditingController(text: education.degree)
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: education.degree?.length ?? 0),
+                ),
               onChanged: (value) => education.degree = value,
             ),
             SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Yo\'nalish'.tr,
-              initialValue: education.field,
+              controller: TextEditingController(text: education.field)
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: education.field?.length ?? 0),
+                ),
               onChanged: (value) => education.field = value,
             ),
             SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Muassasa'.tr,
-              initialValue: education.institution,
+              controller: TextEditingController(text: education.institution)
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: education.institution?.length ?? 0),
+                ),
               onChanged: (value) => education.institution = value,
             ),
             SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Davri (masalan, 2018-2022)'.tr,
-              initialValue: education.period,
+              controller: TextEditingController(text: education.period)
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: education.period?.length ?? 0),
+                ),
               onChanged: (value) => education.period = value,
             ),
             Align(
@@ -369,28 +413,40 @@ class CreateResumeScreen extends StatelessWidget {
             _buildTextField(
               context,
               label: 'Lavozim'.tr,
-              initialValue: experience.position,
+              controller: TextEditingController(text: experience.position)
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: experience.position?.length ?? 0),
+                ),
               onChanged: (value) => experience.position = value,
             ),
             SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Kompaniya'.tr,
-              initialValue: experience.company,
+              controller: TextEditingController(text: experience.company)
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: experience.company?.length ?? 0),
+                ),
               onChanged: (value) => experience.company = value,
             ),
             SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Davri (masalan, 2022-Hozir)'.tr,
-              initialValue: experience.period,
+              controller: TextEditingController(text: experience.period)
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: experience.period?.length ?? 0),
+                ),
               onChanged: (value) => experience.period = value,
             ),
             SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
               label: 'Tavsif'.tr,
-              initialValue: experience.description,
+              controller: TextEditingController(text: experience.description)
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: experience.description?.length ?? 0),
+                ),
               maxLines: 3,
               onChanged: (value) => experience.description = value,
             ),

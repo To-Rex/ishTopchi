@@ -3,9 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
+import '../../../controllers/api_controller.dart';
 import '../../../controllers/socket_service.dart';
 import '../../../controllers/theme_controller.dart';
 import '../../../core/models/chat_rooms.dart';
+import '../../../core/models/message_model.dart';
+import '../../../core/services/show_toast.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../controllers/funcController.dart';
 
@@ -18,6 +21,7 @@ class MessageDetailScreen extends StatefulWidget {
 
 class _MessageDetailScreenState extends State<MessageDetailScreen> {
   final SocketService _socket = SocketService();
+  final ApiController _apiController = Get.find<ApiController>();
   final List<Map<String, dynamic>> _messages = [];
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -25,6 +29,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   late final User _otherUser;
   late final int? _currentUserId;
   late final dynamic _currentUser;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -38,35 +43,56 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     _currentUserId = Get.find<FuncController>().userMe.value.data!.id;
     _currentUser = Get.find<FuncController>().userMe.value.data!;
     _otherUser = _room.user1.id == _currentUserId ? _room.user2 : _room.user1;
-    // Add resume as file message first
-    if (_room.application != null && _room.application.resume != null) {
-      _messages.add({
-        'resume': _room.application.resume,
-        'senderId': _room.application.applicant.id,
-        'createdAt': _room.application.createdAt,
-        'status': 'sent', // Assume initial status
+
+    _loadMessages();
+  }
+
+  Future<void> _loadMessages() async {
+    try {
+      setState(() {
+        _isLoading = true;
       });
-    }
-    // Add initial application message
-    if (_room.application != null &&
-        _room.application.message != null &&
-        _room.application.message.isNotEmpty) {
-      _messages.add({
-        'content': _room.application.message,
-        'senderId': _room.application.applicant.id,
-        'createdAt': _room.application.createdAt,
-        'status': 'sent', // Assume initial status
+
+      // Fetch messages from API
+      final response = await _apiController.fetchChatRoomMessages(_room.id);
+
+      // Convert API messages to the format used by the screen
+      final apiMessages =
+          response.data.map((msg) {
+            return {
+              'id': msg.id,
+              'content': msg.content,
+              'senderId': msg.sender.id,
+              'createdAt': msg.createdAt.toIso8601String(),
+              'status': msg.isRead ? 'seen' : 'delivered',
+              'mediaUrl': msg.mediaUrl,
+              'resume': msg.resume,
+            };
+          }).toList();
+
+      setState(() {
+        _messages.clear();
+        _messages.addAll(apiMessages);
+        _isLoading = false;
       });
+
+      _socket.joinChat(_room.id);
+      _socket.onNewMessage(_onNewMessage);
+      _socket.onMessageStatus(_onMessageStatus);
+      // Sort messages in ascending order (oldest first) for reverse ListView
+      _messages.sort(
+        (a, b) => DateTime.parse(
+          a['createdAt'],
+        ).compareTo(DateTime.parse(b['createdAt'])),
+      );
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    } catch (e) {
+      debugPrint('Error loading messages: $e');
+      setState(() {
+        _isLoading = false;
+      });
+      ShowToast.show('Xatolik', 'Xabarlar yuklashda xatolik yuz berdi', 3, 1);
     }
-    _socket.joinChat(_room.id);
-    _socket.onNewMessage(_onNewMessage);
-    _socket.onMessageStatus(_onMessageStatus);
-    _messages.sort(
-      (a, b) => DateTime.parse(
-        b['createdAt'],
-      ).compareTo(DateTime.parse(a['createdAt'])),
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
 
   @override
@@ -137,10 +163,11 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   void _onNewMessage(Map<String, dynamic> data) {
     setState(() {
       _messages.add(data);
+      // Sort messages in ascending order (oldest first) for reverse ListView
       _messages.sort(
         (a, b) => DateTime.parse(
-          b['createdAt'],
-        ).compareTo(DateTime.parse(a['createdAt'])),
+          a['createdAt'],
+        ).compareTo(DateTime.parse(b['createdAt'])),
       );
       _scrollToBottom();
     });
@@ -166,6 +193,8 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     return AppBar(
       backgroundColor: AppColors.backgroundColor,
       elevation: 0,
+      surfaceTintColor: AppColors.backgroundColor,
+      shadowColor: AppColors.backgroundColor,
       title: Row(
         children: [
           CircleAvatar(
@@ -198,17 +227,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.call, color: AppColors.textColor),
-          onPressed: () {
-            Get.snackbar(
-              'Xabar',
-              'Qo\'ng\'iroq funksiyasi tez kunda qo\'shiladi!',
-              backgroundColor: AppColors.primaryColor,
-              colorText: AppColors.textColor,
-            );
-          },
-        ),
-        IconButton(
           icon: Icon(Icons.more_vert, color: AppColors.textColor),
           onPressed: () {
             _showMoreOptions(context);
@@ -219,6 +237,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(color: AppColors.primaryColor),
+      );
+    }
+
     return Column(
       children: [
         Expanded(
@@ -326,7 +350,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   }
 
   Widget _buildMessageBubble(BuildContext context, Map<String, dynamic> msg) {
-    if (msg.containsKey('resume')) {
+    if (msg.containsKey('resume') && msg['resume'] != null) {
       return _buildResumeMessageBubble(context, msg);
     }
     final isMe = msg['senderId'] == _currentUserId;
@@ -338,7 +362,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             ? AppColors.white.withOpacity(0.7)
             : AppColors.iconColor.withOpacity(0.7);
     final avatarTextColor =
-        isMe ? AppColors.white : AppColors.textSecondaryColor;
+        isMe ? AppColors.white : AppColors.white;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
@@ -483,29 +507,39 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             height: 50,
             width: 60,
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_textController.text.isNotEmpty) {
-                  final message = {
-                    'content': _textController.text,
-                    'senderId': _currentUserId,
-                    'createdAt': DateTime.now().toIso8601String(),
-                    'status': 'sent',
-                    'id': DateTime.now().millisecondsSinceEpoch, // Temporary id
-                  };
-                  setState(() {
-                    _messages.add(message);
-                    _messages.sort(
-                      (a, b) => DateTime.parse(
-                        b['createdAt'],
-                      ).compareTo(DateTime.parse(a['createdAt'])),
-                    );
-                    _scrollToBottom();
-                  });
-                  _socket.sendMessage(
-                    chatRoomId: _room.id,
-                    content: _textController.text,
-                  );
+                  final messageContent = _textController.text;
                   _textController.clear();
+
+                  // Send message via API
+                  final sentMessage = await _apiController.sendMessage(
+                    content: messageContent,
+                    chatRoomId: _room.id,
+                  );
+
+                  if (sentMessage != null) {
+                    // Add message to list
+                    final message = {
+                      'id': sentMessage.id,
+                      'content': sentMessage.content,
+                      'senderId': sentMessage.sender.id,
+                      'createdAt': sentMessage.createdAt.toIso8601String(),
+                      'status': 'sent',
+                      'mediaUrl': sentMessage.mediaUrl,
+                      'resume': sentMessage.resume,
+                    };
+                    setState(() {
+                      _messages.add(message);
+                      // Sort messages in ascending order (oldest first) for reverse ListView
+                      _messages.sort(
+                        (a, b) => DateTime.parse(
+                          a['createdAt'],
+                        ).compareTo(DateTime.parse(b['createdAt'])),
+                      );
+                      _scrollToBottom();
+                    });
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -592,6 +626,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 );
               },
             ),
+            SizedBox(height: AppDimensions.paddingLarge),
           ],
         );
       },
