@@ -1,6 +1,5 @@
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-
 typedef Json = Map<String, dynamic>;
 
 class SocketService {
@@ -26,12 +25,12 @@ class SocketService {
     _socket = IO.io(
       'wss://ishtopchi.uz',
       IO.OptionBuilder()
-          .setPath('/api/socket.io')            // <-- /socket.io
-          .setTransports(['websocket'])       // mobil uchun barqaror
+          .setPath('/api/socket.io') // <-- /socket.io
+          .setTransports(['websocket']) // mobil uchun barqaror
           .enableReconnection()
           .setReconnectionAttempts(9999)
           .setReconnectionDelay(1000)
-          .setAuth({'token': token})          // NestJS: client.handshake.auth.token
+          .setAuth({'token': token}) // NestJS: client.handshake.auth.token
           .build(),
     );
 
@@ -113,6 +112,19 @@ class SocketService {
   void onUserOffline(void Function(Json) cb) => _onUserOffline.add(cb);
   void onUserPresence(void Function(Json) cb) => _onUserPresence.add(cb);
   void onError(void Function(String) cb) => _onError.add(cb);
+
+  // Listeners o‘chirish
+  void removeNewMessageListener(void Function(Json) cb) =>
+      _onNewMessage.remove(cb);
+  void removeMessageStatusListener(void Function(Json) cb) =>
+      _onMessageStatus.remove(cb);
+  void removeUserOnlineListener(void Function(Json) cb) =>
+      _onUserOnline.remove(cb);
+  void removeUserOfflineListener(void Function(Json) cb) =>
+      _onUserOffline.remove(cb);
+  void removeUserPresenceListener(void Function(Json) cb) =>
+      _onUserPresence.remove(cb);
+  void removeErrorListener(void Function(String) cb) => _onError.remove(cb);
 
   void disconnect() {
     try {

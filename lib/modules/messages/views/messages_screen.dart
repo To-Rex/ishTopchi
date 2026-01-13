@@ -8,9 +8,6 @@ import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../config/theme/app_theme.dart';
 import '../../../controllers/funcController.dart';
-import '../../../controllers/socket_service.dart';
-import '../../../controllers/theme_controller.dart';
-import '../../../core/models/chat_rooms.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/messages_controller.dart';
 import '../../../config/routes/app_routes.dart';
@@ -19,22 +16,8 @@ class MessagesScreen extends GetView<MessagesController> {
   MessagesScreen({super.key});
   final FuncController funcController = Get.find<FuncController>();
 
-  final SocketService _socketService = SocketService();
-
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.find<ThemeController>();
-
-    // final socket = SocketService();
-    // socket.onNewMessage((msg) => print('newMessage: $msg'));
-    // socket.onMessageStatus((st) => print('messageStatus: $st'));
-    // socket.onError((e) => print('SOCKET ERROR: $e'));
-    // socket.connect(token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEyLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1NDU2Nzg4NCwiZXhwIjoxNzg2MTAzODg0fQ.oRzyoRtRkuls_4ObF4XrDlMmOCQ6YE9r_3u065bKtMY');
-    // socket.joinChat(64);
-    // socket.sendMessage(chatRoomId: 64, content: 'Salom!');
-    // socket.sendMessage(chatRoomId: 64, content: 'Salom!');
-    // socket.updatePresence(true);
-
     return Obx(
       () => Scaffold(
         backgroundColor: AppColors.backgroundColor,

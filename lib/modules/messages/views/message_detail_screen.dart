@@ -5,9 +5,7 @@ import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/socket_service.dart';
-import '../../../controllers/theme_controller.dart';
 import '../../../core/models/chat_rooms.dart';
-import '../../../core/models/message_model.dart';
 import '../../../core/services/show_toast.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../controllers/funcController.dart';
@@ -20,16 +18,20 @@ class MessageDetailScreen extends StatefulWidget {
 }
 
 class _MessageDetailScreenState extends State<MessageDetailScreen> {
-  final SocketService _socket = SocketService();
+  final SocketService _socketService = SocketService();
   final ApiController _apiController = Get.find<ApiController>();
+  final FuncController _funcController = Get.find<FuncController>();
   final List<Map<String, dynamic>> _messages = [];
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final Set<int> _processedMessageIds = <int>{};
   late final dynamic _room;
   late final User _otherUser;
   late final int? _currentUserId;
   late final dynamic _currentUser;
   bool _isLoading = true;
+  bool _listenersRegistered = false;
+  bool _isSending = false;
 
   @override
   void initState() {
@@ -40,11 +42,39 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       Get.back();
       return;
     }
-    _currentUserId = Get.find<FuncController>().userMe.value.data!.id;
-    _currentUser = Get.find<FuncController>().userMe.value.data!;
+    _currentUserId = _funcController.userMe.value.data!.id;
+    _currentUser = _funcController.userMe.value.data!;
     _otherUser = _room.user1.id == _currentUserId ? _room.user2 : _room.user1;
 
+    _setupSocketConnection();
     _loadMessages();
+  }
+
+  void _setupSocketConnection() {
+    final token = _funcController.getToken();
+    if (token != null && token.isNotEmpty) {
+      // Connect to socket if not already connected
+      if (!_socketService.isConnected) {
+        _socketService.connect(token: token);
+      }
+
+      // Only register listeners once
+      if (!_listenersRegistered) {
+        // Listen for new messages
+        _socketService.onNewMessage(_onNewMessage);
+
+        // Listen for message status updates
+        _socketService.onMessageStatus(_onMessageStatus);
+
+        _listenersRegistered = true;
+      }
+
+      // Join the chat room
+      _socketService.joinChat(_room.id);
+
+      // Update presence to online
+      _socketService.updatePresence(true);
+    }
   }
 
   Future<void> _loadMessages() async {
@@ -72,13 +102,18 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
       setState(() {
         _messages.clear();
+        _processedMessageIds.clear();
         _messages.addAll(apiMessages);
+        // Add initial message IDs to processed set
+        for (final msg in apiMessages) {
+          final msgId = msg['id'];
+          if (msgId is int) {
+            _processedMessageIds.add(msgId);
+          }
+        }
         _isLoading = false;
       });
 
-      _socket.joinChat(_room.id);
-      _socket.onNewMessage(_onNewMessage);
-      _socket.onMessageStatus(_onMessageStatus);
       // Sort messages in ascending order (oldest first) for reverse ListView
       _messages.sort(
         (a, b) => DateTime.parse(
@@ -97,7 +132,16 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
   @override
   void dispose() {
-    _socket.leaveChat(_room.id);
+    // Leave the chat room
+    _socketService.leaveChat(_room.id);
+    // Update presence to offline when leaving chat
+    _socketService.updatePresence(false);
+    // Remove listeners to prevent duplicates
+    if (_listenersRegistered) {
+      _socketService.removeNewMessageListener(_onNewMessage);
+      _socketService.removeMessageStatusListener(_onMessageStatus);
+      _listenersRegistered = false;
+    }
     _textController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -161,8 +205,35 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   }
 
   void _onNewMessage(Map<String, dynamic> data) {
+    // Extract message ID
+    final messageId = data['id'] ?? data['messageId'];
+
+    // Check if message ID is valid and is an integer
+    if (messageId == null || messageId is! int) {
+      return;
+    }
+
+    // Check if message was already processed to prevent duplicates
+    if (_processedMessageIds.contains(messageId)) {
+      return; // Skip duplicate messages
+    }
+
+    // Mark message as processed
+    _processedMessageIds.add(messageId);
+
+    // Convert socket message data to the format used by the screen
+    final message = {
+      'id': messageId,
+      'content': data['content'] ?? '',
+      'senderId': data['senderId'] ?? data['sender']?['id'],
+      'createdAt': data['createdAt'] ?? DateTime.now().toIso8601String(),
+      'status': data['status'] ?? 'sent',
+      'mediaUrl': data['mediaUrl'],
+      'resume': data['resume'],
+    };
+
     setState(() {
-      _messages.add(data);
+      _messages.add(message);
       // Sort messages in ascending order (oldest first) for reverse ListView
       _messages.sort(
         (a, b) => DateTime.parse(
@@ -295,20 +366,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!isMe) ...[
-              CircleAvatar(
-                backgroundColor: AppColors.primaryColor,
-                radius: Responsive.scaleWidth(16, context),
-                child: Text(
-                  _otherUser.firstName[0].toUpperCase(),
-                  style: TextStyle(
-                    color: avatarTextColor,
-                    fontSize: Responsive.scaleFont(14, context),
-                  ),
-                ),
-              ),
-              SizedBox(width: AppDimensions.paddingSmall),
-            ],
             Flexible(
               child: Container(
                 margin: EdgeInsets.symmetric(
@@ -329,20 +386,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 ),
               ),
             ),
-            if (isMe) ...[
-              SizedBox(width: AppDimensions.paddingSmall),
-              CircleAvatar(
-                backgroundColor: AppColors.primaryColor,
-                radius: Responsive.scaleWidth(16, context),
-                child: Text(
-                  _currentUser.firstName[0].toUpperCase(),
-                  style: TextStyle(
-                    color: avatarTextColor,
-                    fontSize: Responsive.scaleFont(14, context),
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -361,8 +404,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         isMe
             ? AppColors.white.withOpacity(0.7)
             : AppColors.iconColor.withOpacity(0.7);
-    final avatarTextColor =
-        isMe ? AppColors.white : AppColors.white;
+    final avatarTextColor = isMe ? AppColors.white : AppColors.white;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
@@ -371,20 +413,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!isMe) ...[
-              CircleAvatar(
-                backgroundColor: AppColors.primaryColor,
-                radius: Responsive.scaleWidth(16, context),
-                child: Text(
-                  _otherUser.firstName[0].toUpperCase(),
-                  style: TextStyle(
-                    color: avatarTextColor,
-                    fontSize: Responsive.scaleFont(14, context),
-                  ),
-                ),
-              ),
-              SizedBox(width: AppDimensions.paddingSmall),
-            ],
             Flexible(
               child: Container(
                 margin: EdgeInsets.symmetric(
@@ -397,10 +425,10 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     topLeft: Radius.circular(
                       isMe ? AppDimensions.cardRadius : 0,
                     ),
-                    topRight: Radius.circular(AppDimensions.cardRadius),
+                    topRight: Radius.circular(isMe ? 0 : AppDimensions.cardRadius),
                     bottomLeft: Radius.circular(AppDimensions.cardRadius),
                     bottomRight: Radius.circular(
-                      isMe ? 0 : AppDimensions.cardRadius,
+                      AppDimensions.cardRadius,
                     ),
                   ),
                 ),
@@ -446,20 +474,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 ),
               ),
             ),
-            if (isMe) ...[
-              SizedBox(width: AppDimensions.paddingSmall),
-              CircleAvatar(
-                backgroundColor: AppColors.primaryColor,
-                radius: Responsive.scaleWidth(16, context),
-                child: Text(
-                  _currentUser.firstName[0].toUpperCase(),
-                  style: TextStyle(
-                    color: avatarTextColor,
-                    fontSize: Responsive.scaleFont(14, context),
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -507,39 +521,29 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             height: 50,
             width: 60,
             child: ElevatedButton(
-              onPressed: () async {
-                if (_textController.text.isNotEmpty) {
-                  final messageContent = _textController.text;
+              onPressed: () {
+                if (_textController.text.isNotEmpty && !_isSending) {
+                  final messageContent = _textController.text.trim();
+                  if (messageContent.isEmpty) return;
+
+                  setState(() {
+                    _isSending = true;
+                  });
+
                   _textController.clear();
 
-                  // Send message via API
-                  final sentMessage = await _apiController.sendMessage(
-                    content: messageContent,
+                  // Send message via socket for real-time delivery
+                  _socketService.sendMessage(
                     chatRoomId: _room.id,
+                    content: messageContent,
                   );
 
-                  if (sentMessage != null) {
-                    // Add message to list
-                    final message = {
-                      'id': sentMessage.id,
-                      'content': sentMessage.content,
-                      'senderId': sentMessage.sender.id,
-                      'createdAt': sentMessage.createdAt.toIso8601String(),
-                      'status': 'sent',
-                      'mediaUrl': sentMessage.mediaUrl,
-                      'resume': sentMessage.resume,
-                    };
+                  // Reset sending flag after a short delay
+                  Future.delayed(const Duration(milliseconds: 500), () {
                     setState(() {
-                      _messages.add(message);
-                      // Sort messages in ascending order (oldest first) for reverse ListView
-                      _messages.sort(
-                        (a, b) => DateTime.parse(
-                          a['createdAt'],
-                        ).compareTo(DateTime.parse(b['createdAt'])),
-                      );
-                      _scrollToBottom();
+                      _isSending = false;
                     });
-                  }
+                  });
                 }
               },
               style: ElevatedButton.styleFrom(
