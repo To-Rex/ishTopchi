@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:ishtopchi/controllers/api_controller.dart';
 import 'package:ishtopchi/controllers/funcController.dart';
 import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
@@ -11,112 +12,134 @@ import '../../../core/models/post_model.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../common/widgets/post_card.dart';
 
-class FavoritesScreen extends StatelessWidget {
+class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
+
+  @override
+  State<FavoritesScreen> createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch wishlist when screen is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ApiController apiController = Get.find<ApiController>();
+      final FuncController funcController = Get.find<FuncController>();
+      if (funcController.getToken() != null &&
+          funcController.getToken()!.isNotEmpty) {
+        apiController.fetchWishlist();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final FuncController funcController = Get.find<FuncController>();
     final ThemeController themeController = Get.find<ThemeController>();
-    return Obx(
-      () => Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        body: Builder(
-          builder: (context) {
-            print('WishList uzunligi: ${funcController.wishList.length}');
-            if (funcController.getToken() == null ||
-                funcController.getToken() == '') {
-              return NotLogged();
-            }
-            return funcController.isLoading.value
-                ? const Center(child: CircularProgressIndicator())
-                : funcController.wishList.isEmpty
-                ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.favorite_border,
-                          size: 54.sp,
-                          color: AppColors.textSecondaryColor,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Saqlangan postlar yo‘q'.tr,
-                          style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
-                            color: AppColors.textColor,
-                            fontFamily: 'Poppins',
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Saqlangan postlar yo‘q tavsifi'.tr,
-                          style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
-                            color: AppColors.textSecondaryColor,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.r),
-                            ),
-                            backgroundColor: AppColors.cardColor,
-                          ),
-                          onPressed: () => funcController.setBarIndex(0),
-                          child: Text('Asosiy sahifaga o‘tish'.tr, style: TextStyle(
-                            color: AppColors.textColor,
-                            fontSize: 14.sp,
-                          ),),
-                        ),
-                      ],
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      body: Obx(() {
+        print('WishList uzunligi: ${funcController.wishList.length}');
+        print('isLoading: ${funcController.isLoading.value}');
+
+        if (funcController.getToken() == null ||
+            funcController.getToken() == '') {
+          return NotLogged();
+        }
+
+        // Show loading indicator while fetching
+        if (funcController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Show empty state if wishlist is empty
+        if (funcController.wishList.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.favorite_border,
+                    size: 54.sp,
+                    color: AppColors.textSecondaryColor,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Saqlangan postlar yo\'q'.tr,
+                    style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
+                      color: AppColors.textColor,
+                      fontFamily: 'Poppins',
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                )
-                : funcController.isGridView.value
-                ? GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: Responsive().getCrossAxisCount(context),
-                    crossAxisSpacing: Responsive.scaleWidth(16, context),
-                    mainAxisSpacing: Responsive.scaleHeight(16, context),
-                    childAspectRatio:
-                        Responsive.screenWidth(context) < 300 ? 0.9 : 0.59,
+                  const SizedBox(height: 8),
+                  Text(
+                    'Saqlangan postlar yo\'q tavsifi'.tr,
+                    style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
+                      color: AppColors.textSecondaryColor,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  itemCount: funcController.wishList.length,
-                  itemBuilder: (context, index) {
-                    final wish = funcController.wishList[index];
-                    return PostCard(
-                      post: Data.fromJson(wish.toJson()),
-                      mePost: false,
-                    );
-                  },
-                )
-                : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(
-                    left: Responsive.scaleWidth(16, context),
-                    right: Responsive.scaleWidth(16, context),
-                    bottom: Responsive.scaleHeight(16, context),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      backgroundColor: AppColors.cardColor,
+                    ),
+                    onPressed: () => funcController.setBarIndex(0),
+                    child: Text(
+                      'Asosiy sahifaga o\'tish'.tr,
+                      style: TextStyle(
+                        color: AppColors.textColor,
+                        fontSize: 14.sp,
+                      ),
+                    ),
                   ),
-                  itemCount: funcController.wishList.length,
-                  itemBuilder: (context, index) {
-                    final wish = funcController.wishList[index];
-                    return PostCard(
-                      post: Data.fromJson(wish.toJson()),
-                      mePost: false,
-                    );
-                  },
-                );
-          },
-        ),
-      ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Show wishlist posts
+        return funcController.isGridView.value
+            ? GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: Responsive().getCrossAxisCount(context),
+                crossAxisSpacing: Responsive.scaleWidth(16, context),
+                mainAxisSpacing: Responsive.scaleHeight(16, context),
+                childAspectRatio:
+                    Responsive.screenWidth(context) < 300 ? 0.9 : 0.59,
+              ),
+              itemCount: funcController.wishList.length,
+              itemBuilder: (context, index) {
+                final wish = funcController.wishList[index];
+                return PostCard(post: wish, mePost: false);
+              },
+            )
+            : ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.only(
+                left: Responsive.scaleWidth(16, context),
+                right: Responsive.scaleWidth(16, context),
+                bottom: Responsive.scaleHeight(16, context),
+              ),
+              itemCount: funcController.wishList.length,
+              itemBuilder: (context, index) {
+                final wish = funcController.wishList[index];
+                return PostCard(post: wish, mePost: false);
+              },
+            );
+      }),
     );
   }
 }

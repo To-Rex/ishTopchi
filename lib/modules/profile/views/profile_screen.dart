@@ -586,7 +586,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             if (controller.hasToken.value)
                               _buildMenuItem(
                                 LucideIcons.megaphone,
-                                'Mening e\'lonlarim',
+                                'Mening e’lonlarim',
                                 controller.onMyPostsTap,
                               ),
                             _buildMenuItem(

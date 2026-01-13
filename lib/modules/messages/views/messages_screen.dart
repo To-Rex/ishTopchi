@@ -8,6 +8,7 @@ import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../config/theme/app_theme.dart';
 import '../../../controllers/funcController.dart';
+import '../../../core/models/chat_rooms.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/messages_controller.dart';
 import '../../../config/routes/app_routes.dart';
@@ -62,7 +63,7 @@ class MessagesScreen extends GetView<MessagesController> {
             ),
             SizedBox(height: AppDimensions.paddingSmall),
             ...postOwnerRooms.map(
-              (room) => _buildRoomCard(context, room, currentUserId, true),
+              (room) => _buildPostOwnerRoomCard(context, room, currentUserId),
             ),
           ],
           if (applicationRooms.isNotEmpty) ...[
@@ -76,7 +77,7 @@ class MessagesScreen extends GetView<MessagesController> {
             ),
             SizedBox(height: AppDimensions.paddingSmall),
             ...applicationRooms.map(
-              (room) => _buildRoomCard(context, room, currentUserId, false),
+              (room) => _buildRoomCard(context, room, currentUserId),
             ),
           ],
         ],
@@ -135,16 +136,158 @@ class MessagesScreen extends GetView<MessagesController> {
     );
   }
 
+  Widget _buildPostOwnerRoomCard(
+    BuildContext context,
+    PostOwnerRoom room,
+    int currentUserId,
+  ) {
+    final post = room.post;
+    final chatCount = room.chatRooms.length;
+    final latestChat = room.chatRooms.isNotEmpty ? room.chatRooms.first : null;
+    final time = latestChat != null ? _formatTime(latestChat.createdAt) : '';
+
+    return Card(
+      color: AppColors.cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+      ),
+      margin: EdgeInsets.only(bottom: AppDimensions.paddingMedium),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+        onTap: () {
+          Get.toNamed(AppRoutes.postOwnerDetail, arguments: room);
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingSmall,
+            vertical: AppDimensions.paddingSmall,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Post image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+                child: Container(
+                  width: Responsive.scaleWidth(80, context),
+                  height: Responsive.scaleWidth(80, context),
+                  decoration: BoxDecoration(
+                    color: AppColors.textSecondaryColor.withAlpha(50),
+                  ),
+                  child:
+                      post.pictureUrl != null && post.pictureUrl!.isNotEmpty
+                          ? Image.network(
+                            'https://ishtopchi.uz${post.pictureUrl}',
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (context, error, stackTrace) => Center(
+                                  child: Icon(
+                                    LucideIcons.imageOff,
+                                    color: AppColors.textSecondaryColor,
+                                    size: 40,
+                                  ),
+                                ),
+                          )
+                          : Center(
+                            child: Icon(
+                              LucideIcons.imageOff,
+                              color: AppColors.textSecondaryColor,
+                              size: 40,
+                            ),
+                          ),
+                ),
+              ),
+              SizedBox(width: AppDimensions.paddingMedium),
+              // Post details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Post title
+                    Text(
+                      post.title ?? 'Noma\'lum',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: Responsive.scaleFont(16, context),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textColor,
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingSmall),
+                    // Salary
+                    if (post.salaryFrom != null || post.salaryTo != null)
+                      Row(
+                        children: [
+                          Icon(
+                            LucideIcons.wallet,
+                            size: Responsive.scaleFont(14, context),
+                            color: AppColors.iconColor,
+                          ),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              '${post.salaryFrom ?? 'Noma\'lum'} - ${post.salaryTo ?? 'Noma\'lum'} UZS',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: Responsive.scaleFont(12, context),
+                                color: AppColors.iconColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    SizedBox(height: AppDimensions.paddingSmall),
+                    // Chat count and time
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.message_outlined,
+                          size: Responsive.scaleFont(14, context),
+                          color: AppColors.iconColor,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          '$chatCount ${chatCount == 1 ? 'chat' : 'chats'}',
+                          style: TextStyle(
+                            fontSize: Responsive.scaleFont(12, context),
+                            color: AppColors.iconColor,
+                          ),
+                        ),
+                        if (time.isNotEmpty) ...[
+                          SizedBox(width: AppDimensions.paddingMedium),
+                          Text(
+                            time,
+                            style: TextStyle(
+                              fontSize: Responsive.scaleFont(12, context),
+                              color: AppColors.iconColor,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildRoomCard(
     BuildContext context,
-    dynamic room,
+    ApplicationRoom room,
     int currentUserId,
-    bool isPostOwner,
   ) {
     final otherUser = room.user1.id == currentUserId ? room.user2 : room.user1;
-    final sender = '${otherUser.firstName} ${otherUser.lastName ?? ''}'.trim();
-    final preview =
-        isPostOwner ? room.application.post.title : room.application.message;
+    final sender =
+        '${otherUser.firstName ?? ''} ${otherUser.lastName ?? ''}'.trim();
+    final senderInitial = sender.isNotEmpty ? sender[0].toUpperCase() : '?';
+    final preview = room.application.message;
     final time = _formatTime(room.createdAt);
 
     return Card(
@@ -153,164 +296,69 @@ class MessagesScreen extends GetView<MessagesController> {
         borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
       ),
       margin: EdgeInsets.only(bottom: AppDimensions.paddingMedium),
-      child:
-          isPostOwner
-              ? InkWell(
-                borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-                onTap: () {
-                  Get.toNamed(AppRoutes.postOwnerDetail, arguments: room);
-                },
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppDimensions.paddingMedium,
-                    vertical: AppDimensions.paddingSmall,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Post image
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          AppDimensions.cardRadius,
-                        ),
-                        child: Container(
-                          width: Responsive.scaleWidth(80, context),
-                          height: Responsive.scaleWidth(80, context),
-                          decoration: BoxDecoration(
-                            color: AppColors.textSecondaryColor.withAlpha(50),
-                          ),
-                          child:
-                              room.application.post?.pictureUrl != null &&
-                                      room
-                                          .application
-                                          .post
-                                          .pictureUrl!
-                                          .isNotEmpty
-                                  ? Image.network(
-                                    'https://ishtopchi.uz${room.application.post.pictureUrl}',
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) => Center(
-                                          child: Icon(
-                                            LucideIcons.imageOff,
-                                            color: AppColors.textSecondaryColor,
-                                            size: 40,
-                                          ),
-                                        ),
-                                  )
-                                  : Center(
-                                    child: Icon(
-                                      LucideIcons.imageOff,
-                                      color: AppColors.textSecondaryColor,
-                                      size: 40,
-                                    ),
-                                  ),
-                        ),
-                      ),
-                      SizedBox(width: AppDimensions.paddingMedium),
-                      // Post details
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Post title
-                            Text(
-                              room.application.post?.title ?? 'Noma’lum',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: Responsive.scaleFont(16, context),
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textColor,
-                              ),
-                            ),
-                            SizedBox(height: AppDimensions.paddingSmall),
-                            // Salary
-                            if (room.application.post?.salaryFrom != null ||
-                                room.application.post?.salaryTo != null)
-                              Row(
-                                children: [
-                                  Icon(
-                                    LucideIcons.wallet,
-                                    size: Responsive.scaleFont(14, context),
-                                    color: AppColors.iconColor,
-                                  ),
-                                  SizedBox(width: 4),
-                                  Expanded(
-                                    child: Text(
-                                      '${room.application.post?.salaryFrom ?? 'Noma’lum'} - ${room.application.post?.salaryTo ?? 'Noma’lum'} UZS',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: Responsive.scaleFont(
-                                          12,
-                                          context,
-                                        ),
-                                        color: AppColors.iconColor,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            SizedBox(height: AppDimensions.paddingSmall),
-                            // Time
-                            Text(
-                              time,
-                              style: TextStyle(
-                                fontSize: Responsive.scaleFont(12, context),
-                                color: AppColors.iconColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              : ListTile(
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingMedium,
-                  vertical: AppDimensions.paddingSmall,
-                ),
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.primaryColor,
-                  backgroundImage:
-                      isPostOwner && room.application.post.pictureUrl != null
-                          ? NetworkImage(room.application.post.pictureUrl!)
-                          : null,
-                  child: Text(
-                    sender[0].toUpperCase(),
-                    style: TextStyle(color: AppColors.white),
-                  ),
-                ),
-                title: Text(
-                  sender,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontSize: Responsive.scaleFont(16, context),
-                  ),
-                ),
-                subtitle: Text(
-                  preview,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: Responsive.scaleFont(14, context),
-                    color: AppColors.iconColor.withOpacity(0.8),
-                  ),
-                ),
-                trailing: Text(
-                  time,
-                  style: TextStyle(
-                    fontSize: Responsive.scaleFont(12, context),
-                    color: AppColors.iconColor,
-                  ),
-                ),
-                onTap: () {
-                  Get.toNamed(AppRoutes.messagesDetail, arguments: room);
-                },
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+        onTap: () {
+          Get.toNamed(AppRoutes.messagesDetail, arguments: room);
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingMedium,
+            vertical: AppDimensions.paddingSmall,
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: AppColors.primaryColor,
+                backgroundImage:
+                    otherUser.profilePicture != null
+                        ? NetworkImage(otherUser.profilePicture!)
+                        : null,
+                child: otherUser.profilePicture == null ? Text(
+                  senderInitial,
+                  style: TextStyle(color: AppColors.white),
+                ) : null,
               ),
+              SizedBox(width: AppDimensions.paddingMedium),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      sender,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: Responsive.scaleFont(16, context),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textColor,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      preview,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: Responsive.scaleFont(14, context),
+                        color: AppColors.iconColor.withOpacity(0.8),
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      time,
+                      style: TextStyle(
+                        fontSize: Responsive.scaleFont(12, context),
+                        color: AppColors.iconColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

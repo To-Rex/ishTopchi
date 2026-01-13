@@ -14,7 +14,7 @@ import '../core/models/post_model.dart';
 import '../core/models/resumes_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
-import '../core/models/chat_rooms.dart' hide Data;
+import '../core/models/chat_rooms.dart' hide Data, Meta;
 import '../modules/login/views/otp_verification_screen.dart';
 import '../modules/main/views/blocked_screen.dart';
 import '../modules/profile/views/edit_profile_screen.dart';
@@ -73,8 +73,6 @@ class ApiController extends GetxController {
   Future<List<Map<String, dynamic>>> fetchRegions() async {
     try {
       final response = await _dio.get('$_baseUrl/regions');
-      print(response.statusCode.toString());
-      print(response.data.toString());
 
       if (response.statusCode == 200) {
         final data = response.data['data']['items'] as List<dynamic>;
@@ -687,6 +685,7 @@ class ApiController extends GetxController {
   // Wishlistni olish
   Future<void> fetchWishlist() async {
     try {
+      funcController.isLoading.value = true;
       final response = await _dio.get(
         '$_baseUrl/wishlist',
         options: Options(
@@ -696,50 +695,22 @@ class ApiController extends GetxController {
           },
         ),
       );
-      //debugPrint('API javobi wishlist: ${response.data}');
+      log(response.statusCode.toString());
+      log(response.data.toString());
+      debugPrint('API javobi wishlist: ${response.data}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
+        debugPrint('Wishlist data length: ${data.length}');
+        debugPrint('Wishlist data: $data');
         funcController.wishList.value =
             data
                 .where((json) => json != null)
                 .map((json) => WishList.fromJson(json as Map<String, dynamic>))
                 .toList();
-        //debugPrint('WishList uzunligi: ${funcController.wishList.length}');
-        Future<ChatRooms> fetchChatRooms({int page = 1, int limit = 10}) async {
-          try {
-            final response = await _dio.get(
-              '$_baseUrl/chat-rooms?page=$page&limit=$limit',
-              options: Options(
-                headers: {
-                  'accept': 'application/json',
-                  'Authorization': 'Bearer ${funcController.globalToken.value}',
-                },
-              ),
-            );
-            if (response.statusCode == 200) {
-              return ChatRooms.fromJson(response.data);
-            } else {
-              ShowToast.show(
-                'Xatolik',
-                'Chat rooms olishda xatolik yuz berdi',
-                3,
-                1,
-              );
-              throw Exception(
-                'Chat rooms olishda xatolik: ${response.statusCode}',
-              );
-            }
-          } catch (e) {
-            debugPrint('fetchChatRooms xatolik: $e');
-            ShowToast.show(
-              'Xatolik',
-              'Chat rooms olishda xato yuz berdi',
-              3,
-              1,
-            );
-            rethrow;
-          }
-        }
+        debugPrint('WishList uzunligi: ${funcController.wishList.length}');
+        debugPrint(
+          'WishList items: ${funcController.wishList.map((e) => e.title).toList()}',
+        );
       } else if (response.statusCode == 404) {
         funcController.clearWishList();
         debugPrint('Wishlist bo‘sh');
@@ -749,6 +720,8 @@ class ApiController extends GetxController {
     } catch (e) {
       funcController.clearWishList();
       debugPrint('fetchWishlist xatolik: $e');
+    } finally {
+      funcController.isLoading.value = false;
     }
   }
 
@@ -793,7 +766,7 @@ class ApiController extends GetxController {
         ),
       );
       print(response.statusCode.toString());
-      log(response.data.toString());
+      //log(response.data.toString());
       if (response.statusCode == 200) {
         return ChatRoomMessagesResponse.fromJson(response.data);
       } else {

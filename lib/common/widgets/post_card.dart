@@ -64,8 +64,11 @@ class PostCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
+          // Handle both Data and WishList types
           final dataPost =
-              post is Data ? post as Data : Data.fromJson(post.toJson());
+              post is Data
+                  ? post as Data
+                  : post; // WishList already has all required fields
           Get.to(() => PostDetailScreen(post: dataPost));
         },
         borderRadius: BorderRadius.circular(Responsive.scaleWidth(16, context)),
@@ -551,8 +554,11 @@ class PostCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
+          // Handle both Data and WishList types
           final dataPost =
-              post is Data ? post as Data : Data.fromJson(post.toJson());
+              post is Data
+                  ? post as Data
+                  : post; // WishList already has all required fields
           Get.to(() => PostDetailScreen(post: dataPost));
         },
         borderRadius: BorderRadius.circular(Responsive.scaleWidth(16, context)),

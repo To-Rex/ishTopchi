@@ -16,11 +16,12 @@ import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../../../controllers/theme_controller.dart';
 import '../../../core/models/post_model.dart';
+import '../../../core/models/wish_list.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/post_detail_controller.dart';
 
 class PostDetailScreen extends StatefulWidget {
-  final Data post;
+  final PostInterface post;
 
   const PostDetailScreen({super.key, required this.post});
 

@@ -297,11 +297,57 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         onPressed: () => Get.back(),
       ),
       actions: [
-        IconButton(
+        PopupMenuButton<String>(
           icon: Icon(Icons.more_vert, color: AppColors.textColor),
-          onPressed: () {
-            _showMoreOptions(context);
+          color: AppColors.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+          ),
+          onSelected: (value) {
+            _handleMenuSelection(value);
           },
+          itemBuilder:
+              (BuildContext context) => [
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: AppColors.red, size: 20),
+                      SizedBox(width: 12),
+                      Text(
+                        'Xabarni o\'chirish',
+                        style: TextStyle(color: AppColors.textColor),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'block',
+                  child: Row(
+                    children: [
+                      Icon(Icons.block, color: AppColors.red, size: 20),
+                      SizedBox(width: 12),
+                      Text(
+                        'Foydalanuvchini bloklash',
+                        style: TextStyle(color: AppColors.textColor),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'report',
+                  child: Row(
+                    children: [
+                      Icon(Icons.report, color: AppColors.red, size: 20),
+                      SizedBox(width: 12),
+                      Text(
+                        'Shikoyat qilish',
+                        style: TextStyle(color: AppColors.textColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
         ),
       ],
     );
@@ -425,11 +471,11 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     topLeft: Radius.circular(
                       isMe ? AppDimensions.cardRadius : 0,
                     ),
-                    topRight: Radius.circular(isMe ? 0 : AppDimensions.cardRadius),
-                    bottomLeft: Radius.circular(AppDimensions.cardRadius),
-                    bottomRight: Radius.circular(
-                      AppDimensions.cardRadius,
+                    topRight: Radius.circular(
+                      isMe ? 0 : AppDimensions.cardRadius,
                     ),
+                    bottomLeft: Radius.circular(AppDimensions.cardRadius),
+                    bottomRight: Radius.circular(AppDimensions.cardRadius),
                   ),
                 ),
                 child: Column(
@@ -567,6 +613,35 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       appBar: _buildAppBar(context),
       body: _buildBody(context),
     );
+  }
+
+  void _handleMenuSelection(String value) {
+    switch (value) {
+      case 'delete':
+        Get.snackbar(
+          'Xabar',
+          'Xabar o\'chirildi!',
+          backgroundColor: AppColors.primaryColor,
+          colorText: AppColors.textColor,
+        );
+        break;
+      case 'block':
+        Get.snackbar(
+          'Xabar',
+          'Foydalanuvchi bloklandi!',
+          backgroundColor: AppColors.primaryColor,
+          colorText: AppColors.textColor,
+        );
+        break;
+      case 'report':
+        Get.snackbar(
+          'Xabar',
+          'Shikoyat yuborildi!',
+          backgroundColor: AppColors.primaryColor,
+          colorText: AppColors.textColor,
+        );
+        break;
+    }
   }
 
   void _showMoreOptions(BuildContext context) {

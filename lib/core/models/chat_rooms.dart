@@ -45,30 +45,48 @@ class Data {
 }
 
 class PostOwnerRoom {
+  final Post post;
+  final List<ChatRoom> chatRooms;
+
+  PostOwnerRoom({required this.post, required this.chatRooms});
+
+  factory PostOwnerRoom.fromJson(Map<String, dynamic> json) {
+    return PostOwnerRoom(
+      post: Post.fromJson(json['post']),
+      chatRooms:
+          (json['chatRooms'] as List).map((e) => ChatRoom.fromJson(e)).toList(),
+    );
+  }
+}
+
+class ChatRoom {
   final int id;
   final User user1;
   final User user2;
   final Application application;
   final String createdAt;
   final String updatedAt;
+  final bool isApplicantRejected;
 
-  PostOwnerRoom({
+  ChatRoom({
     required this.id,
     required this.user1,
     required this.user2,
     required this.application,
     required this.createdAt,
     required this.updatedAt,
+    required this.isApplicantRejected,
   });
 
-  factory PostOwnerRoom.fromJson(Map<String, dynamic> json) {
-    return PostOwnerRoom(
+  factory ChatRoom.fromJson(Map<String, dynamic> json) {
+    return ChatRoom(
       id: json['id'],
       user1: User.fromJson(json['user1']),
       user2: User.fromJson(json['user2']),
       application: Application.fromJson(json['application']),
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      isApplicantRejected: json['is_applicant_rejected'] ?? false,
     );
   }
 }
@@ -80,6 +98,7 @@ class ApplicationRoom {
   final Application application;
   final String createdAt;
   final String updatedAt;
+  final bool isApplicantRejected;
 
   ApplicationRoom({
     required this.id,
@@ -88,6 +107,7 @@ class ApplicationRoom {
     required this.application,
     required this.createdAt,
     required this.updatedAt,
+    required this.isApplicantRejected,
   });
 
   factory ApplicationRoom.fromJson(Map<String, dynamic> json) {
@@ -98,6 +118,7 @@ class ApplicationRoom {
       application: Application.fromJson(json['application']),
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      isApplicantRejected: json['is_applicant_rejected'] ?? false,
     );
   }
 }
@@ -109,6 +130,7 @@ class OtherRoom {
   final Application? application;
   final String createdAt;
   final String updatedAt;
+  final bool isApplicantRejected;
 
   OtherRoom({
     required this.id,
@@ -117,6 +139,7 @@ class OtherRoom {
     this.application,
     required this.createdAt,
     required this.updatedAt,
+    required this.isApplicantRejected,
   });
 
   factory OtherRoom.fromJson(Map<String, dynamic> json) {
@@ -130,6 +153,7 @@ class OtherRoom {
               : null,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      isApplicantRejected: json['is_applicant_rejected'] ?? false,
     );
   }
 }
@@ -272,6 +296,29 @@ class Post {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       user: User.fromJson(json['user']),
+    );
+  }
+}
+
+class Meta {
+  final int total;
+  final int page;
+  final int limit;
+  final int totalPages;
+
+  Meta({
+    required this.total,
+    required this.page,
+    required this.limit,
+    required this.totalPages,
+  });
+
+  factory Meta.fromJson(Map<String, dynamic> json) {
+    return Meta(
+      total: json['total'],
+      page: json['page'],
+      limit: json['limit'],
+      totalPages: json['totalPages'],
     );
   }
 }
