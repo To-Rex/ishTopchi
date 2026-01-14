@@ -139,8 +139,8 @@ class HelpCenterScreenState extends State<HelpCenterScreen>
                 context,
                 Icons.email,
                 'Email'.tr,
-                'support@ishtopchi.uz',
-                () => _launchURL('mailto:support@ishtopchi.uz'),
+                'ishtopchi@gmail.com',
+                () => _launchURL('mailto:ishtopchi@gmail.com'),
               ),
               SizedBox(height: Responsive.scaleHeight(6, context)),
               _buildContactItem(

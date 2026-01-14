@@ -65,6 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       expandedHeight: 260,
                       collapsedHeight: 60,
                       foregroundColor: AppColors.textColor,
+                      surfaceTintColor: AppColors.backgroundColor,
                       flexibleSpace: LayoutBuilder(
                         builder: (context, constraints) {
                           final isCollapsed = constraints.maxHeight <= 80;
@@ -139,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               ),
                                               SizedBox(width: 10.w),
                                               Text(
-                                                'Ro\'yxatdan o\'ting va boshlang!'
+                                                'Ro‘yxatdan o‘ting va boshlang!'
                                                     .tr,
                                                 style: TextStyle(
                                                   fontSize:
@@ -377,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                         height: 16,
                                                       ),
                                                       Text(
-                                                        'Ro\'yxatdan o\'ting va boshlang!'
+                                                        'Ro‘yxatdan o‘ting va boshlang!'
                                                             .tr,
                                                         style: TextStyle(
                                                           color:
@@ -537,8 +538,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                           .authProviders!
                                                           .first
                                                           .providersUserId ??
-                                                      'Ma\'lumotlar yo\'q'.tr
-                                                  : 'Ma\'lumotlar yo\'q'.tr,
+                                                      'Ma’lumot yo‘q'.tr
+                                                  : 'Ma’lumot yo‘q'.tr,
                                               style: TextStyle(
                                                 color:
                                                     AppColors
@@ -601,7 +602,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             _buildMenuItem(
                               LucideIcons.headset,
-                              'Qo\'llab-quvvatlash'.tr,
+                              'Qo‘llab-quvvatlash'.tr,
                               controller.onSupportTap,
                             ),
                             _buildMenuItem(
@@ -704,7 +705,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       child: Text(
         'Kirish'.tr,
         style: TextStyle(
-          color: AppColors.textColor,
+          color: AppColors.white,
           fontSize: Responsive.scaleFont(14, context),
           fontWeight: FontWeight.w600,
         ),

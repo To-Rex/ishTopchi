@@ -48,7 +48,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
             onPressed: () => Get.back(),
           ),
           title: Text(
-            'Mening Rezumelarim'.tr,
+            'Mening Rezyumelarim'.tr,
             style: TextStyle(
               color: AppColors.textColor,
               fontSize: Responsive.scaleFont(20, context),
@@ -90,7 +90,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
                     ),
                     SizedBox(width: Responsive.scaleWidth(8, context)),
                     Text(
-                      'Yangi qo\'shish'.tr,
+                      'Yangi qo‘shish'.tr,
                       style: TextStyle(
                         fontSize: Responsive.scaleFont(14, context),
                         color: AppColors.white,

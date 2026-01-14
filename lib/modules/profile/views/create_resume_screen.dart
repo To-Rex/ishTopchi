@@ -109,7 +109,7 @@ class _CreateResumeScreenState extends State<CreateResumeScreen> {
                 // Ta'lim bo'limi
                 _buildSectionTitle(
                   context,
-                  'Ta\'lim'.tr,
+                  'Ta’lim'.tr,
                   () => controller.addEducation(),
                 ),
                 Obx(
@@ -343,7 +343,7 @@ class _CreateResumeScreenState extends State<CreateResumeScreen> {
             SizedBox(height: AppDimensions.paddingMedium),
             _buildTextField(
               context,
-              label: 'Yo\'nalish'.tr,
+              label: 'Yo‘nalish'.tr,
               controller: TextEditingController(text: education.field)
                 ..selection = TextSelection.fromPosition(
                   TextPosition(offset: education.field?.length ?? 0),

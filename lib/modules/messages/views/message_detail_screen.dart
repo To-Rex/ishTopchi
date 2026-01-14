@@ -32,6 +32,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   bool _isLoading = true;
   bool _listenersRegistered = false;
   bool _isSending = false;
+  int? _editingMessageId; // Tahrirlanayotgan xabar ID si
 
   @override
   void initState() {
@@ -452,6 +453,8 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             : AppColors.iconColor.withOpacity(0.7);
     final avatarTextColor = isMe ? AppColors.white : AppColors.white;
 
+    final GlobalKey bubbleKey = GlobalKey();
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
       child: Align(
@@ -460,63 +463,73 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                  vertical: AppDimensions.paddingSmall,
-                ),
-                padding: EdgeInsets.all(AppDimensions.paddingMedium),
-                decoration: BoxDecoration(
-                  color: isMe ? AppColors.primaryColor : AppColors.cardColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(
-                      isMe ? AppDimensions.cardRadius : 0,
-                    ),
-                    topRight: Radius.circular(
-                      isMe ? 0 : AppDimensions.cardRadius,
-                    ),
-                    bottomLeft: Radius.circular(AppDimensions.cardRadius),
-                    bottomRight: Radius.circular(AppDimensions.cardRadius),
+              child: GestureDetector(
+                key: bubbleKey,
+                onLongPress: () {
+                  if (isMe) {
+                    _showMessageOptions(context, msg, bubbleKey);
+                  }
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    vertical: AppDimensions.paddingSmall,
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment:
-                      isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      msg['content'] ?? '',
-                      style: TextStyle(color: bubbleTextColor),
+                  padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                  decoration: BoxDecoration(
+                    color: isMe ? AppColors.primaryColor : AppColors.cardColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(
+                        isMe ? AppDimensions.cardRadius : 0,
+                      ),
+                      topRight: Radius.circular(
+                        isMe ? 0 : AppDimensions.cardRadius,
+                      ),
+                      bottomLeft: Radius.circular(AppDimensions.cardRadius),
+                      bottomRight: Radius.circular(AppDimensions.cardRadius),
                     ),
-                    SizedBox(height: AppDimensions.paddingSmall / 2),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          time,
-                          style: TextStyle(
-                            color: timeColor,
-                            fontSize: Responsive.scaleFont(12, context),
-                          ),
-                        ),
-                        if (isMe) ...[
-                          SizedBox(width: AppDimensions.paddingSmall / 2),
+                  ),
+                  child: Column(
+                    crossAxisAlignment:
+                        isMe
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        msg['content'] ?? '',
+                        style: TextStyle(color: bubbleTextColor),
+                      ),
+                      SizedBox(height: AppDimensions.paddingSmall / 2),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           Text(
-                            status == 'seen'
-                                ? 'Seen'
-                                : status == 'delivered'
-                                ? 'Delivered'
-                                : '',
+                            time,
                             style: TextStyle(
-                              color:
-                                  status == 'seen'
-                                      ? AppColors.white
-                                      : AppColors.white.withOpacity(0.7),
-                              fontSize: Responsive.scaleFont(10, context),
+                              color: timeColor,
+                              fontSize: Responsive.scaleFont(12, context),
                             ),
                           ),
+                          if (isMe) ...[
+                            SizedBox(width: AppDimensions.paddingSmall / 2),
+                            Text(
+                              status == 'seen'
+                                  ? 'Seen'
+                                  : status == 'delivered'
+                                  ? 'Delivered'
+                                  : '',
+                              style: TextStyle(
+                                color:
+                                    status == 'seen'
+                                        ? AppColors.white
+                                        : AppColors.white.withOpacity(0.7),
+                                fontSize: Responsive.scaleFont(10, context),
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -527,83 +540,214 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   }
 
   Widget _buildInputField(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-        top: AppDimensions.paddingMedium,
-        bottom: AppDimensions.paddingLarge,
-        left: 15.sp,
-        right: 15.sp,
-      ),
-      color: AppColors.cardColor,
-      child: Row(
-        children: [
-          Expanded(
-            child: SizedBox(
-              height: 50,
-              child: TextField(
-                controller: _textController,
-                style: TextStyle(color: AppColors.textColor),
-                decoration: InputDecoration(
-                  hintText: 'Type a message',
-                  hintStyle: TextStyle(
-                    color: AppColors.iconColor.withOpacity(0.6),
-                  ),
-                  filled: true,
-                  fillColor: AppColors.backgroundColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: Responsive.scaleHeight(16, context),
-                    horizontal: Responsive.scaleWidth(20, context),
-                  ),
-                ),
+    final isEditing = _editingMessageId != null;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Edit panel (shown only when editing)
+        if (isEditing) ...[
+          Container(
+            margin: EdgeInsets.only(
+              bottom: AppDimensions.paddingSmall,
+              left: 15.sp,
+              right: 15.sp,
+            ),
+            padding: EdgeInsets.all(AppDimensions.paddingMedium),
+            decoration: BoxDecoration(
+              color: AppColors.backgroundColor.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+              border: Border.all(
+                color: AppColors.primaryColor.withOpacity(0.3),
+                width: 1,
               ),
             ),
-          ),
-          SizedBox(width: AppDimensions.paddingSmall),
-          Container(
-            height: 50,
-            width: 60,
-            child: ElevatedButton(
-              onPressed: () {
-                if (_textController.text.isNotEmpty && !_isSending) {
-                  final messageContent = _textController.text.trim();
-                  if (messageContent.isEmpty) return;
-
-                  setState(() {
-                    _isSending = true;
-                  });
-
-                  _textController.clear();
-
-                  // Send message via socket for real-time delivery
-                  _socketService.sendMessage(
-                    chatRoomId: _room.id,
-                    content: messageContent,
-                  );
-
-                  // Reset sending flag after a short delay
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    setState(() {
-                      _isSending = false;
-                    });
-                  });
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.backgroundColor,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          color: AppColors.primaryColor,
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Xabarni tahrirlash',
+                          style: TextStyle(
+                            color: AppColors.textColor,
+                            fontSize: Responsive.scaleFont(14, context),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _editingMessageId = null;
+                          _textController.clear();
+                        });
+                      },
+                      child: Icon(
+                        Icons.close,
+                        color: AppColors.textColor,
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              child: Icon(Icons.send, color: AppColors.textColor),
+                SizedBox(height: AppDimensions.paddingSmall),
+                // Message preview
+                Container(
+                  padding: EdgeInsets.all(AppDimensions.paddingSmall),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardColor,
+                    borderRadius: BorderRadius.circular(
+                      AppDimensions.cardRadius / 2,
+                    ),
+                  ),
+                  child: Text(
+                    _messages.firstWhere(
+                          (msg) => msg['id'] == _editingMessageId,
+                          orElse: () => {'content': ''},
+                        )['content'] ??
+                        '',
+                    style: TextStyle(
+                      color: AppColors.textColor,
+                      fontSize: Responsive.scaleFont(13, context),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
-      ),
+        // Input field container
+        Container(
+          padding: EdgeInsets.only(
+            top: AppDimensions.paddingMedium,
+            bottom: AppDimensions.paddingLarge,
+            left: 15.sp,
+            right: 15.sp,
+          ),
+          color: AppColors.cardColor,
+          child: Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 50,
+                  child: TextField(
+                    controller: _textController,
+                    style: TextStyle(color: AppColors.textColor),
+                    decoration: InputDecoration(
+                      hintText:
+                          isEditing ? 'Xabarni tahrirlash' : 'Type a message',
+                      hintStyle: TextStyle(
+                        color: AppColors.iconColor.withOpacity(0.6),
+                      ),
+                      filled: true,
+                      fillColor: AppColors.backgroundColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: Responsive.scaleHeight(16, context),
+                        horizontal: Responsive.scaleWidth(20, context),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: AppDimensions.paddingSmall),
+              if (isEditing) ...[
+                // Update button
+                Container(
+                  height: 50,
+                  width: 80,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_textController.text.trim().isNotEmpty &&
+                          !_isSending) {
+                        final messageContent = _textController.text.trim();
+                        if (messageContent.isEmpty) return;
+
+                        setState(() {
+                          _isSending = true;
+                        });
+
+                        _updateMessage(_editingMessageId!, messageContent).then(
+                          (_) {
+                            setState(() {
+                              _editingMessageId = null;
+                              _textController.clear();
+                              _isSending = false;
+                            });
+                          },
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Icon(Icons.send, color: AppColors.textColor),
+                  ),
+                ),
+              ] else ...[
+                // Send button (normal mode)
+                Container(
+                  height: 50,
+                  width: 60,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_textController.text.isNotEmpty && !_isSending) {
+                        final messageContent = _textController.text.trim();
+                        if (messageContent.isEmpty) return;
+
+                        setState(() {
+                          _isSending = true;
+                        });
+
+                        _textController.clear();
+
+                        // Send message via socket for real-time delivery
+                        _socketService.sendMessage(
+                          chatRoomId: _room.id,
+                          content: messageContent,
+                        );
+
+                        // Reset sending flag after a short delay
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          setState(() {
+                            _isSending = false;
+                          });
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.backgroundColor,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Icon(Icons.send, color: AppColors.textColor),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -641,6 +785,128 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           colorText: AppColors.textColor,
         );
         break;
+    }
+  }
+
+  void _showMessageOptions(
+    BuildContext context,
+    Map<String, dynamic> msg,
+    GlobalKey bubbleKey,
+  ) {
+    final RenderBox? renderBox =
+        bubbleKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (renderBox == null) return;
+
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+    final Size size = renderBox.size;
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy,
+        offset.dx + size.width,
+        offset.dy + size.height,
+      ),
+      color: AppColors.cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit, color: AppColors.primaryColor, size: 20),
+              SizedBox(width: 12),
+              Text(
+                'Xabarni tahrirlash',
+                style: TextStyle(color: AppColors.textColor),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(Icons.delete, color: AppColors.red, size: 20),
+              SizedBox(width: 12),
+              Text(
+                'Xabarni o\'chirish',
+                style: TextStyle(color: AppColors.textColor),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'edit') {
+        _editMessage(msg);
+      } else if (value == 'delete') {
+        _deleteMessage(msg);
+      }
+    });
+  }
+
+  void _editMessage(Map<String, dynamic> msg) {
+    setState(() {
+      _editingMessageId = msg['id'];
+      _textController.text = msg['content'] ?? '';
+    });
+    _scrollToBottom();
+  }
+
+  Future<void> _updateMessage(int messageId, String newContent) async {
+    try {
+      final response = await _apiController.updateMessage(
+        messageId,
+        newContent,
+      );
+
+      if (response['success'] == true) {
+        setState(() {
+          final index = _messages.indexWhere((msg) => msg['id'] == messageId);
+          if (index != -1) {
+            _messages[index]['content'] = newContent;
+          }
+        });
+        ShowToast.show('Muvaffaqiyat', 'Xabar tahrirlandi', 3, 1);
+      } else {
+        ShowToast.show(
+          'Xatolik',
+          'Xabarni tahrirlashda xatolik yuz berdi',
+          3,
+          1,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error updating message: $e');
+      ShowToast.show('Xatolik', 'Xabarni tahrirlashda xatolik yuz berdi', 3, 1);
+    }
+  }
+
+  Future<void> _deleteMessage(Map<String, dynamic> msg) async {
+    try {
+      final response = await _apiController.deleteMessage(msg['id']);
+
+      if (response['success'] == true) {
+        setState(() {
+          _messages.removeWhere((m) => m['id'] == msg['id']);
+        });
+        ShowToast.show('Muvaffaqiyat', 'Xabar o\'chirildi', 3, 1);
+      } else {
+        ShowToast.show(
+          'Xatolik',
+          'Xabarni o\'chirishda xatolik yuz berdi',
+          3,
+          1,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error deleting message: $e');
+      ShowToast.show('Xatolik', 'Xabarni o\'chirishda xatolik yuz berdi', 3, 1);
     }
   }
 
@@ -886,7 +1152,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                   ),
                                   SizedBox(width: AppDimensions.paddingSmall),
                                   Text(
-                                    'Ta\'lim',
+                                    'Ta’lim',
                                     style: TextStyle(
                                       color: AppColors.iconColor,
                                       fontSize: Responsive.scaleFont(

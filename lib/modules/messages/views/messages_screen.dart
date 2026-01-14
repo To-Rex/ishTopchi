@@ -205,7 +205,7 @@ class MessagesScreen extends GetView<MessagesController> {
                   children: [
                     // Post title
                     Text(
-                      post.title ?? 'Noma\'lum',
+                      post.title ?? 'Noma’lum'.tr,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

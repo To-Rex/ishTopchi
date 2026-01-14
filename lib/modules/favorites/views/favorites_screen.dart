@@ -69,7 +69,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Saqlangan postlar yo\'q'.tr,
+                    'Saqlangan postlar yo‘q'.tr,
                     style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
                       color: AppColors.textColor,
                       fontFamily: 'Poppins',
@@ -79,7 +79,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Saqlangan postlar yo\'q tavsifi'.tr,
+                    'Saqlangan postlar yo‘q tavsifi'.tr,
                     style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
                       color: AppColors.textSecondaryColor,
                     ),
@@ -95,7 +95,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     ),
                     onPressed: () => funcController.setBarIndex(0),
                     child: Text(
-                      'Asosiy sahifaga o\'tish'.tr,
+                      'Asosiy sahifaga o‘tish'.tr,
                       style: TextStyle(
                         color: AppColors.textColor,
                         fontSize: 14.sp,

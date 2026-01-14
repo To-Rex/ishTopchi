@@ -157,7 +157,7 @@ class _AdPostingScreenState extends State<AdPostingScreen>
             controller.isLoadingDistricts.value
                 ? CircularProgressIndicator(color: AppColors.iconColor)
                 : Text(
-                  'Ma\'lumotlar yuklanmadi'.tr,
+                  'Ma’lumotlar yuklanmadi'.tr,
                   style: TextStyle(color: AppColors.textColor),
                 ),
       );
@@ -863,7 +863,7 @@ class _AdPostingScreenState extends State<AdPostingScreen>
         elevation: 2,
       ),
       child: Text(
-        'E\'lonni yuborish'.tr,
+        'E’lonni yuborish'.tr,
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
           fontSize: Responsive.scaleFont(16, context),
           color: AppColors.white,

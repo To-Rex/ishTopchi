@@ -833,6 +833,75 @@ class ApiController extends GetxController {
     }
   }
 
+  // Xabarni yangilash
+  Future<Map<String, dynamic>> updateMessage(
+    int messageId,
+    String newContent,
+  ) async {
+    try {
+      final response = await _dio.patch(
+        '$_baseUrl/message/$messageId',
+        data: json.encode({'content': newContent}),
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ${funcController.globalToken.value}',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return {'success': true, 'data': response.data};
+      } else {
+        ShowToast.show(
+          'Xatolik',
+          'Xabarni yangilashda xatolik yuz berdi',
+          3,
+          1,
+        );
+        debugPrint('updateMessage xatolik: ${response.statusCode}');
+        return {'success': false};
+      }
+    } catch (e) {
+      debugPrint('updateMessage exception: $e');
+      ShowToast.show('Xatolik', 'Xabarni yangilashda xato yuz berdi', 3, 1);
+      return {'success': false};
+    }
+  }
+
+  // Xabarni o'chirish
+  Future<Map<String, dynamic>> deleteMessage(int messageId) async {
+    try {
+      final response = await _dio.delete(
+        '$_baseUrl/message/$messageId',
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ${funcController.globalToken.value}',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return {'success': true};
+      } else {
+        ShowToast.show(
+          'Xatolik',
+          'Xabarni o\'chirishda xatolik yuz berdi',
+          3,
+          1,
+        );
+        debugPrint('deleteMessage xatolik: ${response.statusCode}');
+        return {'success': false};
+      }
+    } catch (e) {
+      debugPrint('deleteMessage exception: $e');
+      ShowToast.show('Xatolik', 'Xabarni o\'chirishda xato yuz berdi', 3, 1);
+      return {'success': false};
+    }
+  }
+
   // Yoqtirish (wishlist'ga qo'shish)
   Future<void> addToWishlist(int postId) async {
     debugPrint(postId.toString());

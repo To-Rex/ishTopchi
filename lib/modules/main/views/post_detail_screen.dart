@@ -236,7 +236,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                   SizedBox(height: AppDimensions.paddingMedium),
                   // Sarlavha
                   TextSmall(
-                    text: 'Ro\'yxatdan o\'tish talab qilinadi'.tr,
+                    text: 'Ro‘yxatdan o‘tish talab qilinadi'.tr,
                     color: AppColors.textColor,
                     maxLines: 2,
                     fontSize: Responsive.scaleFont(18, context),
@@ -247,7 +247,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                   // Tavsif
                   TextSmall(
                     text:
-                        'Telefon raqamini ko\'rish uchun ro\'yxatdan o\'ting yoki hisobingizga kiring.'
+                        'Telefon raqamini ko‘rish uchun ro‘yxatdan o‘ting yoki hisobingizga kiring.'
                             .tr,
                     color: AppColors.textSecondaryColor,
                     maxLines: 100,
@@ -596,7 +596,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                                                   Expanded(
                                                     child: Text(
                                                       resume.title ??
-                                                          'Noma\'lum'.tr,
+                                                          'Noma’lum'.tr,
                                                       style: TextStyle(
                                                         color:
                                                             AppColors.textColor,
@@ -1607,7 +1607,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                             ),
                             SizedBox(width: Responsive.scaleWidth(6, context)),
                             Text(
-                              '${widget.post.views ?? 0} ko‘rish'.tr,
+                              '${widget.post.views ?? 0} ${'ko‘rish'.tr}',
                               style: TextStyle(
                                 fontSize: Responsive.scaleFont(13, context),
                                 color: AppColors.textColor,

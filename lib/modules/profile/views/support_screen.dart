@@ -21,7 +21,7 @@ class _SupportScreenState extends State<SupportScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Qo\'llab-quvvatlash'.tr,
+          'Qo‘llab-quvvatlash'.tr,
           style: TextStyle(
             color: AppColors.textColor,
             fontSize: Responsive.scaleFont(18, context),

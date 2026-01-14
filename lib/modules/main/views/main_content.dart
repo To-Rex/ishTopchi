@@ -905,7 +905,7 @@ class MainContent extends StatelessWidget {
                       ),
                       SizedBox(width: 6.sp),
                       Text(
-                        '${funcController.totalPosts} ${"ta e'lon".tr}',
+                        '${funcController.totalPosts} ${'ta e’lon'.tr}',
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                         maxLines: 1,

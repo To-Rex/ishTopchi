@@ -76,7 +76,8 @@ class AboutAppScreen extends StatelessWidget {
               context,
               Icons.person_outline,
               'Ishlab chiquvchi'.tr,
-              'Doubleh Team',
+              'Torex Dev',
+              () => _launchURL('https://torexdev.uz'),
             ),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             // Ruxsatlar
@@ -85,6 +86,7 @@ class AboutAppScreen extends StatelessWidget {
               Icons.lock_outline,
               'Ruxsatlar'.tr,
               'Maxfiylik siyosati va shartlar'.tr,
+              () => _launchURL('https://ishtopchi.uz/uz/privacy')
             ),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             // Havolalar
@@ -92,8 +94,8 @@ class AboutAppScreen extends StatelessWidget {
               context,
               Icons.link,
               'Veb-sayt'.tr,
-              'https://x.ai',
-              () => _launchURL('https://x.ai'),
+              'https://ishtopchi.uz',
+              () => _launchURL('https://ishtopchi.uz'),
             ),
             SizedBox(height: Responsive.scaleHeight(24, context)),
             // Qo'shimcha ma'lumot
@@ -117,6 +119,7 @@ class AboutAppScreen extends StatelessWidget {
     IconData icon,
     String title,
     String detail,
+VoidCallback? onTap,
   ) {
     return Container(
       padding: EdgeInsets.all(Responsive.scaleWidth(12, context)),
@@ -134,7 +137,9 @@ class AboutAppScreen extends StatelessWidget {
                   ),
                 ],
       ),
-      child: Row(
+      child: InkWell(
+      onTap: onTap,
+        child: Row(
         children: [
           Icon(
             icon,
@@ -166,6 +171,7 @@ class AboutAppScreen extends StatelessWidget {
           ),
         ],
       ),
+      )
     );
   }
 

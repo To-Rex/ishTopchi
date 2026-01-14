@@ -140,20 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 },
               ),
-              SizedBox(height: Responsive.scaleHeight(20, context)),
-              _buildSectionHeader('Kontent'.tr),
-              _buildSwitchTile(
-                icon: LucideIcons.play,
-                title: 'Avtomatik ijro'.tr,
-                subtitle: 'Videolarni avtomatik ijro etish'.tr,
-                value: _autoPlayEnabled,
-                onChanged: (value) {
-                  setState(() {
-                    _autoPlayEnabled = value;
-                  });
-                  _saveSetting('auto_play_enabled', value);
-                },
-              ),
+              
               SizedBox(height: Responsive.scaleHeight(20, context)),
               _buildSectionHeader('Ma\'lumot'.tr),
               _buildMenuTile(

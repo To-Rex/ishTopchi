@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:ishtopchi/common/widgets/text_small.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../config/theme/app_colors.dart';
 import '../../controllers/theme_controller.dart';
@@ -65,24 +66,23 @@ class _NotLoggedState extends State<NotLogged>
               ),
             ),
             SizedBox(height: 20.sp),
-            Text(
-              "Siz ro'yxatdan o'tmagansiz".tr,
-              style: TextStyle(
-                fontSize: Responsive.scaleFont(20, context),
-                color: AppColors.textColor,
-                fontWeight: FontWeight.w600,
-              ),
+
+            TextSmall(
+              text: 'Siz ro‘yxatdan o‘tmagansiz'.tr,
+              fontSize: Responsive.scaleFont(20, context),
+              color: AppColors.textColor,
+              fontWeight: FontWeight.w600,
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 10.sp),
-            Text(
-              "Iltimos, hisobingizga kiring yoki ro'yxatdan o'ting".tr,
-              style: TextStyle(
-                fontSize: Responsive.scaleFont(16, context),
-                color: AppColors.textColor,
-                fontWeight: FontWeight.w400,
-              ),
+            SizedBox(height: 5.sp),
+
+            TextSmall(
+              text: "Iltimos, hisobingizga kiring yoki ro‘yxatdan o‘ting".tr,
+              fontSize: Responsive.scaleFont(16, context),
+              color: AppColors.textColor,
+              fontWeight: FontWeight.w400,
               textAlign: TextAlign.center,
+              maxLines: 4,
             ),
             SizedBox(height: 30.sp),
             GestureDetector(
@@ -103,13 +103,13 @@ class _NotLoggedState extends State<NotLogged>
                     horizontal: 40.sp,
                     vertical: 12.sp,
                   ),
-                  child: Text(
-                    "Ro'yxatdan o'ting va boshlang!".tr,
-                    style: TextStyle(
-                      fontSize: Responsive.scaleFont(16, context),
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
+                
+                  child: TextSmall(
+                    text: 'Ro‘yxatdan o‘ting va boshlang!'.tr,
+                    fontSize: Responsive.scaleFont(16, context),
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w500,
+                    maxLines: 2
                   ),
                 ),
               ),

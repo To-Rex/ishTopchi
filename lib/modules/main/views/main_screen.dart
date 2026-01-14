@@ -112,7 +112,7 @@ class MainScreen extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: Icon(LucideIcons.circlePlus),
-                label: 'E\'lon qo\'shish'.tr,
+                label: 'E’lon qo‘shish'.tr,
               ),
               BottomNavigationBarItem(
                 icon: Icon(LucideIcons.messageCircle),
