@@ -6,9 +6,7 @@ import 'package:ishtopchi/controllers/funcController.dart';
 import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_theme.dart';
-import '../../../config/routes/app_routes.dart';
 import '../../../controllers/theme_controller.dart';
-import '../../../core/models/post_model.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../common/widgets/post_card.dart';
 
@@ -39,11 +37,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     final FuncController funcController = Get.find<FuncController>();
     final ThemeController themeController = Get.find<ThemeController>();
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
       body: Obx(() {
-        print('WishList uzunligi: ${funcController.wishList.length}');
-        print('isLoading: ${funcController.isLoading.value}');
-
         if (funcController.getToken() == null ||
             funcController.getToken() == '') {
           return NotLogged();

@@ -503,7 +503,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             _buildVersionRow(
               'Ilova versiyasi'.tr,
-              '1.1.0',
+              '1.2.0',
               labelColor,
               valueColor,
             ),

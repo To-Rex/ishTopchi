@@ -50,7 +50,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget build(BuildContext context) {
     return Obx(() {
       return Scaffold(
-        backgroundColor: AppColors.backgroundColor,
         body:
             (funcController.isLoading.value &&
                     funcController.getToken()!.isNotEmpty)
@@ -60,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 : CustomScrollView(
                   slivers: [
                     SliverAppBar(
-                      backgroundColor: AppColors.backgroundColor,
+                      backgroundColor: Colors.transparent,
                       pinned: true,
                       expandedHeight: 260,
                       collapsedHeight: 60,
@@ -674,7 +673,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             const SizedBox(height: 24),
                             Center(
                               child: Text(
-                                'Ishtopchi v1.1',
+                                'Ishtopchi v1.2',
                                 style: TextStyle(
                                   color: AppColors.textSecondaryColor,
                                   fontSize: 13,

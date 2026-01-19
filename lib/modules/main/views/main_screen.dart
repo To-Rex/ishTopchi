@@ -52,9 +52,6 @@ class MainScreen extends StatelessWidget {
               left: Responsive.scaleWidth(11, context),
               right: Responsive.scaleWidth(11, context),
             ),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundColor
-            ),
             child: Row(
               children: [
                 ElevatedButton.icon(
@@ -85,6 +82,19 @@ class MainScreen extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
+                IconButton(
+                  icon: Icon(
+                    themeController.isDarkMode.value
+                        ? LucideIcons.sun
+                        : LucideIcons.moon,
+                    color: AppColors.textColor,
+                  ),
+                  onPressed: () => themeController.toggleTheme(),
+                  tooltip:
+                      themeController.isDarkMode.value
+                          ? 'Yorqin mavzu'
+                          : 'Tungi mavzu',
+                ),
                 IconButton(
                   icon: Icon(LucideIcons.bell, color: AppColors.textColor),
                   onPressed: () => Get.toNamed('/notifications'),

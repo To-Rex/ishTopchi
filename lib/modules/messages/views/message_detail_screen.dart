@@ -401,10 +401,43 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   ) {
     final resume = msg['resume'];
     final isMe = msg['senderId'] == _currentUserId;
-    final bubbleTextColor = isMe ? AppColors.white : AppColors.textColor;
-    final iconColor = isMe ? AppColors.white : AppColors.iconColor;
-    final avatarTextColor =
-        isMe ? AppColors.white : AppColors.textSecondaryColor;
+    final time = _formatTime(msg['createdAt']);
+    final status = msg['status'] ?? 'sent';
+
+    // Colors based on sender
+    final cardColor = isMe ? AppColors.primaryColor : AppColors.cardColor;
+    final titleColor = isMe ? AppColors.white : AppColors.textColor;
+    const subtitleColor = Color(0xFFB8B8B8);
+    final iconColor =
+        isMe ? AppColors.white.withOpacity(0.8) : AppColors.primaryColor;
+    final timeColor =
+        isMe
+            ? AppColors.white.withOpacity(0.7)
+            : AppColors.iconColor.withOpacity(0.7);
+    final borderColor =
+        isMe ? Colors.white.withOpacity(0.2) : Colors.grey.withOpacity(0.2);
+    final backgroundColor =
+        isMe
+            ? AppColors.primaryColor.withOpacity(0.15)
+            : AppColors.backgroundColor;
+
+    // Get user initials
+    final user = isMe ? _currentUser : _otherUser;
+    final initials =
+        (user.firstName[0] + (user.lastName != null ? user.lastName![0] : ''))
+            .toUpperCase();
+
+    // Get experience preview
+    final firstExperience =
+        resume?.experience != null && resume!.experience!.isNotEmpty
+            ? resume.experience![0]
+            : null;
+
+    // Get education preview
+    final firstEducation =
+        resume?.education != null && resume!.education!.isNotEmpty
+            ? resume.education![0]
+            : null;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
@@ -414,22 +447,246 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                  vertical: AppDimensions.paddingSmall,
-                ),
-                padding: EdgeInsets.all(AppDimensions.paddingMedium),
-                decoration: BoxDecoration(
-                  color: isMe ? AppColors.primaryColor : AppColors.cardColor,
-                  borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-                ),
-                child: ListTile(
-                  leading: Icon(Icons.file_present, color: iconColor),
-                  title: Text(
-                    resume.title ?? 'Resume',
-                    style: TextStyle(color: bubbleTextColor),
+              child: GestureDetector(
+                onTap: () => _showResumeDialog(context),
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    vertical: AppDimensions.paddingSmall,
                   ),
-                  onTap: () => _showResumeDialog(context),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(
+                        isMe ? AppDimensions.cardRadius : 0,
+                      ),
+                      topRight: Radius.circular(
+                        isMe ? 0 : AppDimensions.cardRadius,
+                      ),
+                      bottomLeft: Radius.circular(AppDimensions.cardRadius),
+                      bottomRight: Radius.circular(AppDimensions.cardRadius),
+                    ),
+                    border: Border.all(color: borderColor, width: 1),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header with user info and resume icon
+                      Container(
+                        padding: EdgeInsets.all(AppDimensions.paddingMedium),
+                        decoration: BoxDecoration(
+                          color: backgroundColor,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(
+                              isMe ? AppDimensions.cardRadius - 1 : 0,
+                            ),
+                            topRight: Radius.circular(
+                              isMe ? 0 : AppDimensions.cardRadius - 1,
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            // User avatar
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: iconColor.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  initials,
+                                  style: TextStyle(
+                                    color: iconColor,
+                                    fontSize: Responsive.scaleFont(14, context),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: AppDimensions.paddingSmall),
+                            // User name
+                            Expanded(
+                              child: Text(
+                                '${user.firstName} ${user.lastName ?? ''}',
+                                style: TextStyle(
+                                  color: titleColor,
+                                  fontSize: Responsive.scaleFont(14, context),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            // Resume icon
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: iconColor.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.description_outlined,
+                                color: iconColor,
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Resume title
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          AppDimensions.paddingMedium,
+                          AppDimensions.paddingMedium,
+                          AppDimensions.paddingMedium,
+                          AppDimensions.paddingSmall,
+                        ),
+                        child: Text(
+                          resume?.title ?? 'Resume',
+                          style: TextStyle(
+                            color: titleColor,
+                            fontSize: Responsive.scaleFont(16, context),
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+
+                      // Experience preview
+                      if (firstExperience != null) ...[
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingMedium,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.work_outline,
+                                color: subtitleColor,
+                                size: 16,
+                              ),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  firstExperience.position ?? '',
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: Responsive.scaleFont(13, context),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                      ],
+
+                      // Education preview
+                      if (firstEducation != null) ...[
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppDimensions.paddingMedium,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.school_outlined,
+                                color: subtitleColor,
+                                size: 16,
+                              ),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  firstEducation.degree ?? '',
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: Responsive.scaleFont(13, context),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: AppDimensions.paddingSmall),
+                      ],
+
+                      // Footer with time, status and tap hint
+                      Container(
+                        padding: EdgeInsets.fromLTRB(
+                          AppDimensions.paddingMedium,
+                          AppDimensions.paddingSmall,
+                          AppDimensions.paddingMedium,
+                          AppDimensions.paddingMedium,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Time and status
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  time,
+                                  style: TextStyle(
+                                    color: timeColor,
+                                    fontSize: Responsive.scaleFont(11, context),
+                                  ),
+                                ),
+                                if (isMe) ...[
+                                  SizedBox(width: 4),
+                                  Text(
+                                    status == 'seen'
+                                        ? 'Seen'
+                                        : status == 'delivered'
+                                        ? 'Delivered'
+                                        : '',
+                                    style: TextStyle(
+                                      color:
+                                          status == 'seen'
+                                              ? AppColors.white
+                                              : AppColors.white.withOpacity(
+                                                0.7,
+                                              ),
+                                      fontSize: Responsive.scaleFont(
+                                        10,
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            // Tap to view hint
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Tap to view',
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: Responsive.scaleFont(11, context),
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: subtitleColor,
+                                  size: 10,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

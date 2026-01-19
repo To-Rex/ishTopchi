@@ -21,7 +21,6 @@ class MessagesScreen extends GetView<MessagesController> {
   Widget build(BuildContext context) {
     return Obx(
       () => Scaffold(
-        backgroundColor: AppColors.backgroundColor,
         body: _buildBody(context),
       ),
     );

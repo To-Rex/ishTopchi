@@ -141,7 +141,6 @@ class _AdPostingScreenState extends State<AdPostingScreen>
   @override
   Widget build(BuildContext context) => Obx(
     () => Scaffold(
-      backgroundColor: AppColors.backgroundColor,
       body:
           funcController.getToken() == null || funcController.getToken() == ''
               ? NotLogged()
