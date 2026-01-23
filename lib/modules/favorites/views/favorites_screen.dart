@@ -36,13 +36,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget build(BuildContext context) {
     final FuncController funcController = Get.find<FuncController>();
     final ThemeController themeController = Get.find<ThemeController>();
+
+    // Check token outside Obx since it's not an observable
+    if (funcController.getToken() == null || funcController.getToken() == '') {
+      return Scaffold(body: NotLogged());
+    }
+
     return Scaffold(
       body: Obx(() {
-        if (funcController.getToken() == null ||
-            funcController.getToken() == '') {
-          return NotLogged();
-        }
-
         // Show loading indicator while fetching
         if (funcController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());

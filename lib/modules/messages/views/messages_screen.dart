@@ -19,11 +19,7 @@ class MessagesScreen extends GetView<MessagesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
-        body: _buildBody(context),
-      ),
-    );
+    return Scaffold(body: _buildBody(context));
   }
 
   Widget _buildBody(BuildContext context) {
@@ -313,10 +309,13 @@ class MessagesScreen extends GetView<MessagesController> {
                     otherUser.profilePicture != null
                         ? NetworkImage(otherUser.profilePicture!)
                         : null,
-                child: otherUser.profilePicture == null ? Text(
-                  senderInitial,
-                  style: TextStyle(color: AppColors.white),
-                ) : null,
+                child:
+                    otherUser.profilePicture == null
+                        ? Text(
+                          senderInitial,
+                          style: TextStyle(color: AppColors.white),
+                        )
+                        : null,
               ),
               SizedBox(width: AppDimensions.paddingMedium),
               Expanded(

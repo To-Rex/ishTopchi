@@ -1,14 +1,16 @@
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../../controllers/api_controller.dart';
+import '../../../controllers/funcController.dart';
 import '../views/phone_screen.dart';
 
 class LoginController extends GetxController {
   final isLoading = false.obs;
 
   final ApiController _apiController = ApiController();
-
+  final FuncController funcController = Get.put(FuncController());
 
   Future<void> signInWithGoogle1() async {
     isLoading.value = true;
@@ -27,7 +29,8 @@ class LoginController extends GetxController {
       print('Client ID: ${_googleSignIn.serverClientId}');
 
       // Google auth ma'lumotlarini olish
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       print('User email address: ${googleUser.email}');
       print('User name: ${googleUser.displayName}');
       await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'WEB');
@@ -40,8 +43,10 @@ class LoginController extends GetxController {
     isLoading.value = true;
     final GoogleSignIn _googleSignInIos = GoogleSignIn(
       scopes: ['email', 'profile'],
-      clientId: '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com', // iOS Client ID
-      serverClientId: '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com', // Android Client ID
+      clientId:
+          '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com', // iOS Client ID
+      serverClientId:
+          '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com', // Android Client ID
     );
     //final GoogleSignIn _googleSignInIos = GoogleSignIn();
     try {
@@ -59,11 +64,11 @@ class LoginController extends GetxController {
       print('Client ID: ${_googleSignInIos.serverClientId}');
 
       // Google auth ma'lumotlarini olish
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       print('User email address: ${googleUser.email}');
       print('User name: ${googleUser.displayName}');
       await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'IOS');
-
     } catch (e) {
       isLoading.value = false;
       print('Google Sign-In error: $e');
@@ -78,14 +83,34 @@ class LoginController extends GetxController {
   Future<void> signInWithApple() async {
     isLoading.value = true;
     try {
-      final credential = await SignInWithApple.getAppleIDCredential(scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName]);
+
+      // Fetch device info
+      await funcController.fetchDeviceInfo();
+
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
       // Apple'dan kelgan ma'lumotlarni logda ko'rish
       print("Apple User ID: ${credential.userIdentifier}");
       print("Apple Email: ${credential.email}");
-      print("Apple Full Name: ${credential.givenName} ${credential.familyName}");
-      var fullName = '${credential.givenName ?? ''} ${credential.familyName ?? ''}';
+      print(
+        "Apple Full Name: ${credential.givenName} ${credential.familyName}",
+      );
+      var fullName =
+          '${credential.givenName ?? ''} ${credential.familyName ?? ''}';
       if (credential.identityToken != null) {
-        await _apiController.sendAppleIdToken(credential.identityToken!, 'IOS', fullName);
+        await _apiController.sendAppleIdToken(
+          credential.identityToken!,
+          'IOS',
+          fullName,
+          funcController.fcmToken.value,
+          funcController.deviceId.value,
+          funcController.platform.value,
+          funcController.deviceName.value,
+        );
       } else {
         print("Apple Sign-In: identityToken null qaytdi!");
       }
@@ -95,5 +120,4 @@ class LoginController extends GetxController {
       isLoading.value = false;
     }
   }
-
 }

@@ -119,14 +119,17 @@ class OtpVerificationScreen extends StatelessWidget {
                       child: PinCodeTextField(
                         appContext: context,
                         length: 6,
-                        controller: controller.pinTEC, // <— qo‘shildi
+                        controller: controller.pinTEC, // <— qo'shildi
                         errorAnimationController:
-                            controller.errorCtrl, // <— qo‘shildi
+                            controller.errorCtrl, // <— qo'shildi
                         keyboardType: TextInputType.number,
                         animationType: AnimationType.fade,
                         textStyle: TextStyle(
                           fontSize: 20,
-                          color: AppColors.textColor,
+                          color:
+                              themeController.isDarkMode.value
+                                  ? AppColors.lightGray
+                                  : AppColors.lightText,
                           fontWeight: FontWeight.bold,
                         ),
                         pinTheme: PinTheme(
@@ -146,13 +149,17 @@ class OtpVerificationScreen extends StatelessWidget {
                           selectedFillColor:
                               controller.isError.value
                                   ? Colors.redAccent
-                                  : AppColors.primaryColor,
+                                  : (themeController.isDarkMode.value
+                                      ? AppColors.midBlue
+                                      : AppColors.lightBlue),
                           activeColor: Colors.transparent,
                           inactiveColor: Colors.transparent,
                           selectedColor:
                               controller.isError.value
                                   ? Colors.redAccent
-                                  : AppColors.primaryColor,
+                                  : (themeController.isDarkMode.value
+                                      ? AppColors.midBlue
+                                      : AppColors.lightBlue),
                         ),
                         animationDuration: const Duration(milliseconds: 200),
                         enableActiveFill: true,

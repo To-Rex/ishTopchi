@@ -139,13 +139,11 @@ class _AdPostingScreenState extends State<AdPostingScreen>
   }
 
   @override
-  Widget build(BuildContext context) => Obx(
-    () => Scaffold(
-      body:
-          funcController.getToken() == null || funcController.getToken() == ''
-              ? NotLogged()
-              : _buildBody(context),
-    ),
+  Widget build(BuildContext context) => Scaffold(
+    body:
+        funcController.getToken() == null || funcController.getToken() == ''
+            ? NotLogged()
+            : _buildBody(context),
   );
 
   Widget _buildBody(BuildContext context) => Obx(() {

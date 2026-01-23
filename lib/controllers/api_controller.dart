@@ -138,9 +138,17 @@ class ApiController extends GetxController {
     String idToken,
     String platform,
     String fullName,
+    String fcmToken,
+    String deviceId,
+    String devicePlatform,
+    String deviceName,
   ) async {
     debugPrint('ID Token: $idToken');
     debugPrint('Platform: $platform');
+    debugPrint('FCM Token: $fcmToken');
+    debugPrint('Device ID: $deviceId');
+    debugPrint('Device Platform: $devicePlatform');
+    debugPrint('Device Name: $deviceName');
     try {
       //final response = await _dio.post('$_baseUrl/oauth/apple', options: Options(headers: {'accept': '*/*', 'Content-Type': 'application/json'}), data: {'idToken': idToken, 'platform': platform});
       final response = await _dio.post(
@@ -152,7 +160,15 @@ class ApiController extends GetxController {
             'Authorization': 'Bearer ${funcController.globalToken.value}',
           },
         ),
-        data: {'idToken': idToken, 'platform': platform, 'fullName': fullName},
+        data: {
+          'idToken': idToken,
+          'platform': platform,
+          'fullName': fullName,
+          'fcmToken': fcmToken,
+          'deviceId': deviceId,
+          'devicePlatform': devicePlatform,
+          'deviceName': deviceName,
+        },
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint('API javobi: ${response.data}');
@@ -1164,7 +1180,8 @@ class ApiController extends GetxController {
   // Qurilmalarni olish ====================================================================================
 
   Future<void> fetchDevices() async {
-    if (funcController.getToken() == null || funcController.getToken() == '') {
+    print('fetchDevices');
+    if (funcController.globalToken.value != '') {
       try {
         final response = await _dio.get(
           '$_baseUrl/devices',
@@ -1175,7 +1192,7 @@ class ApiController extends GetxController {
             },
           ),
         );
-        //debugPrint('Devices: ${response.data}');
+        debugPrint('Devices: ${response.data}');
         if (response.statusCode == 200 || response.statusCode == 201) {
           funcController.devicesModel.value = DevicesModel.fromJson(
             response.data,
@@ -1227,6 +1244,7 @@ class ApiController extends GetxController {
   }
 
   Future<void> loginDevice(id) async {
+    print('$_baseUrl/devices/$id/login');
     try {
       funcController.isLoading.value = true;
       await _dio.post(
@@ -1239,7 +1257,7 @@ class ApiController extends GetxController {
         ),
       );
     } catch (e) {
-      debugPrint('loginDevice xatolik: $e');
+      debugPrint('loginDevice xatolik1: $e');
     } finally {
       funcController.isLoading.value = false;
     }
@@ -1252,8 +1270,7 @@ class ApiController extends GetxController {
         '$_baseUrl/devices',
         data: {
           'deviceId': funcController.deviceId.value,
-          'fcmToken':
-              'jhbkjhbkjhbkhjbkjhvghjvghvhgvghghvhvgjjvhggvhjksvjkkjhbkkjlsnmlkmkbgjvvghvgjhjghvjhgcrdsxtes6726786287tgvhvhjbjnklq',
+          'fcmToken': funcController.fcmToken.value,
           'deviceName': funcController.deviceName.value,
           'deviceModel': funcController.deviceModel.value,
           'platform': funcController.platform.value,
@@ -1266,17 +1283,13 @@ class ApiController extends GetxController {
           },
         ),
       );
+      log(response.statusCode.toString());
+      log(response.data.toString());
       if (response.statusCode == 200) {
-        ShowToast.show(
-          'Muvaffaqiyatli',
-          'Qurilma muvaffaqiyatli kiritildi',
-          3,
-          1,
-        );
         await fetchDevices(); // Ro'yxatni yangilash
       }
     } catch (e) {
-      debugPrint('loginDevice xatolik: $e');
+      debugPrint('loginDevice xatolik2: $e');
     }
   }
 
@@ -1291,6 +1304,9 @@ class ApiController extends GetxController {
       print(
         '$_baseUrl/applications?post_id=$postId&message=$message&resume_id=$resumeId',
       );
+      print(
+        'data: {post_id: $postId, message: $message, resume_id: $resumeId}',
+      );
       final response = await _dio.post(
         '$_baseUrl/applications',
         data: {'post_id': postId, 'message': message, 'resume_id': resumeId},
@@ -1301,6 +1317,7 @@ class ApiController extends GetxController {
           },
         ),
       );
+      debugPrint(response.statusCode.toString());
       debugPrint(response.data.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         ShowToast.show(

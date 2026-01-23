@@ -20,6 +20,7 @@ class FuncController extends GetxController {
   final barIndex = 0.obs;
   final RxString globalToken = ''.obs;
   final RxString otpToken = ''.obs;
+  final RxString fcmToken = ''.obs;
   final RxString otpPhone = ''.obs;
   final RxList<Data> posts = <Data>[].obs;
   final RxList<MeData> mePosts = <MeData>[].obs;

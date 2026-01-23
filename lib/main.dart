@@ -10,6 +10,7 @@ import 'config/routes/app_routes.dart';
 import 'config/translations.dart';
 import 'controllers/api_controller.dart';
 import 'controllers/funcController.dart';
+import 'controllers/init_notification.dart';
 import 'controllers/theme_controller.dart';
 import 'firebase_options.dart';
 import 'modules/ad_posting/controllers/ad_posting_controller.dart';
@@ -32,6 +33,8 @@ Future<void> main() async {
   Get.put(FavoritesController());
   Get.put(MessagesController());
 
+
+  await InitNotification.initialize();
   runApp(MyApp());
 }
 
