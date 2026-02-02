@@ -186,6 +186,21 @@ class FuncController extends GetxController {
     return token;
   }
 
+  /// Log the current FCM token (useful for debugging and testing)
+  void logFcmToken() {
+    print('\n');
+    print('═' * 80);
+    print('🔑 CURRENT FCM TOKEN 🔑');
+    print('═' * 80);
+    if (fcmToken.value.isNotEmpty) {
+      print('Token: ${fcmToken.value}');
+    } else {
+      print('⚠️ No FCM token available yet');
+    }
+    print('═' * 80);
+    print('\n');
+  }
+
   Future<void> deleteToken() async {
     await storage.remove('token');
     globalToken.value = '';

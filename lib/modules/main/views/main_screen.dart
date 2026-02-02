@@ -23,6 +23,9 @@ class MainScreen extends StatelessWidget {
     final ApiController apiController = Get.find<ApiController>();
     final themeController = Get.find<ThemeController>();
 
+    // Log FCM token for debugging/testing
+    funcController.logFcmToken();
+
     // Ilova ochilganda foydalanuvchi ma'lumotlarini yuklash
     if (funcController.globalToken.value.isNotEmpty) {
       apiController.getMe();

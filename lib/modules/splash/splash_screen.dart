@@ -25,6 +25,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
 
+    // Log FCM token for debugging/testing
+    funcController.logFcmToken();
+    
     funcController.checkAndHandleDevice();
     _controller = AnimationController(duration: const Duration(seconds: 2), vsync: this);
     _opacityAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
