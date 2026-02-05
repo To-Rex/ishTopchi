@@ -22,7 +22,7 @@ import 'modules/profile/controllers/profile_controller.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init(); // GetStorage ni ishga tushirish
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize controllers before runApp
   Get.put(ThemeController());
@@ -34,9 +34,6 @@ Future<void> main() async {
   Get.put(FavoritesController());
   Get.put(MessagesController());
 
-  FirebaseMessaging.onBackgroundMessage((message) async {
-    print('Background message received: ${message.messageId}');
-  });
   await InitNotification.initialize();
   runApp(MyApp());
 }
