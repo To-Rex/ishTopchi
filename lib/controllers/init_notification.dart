@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
+import 'package:ishtopchi/controllers/funcController.dart';
 import '../firebase_options.dart';
 import 'dart:convert';
 
@@ -11,7 +13,7 @@ class InitNotification {
   // Asosiy sozlash funksiyasi
   static Future<void> initialize() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    
+    final FuncController funcController = Get.put(FuncController());
     if (_isInitialized) {  // GetController tekshiruvini qo'shish mumkin, lekin majburiy emas
       print('Xabarlar allaqachon sozlangan.');
       return;
@@ -21,6 +23,7 @@ class InitNotification {
       // FCM token olish va saqlash
       final fcmToken = await FirebaseMessaging.instance.getToken();
       debugPrint('FCM Token: $fcmToken');
+      funcController.fcmToken.value = fcmToken ?? '';
       await FirebaseMessaging.instance.requestPermission();
       await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
         alert: true,

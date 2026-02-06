@@ -188,9 +188,6 @@ class FuncController extends GetxController {
 
   /// Log the current FCM token (useful for debugging and testing)
   void logFcmToken() {
-    print('\n');
-    print('═' * 80);
-    print('🔑 CURRENT FCM TOKEN 🔑');
     print('═' * 80);
     if (fcmToken.value.isNotEmpty) {
       print('Token: ${fcmToken.value}');

@@ -326,248 +326,264 @@ class _PostDetailScreenState extends State<PostDetailScreen>
     final FuncController funcController = Get.find<FuncController>();
     final TextEditingController messageController = TextEditingController();
     final RxInt selectedResumeId = (-1).obs; // Tanlangan resume IDsi
+    final ScrollController scrollController = ScrollController();
+    final GlobalKey messageFieldKey = GlobalKey();
+    final RxBool _isLoading = true.obs; // Local loading flag - starts as true
+    final RxBool _hasLoaded =
+        false.obs; // Flag to track if initial load completed
 
-    // Resumelarni olish
-    apiController.fetchMeResumes(page: 1, limit: 100);
+    // Resumelarni faqat bir marta olish - dialog ochilgandan keyin
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!_hasLoaded.value) {
+        _hasLoaded.value = true;
+        await apiController.fetchMeResumes(page: 1, limit: 100);
+        _isLoading.value = false;
+      }
+    });
 
     Get.dialog(
-      Obx(
-        () => Dialog(
-          backgroundColor: AppColors.backgroundColor,
-          shadowColor: AppColors.shadowColor,
-          surfaceTintColor: AppColors.backgroundColor,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 600),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundColor,
-              borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadowColor,
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.85,
+      Dialog(
+        backgroundColor: AppColors.backgroundColor,
+        shadowColor: AppColors.shadowColor,
+        surfaceTintColor: AppColors.backgroundColor,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 600),
+          decoration: BoxDecoration(
+            color: AppColors.backgroundColor,
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowColor,
+                blurRadius: 8,
+                spreadRadius: 1,
+                offset: Offset(0, 3),
               ),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.all(AppDimensions.paddingMedium),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Sarlavha va tugma
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Murojaat qilish'.tr,
-                            style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: Responsive.scaleFont(18, context),
-                              fontWeight: FontWeight.w800,
-                            ),
+            ],
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+            child: SingleChildScrollView(
+              controller: scrollController,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: AppDimensions.paddingMedium,
+                  right: AppDimensions.paddingMedium,
+                  top: AppDimensions.paddingMedium,
+                  bottom:
+                      MediaQuery.of(context).viewInsets.bottom +
+                      AppDimensions.paddingMedium,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Sarlavha va tugma
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Murojaat qilish'.tr,
+                          style: TextStyle(
+                            color: AppColors.textColor,
+                            fontSize: Responsive.scaleFont(18, context),
+                            fontWeight: FontWeight.w800,
                           ),
-                          IconButton(
-                            onPressed: () => Get.back(),
-                            icon: Icon(
-                              LucideIcons.x,
-                              color: AppColors.textSecondaryColor,
-                              size: Responsive.scaleFont(20, context),
-                            ),
-                            padding: EdgeInsets.zero,
-                            constraints: BoxConstraints(),
+                        ),
+                        IconButton(
+                          onPressed: () => Get.back(),
+                          icon: Icon(
+                            LucideIcons.x,
+                            color: AppColors.textSecondaryColor,
+                            size: Responsive.scaleFont(20, context),
                           ),
-                        ],
-                      ),
-                      SizedBox(height: AppDimensions.paddingSmall),
-                      // Resume tanlash
-                      Obx(() {
-                        if (funcController.isLoading.value) {
-                          return Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: Responsive.scaleHeight(40, context),
-                              ),
-                              child: Column(
-                                children: [
-                                  CircularProgressIndicator(
-                                    color: AppColors.iconColor,
-                                    strokeWidth: 2,
-                                  ),
-                                  SizedBox(height: AppDimensions.paddingSmall),
-                                  Text(
-                                    'Rezyumelar yuklanmoqda...'.tr,
-                                    style: TextStyle(
-                                      color: AppColors.textSecondaryColor,
-                                      fontSize: Responsive.scaleFont(
-                                        14,
-                                        context,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-                        if (funcController.resumes.isEmpty) {
-                          return Container(
-                            padding: EdgeInsets.all(AppDimensions.paddingLarge),
-                            decoration: BoxDecoration(
-                              color: AppColors.cardColor,
-                              borderRadius: BorderRadius.circular(
-                                AppDimensions.cardRadius,
-                              ),
+                          padding: EdgeInsets.zero,
+                          constraints: BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AppDimensions.paddingSmall),
+                    // Resume tanlash
+                    Obx(() {
+                      // Show loading state while loading or when hasn't loaded yet
+                      if (_isLoading.value) {
+                        return Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: Responsive.scaleHeight(40, context),
                             ),
                             child: Column(
                               children: [
-                                Icon(
-                                  LucideIcons.fileText,
-                                  size: Responsive.scaleFont(48, context),
-                                  color: AppColors.textSecondaryColor,
-                                ),
-                                SizedBox(height: AppDimensions.paddingMedium),
-                                Text(
-                                  'Rezyumelar mavjud emas'.tr,
-                                  style: TextStyle(
-                                    color: AppColors.textColor,
-                                    fontSize: Responsive.scaleFont(16, context),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  textAlign: TextAlign.center,
+                                CircularProgressIndicator(
+                                  color: AppColors.iconColor,
+                                  strokeWidth: 2,
                                 ),
                                 SizedBox(height: AppDimensions.paddingSmall),
                                 Text(
-                                  'Murojaat qilish uchun rezyume yaratishingiz kerak'
-                                      .tr,
+                                  'Rezyumelar yuklanmoqda...'.tr,
                                   style: TextStyle(
                                     color: AppColors.textSecondaryColor,
-                                    fontSize: Responsive.scaleFont(13, context),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: AppDimensions.paddingMedium),
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    Get.back();
-                                    Get.to(CreateResumeScreen());
-                                  },
-                                  icon: Icon(
-                                    LucideIcons.plus,
-                                    size: Responsive.scaleFont(18, context),
-                                  ),
-                                  label: Text('Yangi rezyume qo‘shish'.tr),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primaryColor,
-                                    foregroundColor: AppColors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: AppDimensions.paddingMedium,
-                                      vertical: AppDimensions.paddingSmall,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        AppDimensions.cardRadius,
-                                      ),
-                                    ),
+                                    fontSize: Responsive.scaleFont(14, context),
                                   ),
                                 ),
                               ],
                             ),
-                          );
-                        }
-                        return SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.35,
+                          ),
+                        );
+                      }
+                      // Show empty state only after loading is complete and resumes are empty
+                      if (funcController.resumes.isEmpty && _hasLoaded.value) {
+                        return Container(
+                          padding: EdgeInsets.all(AppDimensions.paddingLarge),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardColor,
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.cardRadius,
+                            ),
+                          ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Resume ro'yxati sarlavhasi
-                              Row(
-                                children: [
-                                  Icon(
-                                    LucideIcons.fileText,
-                                    size: Responsive.scaleFont(16, context),
-                                    color: AppColors.iconColor,
+                              Icon(
+                                LucideIcons.fileText,
+                                size: Responsive.scaleFont(48, context),
+                                color: AppColors.textSecondaryColor,
+                              ),
+                              SizedBox(height: AppDimensions.paddingMedium),
+                              Text(
+                                'Rezyumelar mavjud emas'.tr,
+                                style: TextStyle(
+                                  color: AppColors.textColor,
+                                  fontSize: Responsive.scaleFont(16, context),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: AppDimensions.paddingSmall),
+                              Text(
+                                'Murojaat qilish uchun rezyume yaratishingiz kerak'
+                                    .tr,
+                                style: TextStyle(
+                                  color: AppColors.textSecondaryColor,
+                                  fontSize: Responsive.scaleFont(13, context),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: AppDimensions.paddingMedium),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  Get.back();
+                                  Get.to(CreateResumeScreen());
+                                },
+                                icon: Icon(
+                                  LucideIcons.plus,
+                                  size: Responsive.scaleFont(18, context),
+                                ),
+                                label: Text('Yangi rezyume qo‘shish'.tr),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primaryColor,
+                                  foregroundColor: AppColors.white,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: AppDimensions.paddingMedium,
+                                    vertical: AppDimensions.paddingSmall,
                                   ),
-                                  SizedBox(
-                                    width: Responsive.scaleWidth(6, context),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AppDimensions.cardRadius,
+                                    ),
                                   ),
-                                  Text(
-                                    'Rezyume tanlang'.tr,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.35,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Resume ro'yxati sarlavhasi
+                            Row(
+                              children: [
+                                Icon(
+                                  LucideIcons.fileText,
+                                  size: Responsive.scaleFont(16, context),
+                                  color: AppColors.iconColor,
+                                ),
+                                SizedBox(
+                                  width: Responsive.scaleWidth(6, context),
+                                ),
+                                Text(
+                                  'Rezyume tanlang'.tr,
+                                  style: TextStyle(
+                                    color: AppColors.textColor,
+                                    fontSize: Responsive.scaleFont(14, context),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: Responsive.scaleWidth(4, context),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: Responsive.scaleWidth(
+                                      8,
+                                      context,
+                                    ),
+                                    vertical: Responsive.scaleHeight(
+                                      2,
+                                      context,
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryColor.withAlpha(50),
+                                    borderRadius: BorderRadius.circular(
+                                      Responsive.scaleWidth(10, context),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '${funcController.resumes.length}',
                                     style: TextStyle(
-                                      color: AppColors.textColor,
+                                      color: AppColors.primaryColor,
                                       fontSize: Responsive.scaleFont(
-                                        14,
+                                        12,
                                         context,
                                       ),
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: Responsive.scaleWidth(4, context),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: Responsive.scaleWidth(
-                                        8,
-                                        context,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: AppDimensions.paddingSmall),
+                            // Resume kartalari
+                            Expanded(
+                              child: Obx(() {
+                                // Trigger rebuild when selectedResumeId changes
+                                selectedResumeId.value;
+                                return ListView.separated(
+                                  shrinkWrap: true,
+                                  itemCount: funcController.resumes.length,
+                                  separatorBuilder:
+                                      (context, index) => SizedBox(
+                                        height: AppDimensions.paddingSmall,
                                       ),
-                                      vertical: Responsive.scaleHeight(
-                                        2,
-                                        context,
-                                      ),
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primaryColor.withAlpha(
-                                        50,
-                                      ),
-                                      borderRadius: BorderRadius.circular(
-                                        Responsive.scaleWidth(10, context),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      '${funcController.resumes.length}',
-                                      style: TextStyle(
-                                        color: AppColors.primaryColor,
-                                        fontSize: Responsive.scaleFont(
-                                          12,
-                                          context,
-                                        ),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: AppDimensions.paddingSmall),
-                              // Resume kartalari
-                              Expanded(
-                                child: Obx(() {
-                                  // Trigger rebuild when selectedResumeId changes
-                                  selectedResumeId.value;
-                                  return ListView.separated(
-                                    shrinkWrap: true,
-                                    itemCount: funcController.resumes.length,
-                                    separatorBuilder:
-                                        (context, index) => SizedBox(
-                                          height: AppDimensions.paddingSmall,
-                                        ),
-                                    itemBuilder: (context, index) {
-                                      final resume =
-                                          funcController.resumes[index];
-                                      final isSelected =
-                                          selectedResumeId.value == resume.id;
-                                      final educationCount =
-                                          resume.education?.length ?? 0;
-                                      final experienceCount =
-                                          resume.experience?.length ?? 0;
+                                  itemBuilder: (context, index) {
+                                    final resume =
+                                        funcController.resumes[index];
+                                    final isSelected =
+                                        selectedResumeId.value == resume.id;
+                                    final educationCount =
+                                        resume.education?.length ?? 0;
+                                    final experienceCount =
+                                        resume.experience?.length ?? 0;
 
-                                      return AnimatedContainer(
+                                    return GestureDetector(
+                                      onTap: () {
+                                        selectedResumeId.value = resume.id!;
+                                      },
+                                      child: AnimatedContainer(
                                         duration: const Duration(
                                           milliseconds: 200,
                                         ),
@@ -588,378 +604,381 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                                             width: isSelected ? 2 : 1,
                                           ),
                                         ),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            selectedResumeId.value = resume.id!;
-                                          },
-                                          child: Padding(
-                                            padding: EdgeInsets.all(
-                                              AppDimensions.paddingMedium,
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                // Header: title and selection indicator
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        resume.title ??
-                                                            'Noma’lum'.tr,
-                                                        style: TextStyle(
-                                                          color:
-                                                              AppColors
-                                                                  .textColor,
-                                                          fontSize:
-                                                              Responsive.scaleFont(
-                                                                15,
-                                                                context,
-                                                              ),
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
-                                                        maxLines: 2,
-                                                        overflow:
-                                                            TextOverflow
-                                                                .ellipsis,
-                                                      ),
-                                                    ),
-                                                    if (isSelected)
-                                                      Container(
-                                                        padding: EdgeInsets.all(
-                                                          Responsive.scaleWidth(
-                                                            4,
-                                                            context,
-                                                          ),
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                          color:
-                                                              AppColors
-                                                                  .primaryColor,
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
-                                                        child: Icon(
-                                                          LucideIcons.check,
-                                                          color:
-                                                              AppColors.white,
-                                                          size:
-                                                              Responsive.scaleFont(
-                                                                14,
-                                                                context,
-                                                              ),
-                                                        ),
-                                                      )
-                                                    else
-                                                      Container(
-                                                        width:
-                                                            Responsive.scaleWidth(
-                                                              22,
-                                                              context,
-                                                            ),
-                                                        height:
-                                                            Responsive.scaleWidth(
-                                                              22,
-                                                              context,
-                                                            ),
-                                                        decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          border: Border.all(
-                                                            color:
-                                                                AppColors
-                                                                    .iconColor,
-                                                            width: 2,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                  ],
-                                                ),
-                                                if (resume.content != null &&
-                                                    resume.content!.isNotEmpty)
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                      top:
-                                                          AppDimensions
-                                                              .paddingSmall,
-                                                    ),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(
+                                            AppDimensions.paddingMedium,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              // Header: title and selection indicator
+                                              Row(
+                                                children: [
+                                                  Expanded(
                                                     child: Text(
-                                                      resume.content!,
+                                                      resume.title ??
+                                                          'Noma’lum'.tr,
                                                       style: TextStyle(
                                                         color:
-                                                            AppColors
-                                                                .textSecondaryColor,
+                                                            AppColors.textColor,
                                                         fontSize:
                                                             Responsive.scaleFont(
-                                                              12,
+                                                              15,
                                                               context,
                                                             ),
-                                                        height: 1.4,
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                       ),
                                                       maxLines: 2,
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
                                                   ),
-                                                // Stats row
+                                                  if (isSelected)
+                                                    Container(
+                                                      padding: EdgeInsets.all(
+                                                        Responsive.scaleWidth(
+                                                          4,
+                                                          context,
+                                                        ),
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            AppColors
+                                                                .primaryColor,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: Icon(
+                                                        LucideIcons.check,
+                                                        color: AppColors.white,
+                                                        size:
+                                                            Responsive.scaleFont(
+                                                              14,
+                                                              context,
+                                                            ),
+                                                      ),
+                                                    )
+                                                  else
+                                                    Container(
+                                                      width:
+                                                          Responsive.scaleWidth(
+                                                            22,
+                                                            context,
+                                                          ),
+                                                      height:
+                                                          Responsive.scaleWidth(
+                                                            22,
+                                                            context,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color:
+                                                              AppColors
+                                                                  .iconColor,
+                                                          width: 2,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                              if (resume.content != null &&
+                                                  resume.content!.isNotEmpty)
                                                 Padding(
                                                   padding: EdgeInsets.only(
                                                     top:
                                                         AppDimensions
                                                             .paddingSmall,
                                                   ),
-                                                  child: Row(
-                                                    children: [
-                                                      if (educationCount >
-                                                          0) ...[
-                                                        Icon(
-                                                          LucideIcons
-                                                              .graduationCap,
-                                                          size:
-                                                              Responsive.scaleFont(
-                                                                12,
-                                                                context,
-                                                              ),
-                                                          color:
-                                                              AppColors
-                                                                  .iconColor,
-                                                        ),
-                                                        SizedBox(
-                                                          width:
-                                                              Responsive.scaleWidth(
-                                                                4,
-                                                                context,
-                                                              ),
-                                                        ),
-                                                        Text(
-                                                          '$educationCount ${'ta\'lim'.tr}',
-                                                          style: TextStyle(
-                                                            color:
-                                                                AppColors
-                                                                    .textSecondaryColor,
-                                                            fontSize:
-                                                                Responsive.scaleFont(
-                                                                  11,
-                                                                  context,
-                                                                ),
+                                                  child: Text(
+                                                    resume.content!,
+                                                    style: TextStyle(
+                                                      color:
+                                                          AppColors
+                                                              .textSecondaryColor,
+                                                      fontSize:
+                                                          Responsive.scaleFont(
+                                                            12,
+                                                            context,
                                                           ),
-                                                        ),
-                                                      ],
-                                                      if (educationCount > 0 &&
-                                                          experienceCount > 0)
-                                                        SizedBox(
-                                                          width:
-                                                              Responsive.scaleWidth(
-                                                                12,
-                                                                context,
-                                                              ),
-                                                        ),
-                                                      if (experienceCount >
-                                                          0) ...[
-                                                        Icon(
-                                                          LucideIcons.briefcase,
-                                                          size:
-                                                              Responsive.scaleFont(
-                                                                12,
-                                                                context,
-                                                              ),
-                                                          color:
-                                                              AppColors
-                                                                  .iconColor,
-                                                        ),
-                                                        SizedBox(
-                                                          width:
-                                                              Responsive.scaleWidth(
-                                                                4,
-                                                                context,
-                                                              ),
-                                                        ),
-                                                        Text(
-                                                          '$experienceCount ${'tajriba'.tr}',
-                                                          style: TextStyle(
-                                                            color:
-                                                                AppColors
-                                                                    .textSecondaryColor,
-                                                            fontSize:
-                                                                Responsive.scaleFont(
-                                                                  11,
-                                                                  context,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                      Spacer(),
-                                                      if (resume.createdAt !=
-                                                          null)
-                                                        Text(
-                                                          _formatDate(
-                                                            resume.createdAt!,
-                                                          ),
-                                                          style: TextStyle(
-                                                            color:
-                                                                AppColors
-                                                                    .textSecondaryColor,
-                                                            fontSize:
-                                                                Responsive.scaleFont(
-                                                                  10,
-                                                                  context,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                    ],
+                                                      height: 1.4,
+                                                    ),
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
+                                              // Stats row
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                  top:
+                                                      AppDimensions
+                                                          .paddingSmall,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    if (educationCount > 0) ...[
+                                                      Icon(
+                                                        LucideIcons
+                                                            .graduationCap,
+                                                        size:
+                                                            Responsive.scaleFont(
+                                                              12,
+                                                              context,
+                                                            ),
+                                                        color:
+                                                            AppColors.iconColor,
+                                                      ),
+                                                      SizedBox(
+                                                        width:
+                                                            Responsive.scaleWidth(
+                                                              4,
+                                                              context,
+                                                            ),
+                                                      ),
+                                                      Text(
+                                                        '$educationCount ${'ta\'lim'.tr}',
+                                                        style: TextStyle(
+                                                          color:
+                                                              AppColors
+                                                                  .textSecondaryColor,
+                                                          fontSize:
+                                                              Responsive.scaleFont(
+                                                                11,
+                                                                context,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                    if (educationCount > 0 &&
+                                                        experienceCount > 0)
+                                                      SizedBox(
+                                                        width:
+                                                            Responsive.scaleWidth(
+                                                              12,
+                                                              context,
+                                                            ),
+                                                      ),
+                                                    if (experienceCount >
+                                                        0) ...[
+                                                      Icon(
+                                                        LucideIcons.briefcase,
+                                                        size:
+                                                            Responsive.scaleFont(
+                                                              12,
+                                                              context,
+                                                            ),
+                                                        color:
+                                                            AppColors.iconColor,
+                                                      ),
+                                                      SizedBox(
+                                                        width:
+                                                            Responsive.scaleWidth(
+                                                              4,
+                                                              context,
+                                                            ),
+                                                      ),
+                                                      Text(
+                                                        '$experienceCount ${'tajriba'.tr}',
+                                                        style: TextStyle(
+                                                          color:
+                                                              AppColors
+                                                                  .textSecondaryColor,
+                                                          fontSize:
+                                                              Responsive.scaleFont(
+                                                                11,
+                                                                context,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                    Spacer(),
+                                                    if (resume.createdAt !=
+                                                        null)
+                                                      Text(
+                                                        _formatDate(
+                                                          resume.createdAt!,
+                                                        ),
+                                                        style: TextStyle(
+                                                          color:
+                                                              AppColors
+                                                                  .textSecondaryColor,
+                                                          fontSize:
+                                                              Responsive.scaleFont(
+                                                                10,
+                                                                context,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      );
-                                    },
-                                  );
-                                }),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                    SizedBox(height: AppDimensions.paddingSmall),
+                    // Xabar yozish
+                    Container(
+                      key: messageFieldKey,
+                      decoration: BoxDecoration(
+                        color: AppColors.cardColor,
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.cardRadius,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: messageController,
+                        maxLines: 3,
+                        textInputAction: TextInputAction.done,
+                        onTap: () {
+                          // Scroll to the message field when tapped
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            scrollController.animateTo(
+                              scrollController.position.maxScrollExtent,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          });
+                        },
+                        onSubmitted: (_) {
+                          // Prevent page refresh and resume reload when done button is pressed
+                          // Use WidgetsBinding to ensure unfocus works properly
+                          WidgetsBinding.instance.focusManager.primaryFocus
+                              ?.unfocus();
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Xabar'.tr,
+                          labelStyle: TextStyle(
+                            color: AppColors.textSecondaryColor,
+                            fontSize: Responsive.scaleFont(14, context),
+                          ),
+                          hintText: 'Murojaat matnini kiriting...'.tr,
+                          hintStyle: TextStyle(
+                            color: AppColors.textSecondaryColor.withAlpha(150),
+                            fontSize: Responsive.scaleFont(12, context),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.cardRadius,
+                            ),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppDimensions.cardRadius,
+                            ),
+                            borderSide: BorderSide(
+                              color: AppColors.primaryColor,
+                              width: 1.5,
+                            ),
+                          ),
+                          contentPadding: EdgeInsets.all(
+                            AppDimensions.paddingMedium,
+                          ),
+                        ),
+                        style: TextStyle(
+                          color: AppColors.textColor,
+                          fontSize: Responsive.scaleFont(14, context),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.paddingMedium),
+                    // Tugmalar
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Get.back(),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppDimensions.paddingMedium,
+                              vertical: AppDimensions.paddingSmall,
+                            ),
+                          ),
+                          child: Text(
+                            'Bekor qilish'.tr,
+                            style: TextStyle(
+                              color: AppColors.red,
+                              fontSize: Responsive.scaleFont(14, context),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: AppDimensions.paddingSmall),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            foregroundColor: AppColors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppDimensions.cardRadius,
+                              ),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppDimensions.paddingLarge,
+                              vertical: AppDimensions.paddingSmall,
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: () async {
+                            print(
+                              'Selected Resume ID: ${selectedResumeId.value}',
+                            );
+                            if (selectedResumeId.value == -1) {
+                              ShowToast.show(
+                                'Xatolik'.tr,
+                                'Iltimos, rezyume tanlang'.tr,
+                                1,
+                                1,
+                              );
+                              return;
+                            }
+                            print(
+                              'Selected Resume ID: ${selectedResumeId.value}',
+                            );
+                            //Get.back();
+                            await apiController.createApplication(
+                              postId,
+                              messageController.text ?? '',
+                              selectedResumeId.value,
+                            );
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                LucideIcons.send,
+                                size: Responsive.scaleFont(16, context),
+                              ),
+                              SizedBox(
+                                width: Responsive.scaleWidth(6, context),
+                              ),
+                              Text(
+                                'Yuborish'.tr,
+                                style: TextStyle(
+                                  fontSize: Responsive.scaleFont(14, context),
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
-                        );
-                      }),
-                      SizedBox(height: AppDimensions.paddingSmall),
-                      // Xabar yozish
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.cardColor,
-                          borderRadius: BorderRadius.circular(
-                            AppDimensions.cardRadius,
-                          ),
                         ),
-                        child: TextField(
-                          controller: messageController,
-                          maxLines: 3,
-                          decoration: InputDecoration(
-                            labelText: 'Xabar'.tr,
-                            labelStyle: TextStyle(
-                              color: AppColors.textSecondaryColor,
-                              fontSize: Responsive.scaleFont(14, context),
-                            ),
-                            hintText: 'Murojaat matnini kiriting...'.tr,
-                            hintStyle: TextStyle(
-                              color: AppColors.textSecondaryColor.withAlpha(
-                                150,
-                              ),
-                              fontSize: Responsive.scaleFont(12, context),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppDimensions.cardRadius,
-                              ),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppDimensions.cardRadius,
-                              ),
-                              borderSide: BorderSide(
-                                color: AppColors.primaryColor,
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: EdgeInsets.all(
-                              AppDimensions.paddingMedium,
-                            ),
-                          ),
-                          style: TextStyle(
-                            color: AppColors.textColor,
-                            fontSize: Responsive.scaleFont(14, context),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: AppDimensions.paddingMedium),
-                      // Tugmalar
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () => Get.back(),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: AppDimensions.paddingMedium,
-                                vertical: AppDimensions.paddingSmall,
-                              ),
-                            ),
-                            child: Text(
-                              'Bekor qilish'.tr,
-                              style: TextStyle(
-                                color: AppColors.red,
-                                fontSize: Responsive.scaleFont(14, context),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: AppDimensions.paddingSmall),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryColor,
-                              foregroundColor: AppColors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  AppDimensions.cardRadius,
-                                ),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: AppDimensions.paddingLarge,
-                                vertical: AppDimensions.paddingSmall,
-                              ),
-                              elevation: 0,
-                            ),
-                            onPressed: () async {
-                              print(
-                                'Selected Resume ID: ${selectedResumeId.value}',
-                              );
-                              if (selectedResumeId.value == -1) {
-                                ShowToast.show(
-                                  'Xatolik'.tr,
-                                  'Iltimos, rezyume tanlang'.tr,
-                                  1,
-                                  1,
-                                );
-                                return;
-                              }
-                              print(
-                                'Selected Resume ID: ${selectedResumeId.value}',
-                              );
-                              //Get.back();
-                              await apiController.createApplication(
-                                postId,
-                                messageController.text ?? '',
-                                selectedResumeId.value,
-                              );
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  LucideIcons.send,
-                                  size: Responsive.scaleFont(16, context),
-                                ),
-                                SizedBox(
-                                  width: Responsive.scaleWidth(6, context),
-                                ),
-                                Text(
-                                  'Yuborish'.tr,
-                                  style: TextStyle(
-                                    fontSize: Responsive.scaleFont(14, context),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
