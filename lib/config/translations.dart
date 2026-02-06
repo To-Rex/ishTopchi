@@ -1151,7 +1151,7 @@ class AppTranslations extends Translations {
       'Ish turi': 'Тип работы',
       'Bandlik turi': 'Тип занятости',
       'Telefon raqami': 'Номер телефона',
-      'Email': 'Email',
+      'Email': 'Почта',
       'Surat yuklash': 'Загрузить фото',
       'Xaritada joyni tanlang': 'Выберите место на карте',
       'Joylashuv tanlanishi shart': 'Местоположение должно быть выбрано',
