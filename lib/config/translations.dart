@@ -6,8 +6,7 @@ class AppTranslations extends Translations {
     'uz': {
       'Kirish': 'Kirish',
       'Sozlamalar': 'Sozlamalar',
-      'Ro‘yxatdan o‘tish talab qilinadi':
-          'Ro‘yxatdan o‘tish talab qilinadi',
+      'Ro‘yxatdan o‘tish talab qilinadi': 'Ro‘yxatdan o‘tish talab qilinadi',
       'Telefon raqamini ko‘rish uchun ro‘yxatdan o‘ting yoki hisobingizga kiring.':
           'Telefon raqamini ko‘rish uchun ro‘yxatdan o‘ting yoki hisobingizga kiring.',
       'Mening Profilim': 'Mening Profilim',
@@ -312,6 +311,23 @@ class AppTranslations extends Translations {
       'Ro‘yxatdan o‘ting va boshlang!': 'Ro‘yxatdan o‘ting va boshlang!',
       'Post Owner Rooms': 'E’lonlar va murojaatlar',
       'Application Rooms': 'Javoblar va taklifnomalar',
+      'Ilova tilini tanlang': 'Ilova tilini tanlang',
+      'Bildirishnomalarni yoqish-o‘chirish':
+          'Bildirishnomalarni yoqish-o‘chirish',
+      'Qorong‘i rejim': 'Qorong‘i rejim',
+      'Ilova dizaynini o‘zgartirish': 'Ilova dizaynini o‘zgartirish',
+      'Ma’lumot': 'Ma’lumot',
+      'Xavfsizlik sozlamalari tez orada qo‘shiladi':
+          'Xavfsizlik sozlamalari tez orada qo‘shiladi',
+      'Ilova keshini tozalash': 'Ilova keshini tozalash',
+      'Foydalanish shartlarini ko‘rish': 'Foydalanish shartlarini ko‘rish',
+      'Foydalanish shartlari tez orada qo‘shiladi':
+          'Foydalanish shartlari tez orada qo‘shiladi',
+      'Ilova versiyasi va yangilanishlar': 'Ilova versiyasi va yangilanishlar',
+      'Keshni tozalashdan so‘ng ba’zi ma’lumotlar qayta yuklanishi kerak bo‘ladi. Davom etasizmi?':
+          'Keshni tozalashdan so‘ng ba’zi ma’lumotlar qayta yuklanishi kerak bo‘ladi. Davom etasizmi?',
+      'Kesh tozalandi': 'Kesh tozalandi',
+      'Ilova versiyasi': 'Ilova versiyasi',
     },
     'oz': {
       'Kirish': 'Кириш',
@@ -619,6 +635,22 @@ class AppTranslations extends Translations {
       'Ro‘yxatdan o‘ting va boshlang!': 'Рўйхатдан ўтинг ва бошланг!',
       'Post Owner Rooms': 'Эълонлар ва мурожаатлар',
       'Application Rooms': 'Жавоблар ва таклифномалар',
+      'Ilova tilini tanlang': 'Илова тилини танланг',
+      'Bildirishnomalarni yoqish-o‘chirish': 'Билдиришномаларни ёқиш-ўчириш',
+      'Qorong‘i rejim': 'Қоронги режим',
+      'Ilova dizaynini o‘zgartirish': 'Илова дизайнини ўзгартириш',
+      'Ma’lumot': 'Маълумот',
+      'Xavfsizlik sozlamalari tez orada qo‘shiladi':
+          'Хавфсизлик созламалари тез орада қўшилади',
+      'Ilova keshini tozalash': 'Илова кешини тозалаш',
+      'Foydalanish shartlarini ko‘rish': 'Фойдаланиш шартларини кўриш',
+      'Foydalanish shartlari tez orada qo‘shiladi':
+          'Фойдаланиш шартлари тез орада қўшилади',
+      'Ilova versiyasi va yangilanishlar': 'Илова версияси ва янгиланишлар',
+      'Keshni tozalashdan so‘ng ba’zi ma’lumotlar qayta yuklanishi kerak bo‘ladi. Davom etasizmi?':
+          'Кешни тозалашдан сўнг баъзи маълумотлар қайта юкланиши керак бўлади. Давом этасизми?',
+      'Kesh tozalandi': 'Кеш тозаланди',
+      'Ilova versiyasi': 'Илова версияси',
     },
     'en': {
       'Kirish': 'Login',
@@ -922,6 +954,22 @@ class AppTranslations extends Translations {
       'Ro‘yxatdan o‘ting va boshlang!': 'Register and Start!',
       'Post Owner Rooms': 'Posts and Applications',
       'Application Rooms': 'Responses and Offers',
+      'Ilova tilini tanlang': 'Select app language',
+      'Bildirishnomalarni yoqish-o‘chirish': 'Turn notifications on/off',
+      'Qorong‘i rejim': 'Dark mode',
+      'Ilova dizaynini o‘zgartirish': 'Change app design',
+      'Ma’lumot': 'Information',
+      'Xavfsizlik sozlamalari tez orada qo‘shiladi':
+          'Security settings will be added soon',
+      'Ilova keshini tozalash': 'Clear app cache',
+      'Foydalanish shartlarini ko‘rish': 'View terms of use',
+      'Foydalanish shartlari tez orada qo‘shiladi':
+          'Terms of use will be added soon',
+      'Ilova versiyasi va yangilanishlar': 'App version and updates',
+      'Keshni tozalashdan so‘ng ba’zi ma’lumotlar qayta yuklanishi kerak bo‘ladi. Davom etasizmi?':
+          'After clearing cache, some data will need to be reloaded. Continue?',
+      'Kesh tozalandi': 'Cache cleared',
+      'Ilova versiyasi': 'App version',
     },
     'ru': {
       'Kirish': 'Вход',
@@ -1230,6 +1278,22 @@ class AppTranslations extends Translations {
       'Ro‘yxatdan o‘ting va boshlang!': 'Зарегистрируйтесь и начинайте!',
       'Post Owner Rooms': 'Посты и заявки',
       'Application Rooms': 'Ответы и предложения',
+      'Ilova tilini tanlang': 'Выберите язык приложения',
+      'Bildirishnomalarni yoqish-o‘chirish': 'Включить/выключить уведомления',
+      'Qorong‘i rejim': 'Темный режим',
+      'Ilova dizaynini o‘zgartirish': 'Изменить дизайн приложения',
+      'Ma’lumot': 'Информация',
+      'Xavfsizlik sozlamalari tez orada qo‘shiladi':
+          'Настройки безопасности будут добавлены скоро',
+      'Ilova keshini tozalash': 'Очистить кэш приложения',
+      'Foydalanish shartlarini ko‘rish': 'Просмотреть условия использования',
+      'Foydalanish shartlari tez orada qo‘shiladi':
+          'Условия использования будут добавлены скоро',
+      'Ilova versiyasi va yangilanishlar': 'Версия приложения и обновления',
+      'Keshni tozalashdan so‘ng ba’zi ma’lumotlar qayta yuklanishi kerak bo‘ladi. Davom etasizmi?':
+          'После очистки кэша некоторые данные потребуют перезагрузки. Продолжить?',
+      'Kesh tozalandi': 'Кэш очищен',
+      'Ilova versiyasi': 'Версия приложения',
     },
   };
 }

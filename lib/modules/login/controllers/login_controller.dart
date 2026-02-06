@@ -33,7 +33,7 @@ class LoginController extends GetxController {
           await googleUser.authentication;
       print('User email address: ${googleUser.email}');
       print('User name: ${googleUser.displayName}');
-      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'WEB');
+      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'WEB', googleUser.displayName ?? '', funcController.fcmToken.value, funcController.deviceId.value, funcController.platform.value, funcController.deviceName.value);
     } catch (e) {
       print('Google Sign-In error: $e');
     }
@@ -68,7 +68,7 @@ class LoginController extends GetxController {
           await googleUser.authentication;
       print('User email address: ${googleUser.email}');
       print('User name: ${googleUser.displayName}');
-      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'IOS');
+      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'IOS', googleUser.displayName ?? '', funcController.fcmToken.value, funcController.deviceId.value, funcController.platform.value, funcController.deviceName.value);
     } catch (e) {
       isLoading.value = false;
       print('Google Sign-In error: $e');

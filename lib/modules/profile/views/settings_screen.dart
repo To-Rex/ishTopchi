@@ -118,7 +118,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSwitchTile(
                 icon: LucideIcons.bell,
                 title: 'Bildirishnomalar'.tr,
-                subtitle: 'Bildirishnomalarni yoqish-o\'chirish'.tr,
+                subtitle: 'Bildirishnomalarni yoqish-o‘chirish'.tr,
                 value: _notificationsEnabled,
                 onChanged: (value) {
                   setState(() {
@@ -131,8 +131,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 builder: (controller) {
                   return _buildSwitchTile(
                     icon: LucideIcons.moon,
-                    title: 'Qorong\'u rejim'.tr,
-                    subtitle: 'Ilova dizaynini o\'zgartirish'.tr,
+                    title: 'Qorong‘i rejim'.tr,
+                    subtitle: 'Ilova dizaynini o‘zgartirish'.tr,
                     value: controller.isDarkMode.value,
                     onChanged: (value) {
                       controller.toggleTheme();
@@ -140,9 +140,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 },
               ),
-              
+
               SizedBox(height: Responsive.scaleHeight(20, context)),
-              _buildSectionHeader('Ma\'lumot'.tr),
+              _buildSectionHeader('Ma’lumot'.tr),
               _buildMenuTile(
                 icon: LucideIcons.shield,
                 title: 'Xavfsizlik'.tr,
@@ -150,7 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () {
                   Get.snackbar(
                     'Xavfsizlik'.tr,
-                    'Xavfsizlik sozlamalari tez orada qo\'shiladi'.tr,
+                    'Xavfsizlik sozlamalari tez orada qo‘shiladi'.tr,
                     backgroundColor: AppColors.darkBlue,
                     colorText: Colors.white,
                   );
@@ -169,11 +169,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildMenuTile(
                 icon: LucideIcons.fileText,
                 title: 'Foydalanish shartlari'.tr,
-                subtitle: 'Foydalanish shartlarini ko\'rish'.tr,
+                subtitle: 'Foydalanish shartlarini ko‘rish'.tr,
                 onTap: () {
                   Get.snackbar(
                     'Foydalanish shartlari'.tr,
-                    'Foydalanish shartlari tez orada qo\'shiladi'.tr,
+                    'Foydalanish shartlari tez orada qo‘shiladi'.tr,
                     backgroundColor: AppColors.darkBlue,
                     colorText: Colors.white,
                   );
@@ -181,7 +181,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               _buildMenuTile(
                 icon: LucideIcons.info,
-                title: 'Versiya ma\'lumotlari'.tr,
+                title: 'Versiya ma’lumotlari'.tr,
                 subtitle: 'Ilova versiyasi va yangilanishlar'.tr,
                 onTap: () {
                   _showVersionInfo();
@@ -418,7 +418,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         content: Text(
-          'Keshni tozalashdan so\'ng ba\'zi ma\'lumotlar qayta yuklanishi kerak bo\'ladi. Davom etasizmi?'
+          'Keshni tozalashdan so‘ng ba’zi ma’lumotlar qayta yuklanishi kerak bo‘ladi. Davom etasizmi?'
               .tr,
           style: TextStyle(
             fontSize: 14.sp,
@@ -490,7 +490,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: dialogColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Versiya ma\'lumotlari'.tr,
+          'Versiya ma’lumotlari'.tr,
           style: TextStyle(
             fontSize: 18.sp,
             color: titleColor,

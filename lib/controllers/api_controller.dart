@@ -104,7 +104,7 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<void> sendGoogleIdToken(String idToken, String platform) async {
+  Future<void> sendGoogleIdToken(String idToken, String platform,String fullName,String fcmToken,String deviceId,String devicePlatform,String deviceName,) async {
     debugPrint('ID Token: $idToken');
     debugPrint('Platform: $platform');
     try {
@@ -113,7 +113,7 @@ class ApiController extends GetxController {
         options: Options(
           headers: {'accept': '*/*', 'Content-Type': 'application/json'},
         ),
-        data: {'idToken': idToken, 'platform': platform},
+        data: {'idToken': idToken, 'platform': platform, 'fullName': fullName, 'fcmToken': fcmToken, 'deviceId': deviceId, 'devicePlatform': devicePlatform, 'deviceName': deviceName},
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint('API javobi: ${response.data}');
@@ -307,6 +307,7 @@ class ApiController extends GetxController {
   Future<bool> loginWithOtp({required String otp}) async {
     final fingerprint = funcController.getOtpToken();
     final phone = funcController.getOtpPhone();
+    print('OTP: $otp, Fingerprint: $fingerprint, Phone: $phone, fcmToken ${funcController.fcmToken.value}, deviceId ${funcController.deviceId.value}, platform ${funcController.platform.value}, deviceName ${funcController.deviceName.value}');
     try {
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/login',
@@ -314,6 +315,11 @@ class ApiController extends GetxController {
           "phone_number": phone,
           "otp": otp,
           "fingerprint": fingerprint,
+          "fcmToken": funcController.fcmToken.value,
+          "deviceId": funcController.deviceId.value,
+          //"devicePlatform": funcController.platform.value,
+          "platform": funcController.platform.value,
+          "deviceName": funcController.deviceName.value,
         }),
         options: Options(
           headers: {
