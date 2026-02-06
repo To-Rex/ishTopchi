@@ -51,7 +51,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
         return 'Telefon raqami orqali kirilgan'.tr;
       }
     }
-    return 'Ma\'lumot yo\'q'.tr;
+    return 'Ma’lumot yo‘q'.tr;
   }
 
   IconData _getAuthIcon(UserMe? user) {
@@ -69,9 +69,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   String _getAuthInfo(UserMe? user) {
     if (user?.data?.authProviders?.isNotEmpty ?? false) {
       final provider = user!.data!.authProviders!.first;
-      return provider.email ?? provider.providersUserId ?? 'Ma\'lumot yo\'q'.tr;
+      return provider.email ?? provider.providersUserId ?? 'Ma’lumot yo‘q'.tr;
     }
-    return 'Ma\'lumot yo\'q'.tr;
+    return 'Ma’lumot yo‘q'.tr;
   }
 
   @override
@@ -226,7 +226,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 Text(
                   user?.data?.firstName != null
                       ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}'
-                      : user?.data?.lastName ?? 'Ism yo\'q'.tr,
+                      : user?.data?.lastName ?? 'Ism yo‘q'.tr,
                   style: TextStyle(
                     color: AppColors.textColor,
                     fontSize: Responsive.scaleFont(22, context),
@@ -277,7 +277,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             if (funcController.meStats.value.data == null) {
               return Center(
                 child: Text(
-                  'Ma\'lumotlar mavjud emas'.tr,
+                  'Ma’lumotlar mavjud emas'.tr,
                   style: TextStyle(
                     color: AppColors.textColor,
                     fontSize: Responsive.scaleFont(13, context),
@@ -297,7 +297,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 _buildStatCard(
                   context,
                   icon: LucideIcons.eye,
-                  title: 'Ko\'rishlar'.tr,
+                  title: 'Ko‘rishlar'.tr,
                   value: funcController.meStats.value.data?.totalViews ?? '0',
                 ),
                 _buildStatCard(
@@ -310,7 +310,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             );
           }),
           SizedBox(height: Responsive.scaleHeight(20, context)),
-          _buildSectionTitle(context, 'Kirish ma\'lumotlari'.tr),
+          _buildSectionTitle(context, 'Kirish ma’lumotlari'.tr),
           SizedBox(height: Responsive.scaleHeight(10, context)),
           Center(
             child: GestureDetector(
@@ -329,7 +329,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Kirish ma\'lumotlari'.tr,
+                            'Kirish ma’lumotlari'.tr,
                             style: TextStyle(
                               color: AppColors.textColor,
                               fontSize: Responsive.scaleFont(18, context),
@@ -440,14 +440,14 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             ),
           ),
           SizedBox(height: Responsive.scaleHeight(20, context)),
-          _buildSectionTitle(context, 'Shaxsiy ma\'lumotlar'),
+          _buildSectionTitle(context, 'Shaxsiy ma’lumotlar'.tr),
           SizedBox(height: Responsive.scaleHeight(10, context)),
           Column(
             children: [
               _buildInfoCard(
                 context,
                 icon: LucideIcons.mapPin,
-                title: 'Manzil',
+                title: 'Manzil'.tr,
                 value:
                     user?.data?.district != null
                         ? '${user!.data!.district!.name}, ${user.data!.district!.region!.name}'
@@ -469,7 +469,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               _buildInfoCard(
                 context,
                 icon: LucideIcons.calendar,
-                title: 'Tug\'ilgan sana'.tr,
+                title: 'Tug‘ilgan sana'.tr,
                 value: user?.data?.birthDate ?? 'Kiritilmagan'.tr,
               ),
               SizedBox(height: Responsive.scaleHeight(6, context)),
@@ -477,7 +477,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 context,
                 icon: LucideIcons.check,
                 title: 'Tasdiqlangan'.tr,
-                value: user?.data?.verified == true ? 'Ha'.tr : 'Yo\'q'.tr,
+                value: user?.data?.verified == true ? 'Ha'.tr : 'Yo‘q'.tr,
               ),
               SizedBox(height: Responsive.scaleHeight(6, context)),
               _buildInfoCard(
@@ -490,7 +490,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               _buildInfoCard(
                 context,
                 icon: LucideIcons.clock,
-                title: 'Ro\'yxatdan o\'tgan sana'.tr,
+                title: 'Ro‘yxatdan o‘tgan sana'.tr,
                 value:
                     user?.data?.createdAt != null
                         ? user!.data!.createdAt!.split('T')[0]
@@ -499,7 +499,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             ],
           ),
           SizedBox(height: Responsive.scaleHeight(20, context)),
-          _buildSectionTitle(context, 'Hisobni boshqarish'),
+          _buildSectionTitle(context, 'Hisobni boshqarish'.tr),
           SizedBox(height: Responsive.scaleHeight(10, context)),
           SizedBox(
             width: double.infinity,
@@ -540,7 +540,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                         ),
                         SizedBox(width: Responsive.scaleWidth(8, context)),
                         Text(
-                          'Hisobni o\'chirish',
+                          'Hisobni o‘chirish'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: Responsive.scaleFont(15, context),
@@ -617,7 +617,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Hisobni o\'chirish'.tr,
+                      'Hisobni o‘chirish'.tr,
                       style: TextStyle(
                         color: AppColors.textColor,
                         fontSize: Responsive.scaleFont(18, context),
@@ -626,7 +626,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     ),
                     SizedBox(height: Responsive.scaleHeight(12, context)),
                     Text(
-                      'Hisobingizni o\'chirishni xohlaysizmi? Bu amal qaytarib bo\'lmaydi.'
+                      'Hisobingizni o‘chirishni xohlaysizmi? Bu amal qaytarib bo‘lmaydi.'
                           .tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -681,7 +681,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  'O\'chirish',
+                                  'O‘chirish',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: Responsive.scaleFont(14, context),
