@@ -21,6 +21,7 @@ import '../views/support_screen.dart';
 import '../../../core/services/show_toast.dart';
 
 class ProfileController extends GetxController {
+  final appVersion = '1.0.3';
   final hasToken = false.obs;
   final RxBool isLoadingUser = false.obs;
   final RxBool isLoadingRegions = false.obs;

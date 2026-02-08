@@ -45,7 +45,7 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
       backgroundColor: AppColors.backgroundColor,
       elevation: 0,
       title: Text(
-        _postOwnerRoom.post.title,
+        _postOwnerRoom.post.title ?? 'Post',
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
           fontSize: Responsive.scaleFont(18, context),
           color: AppColors.textColor,
@@ -92,8 +92,14 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
     final sender =
         '${otherUser.firstName ?? ''} ${otherUser.lastName ?? ''}'.trim();
     final senderInitial = sender.isNotEmpty ? sender[0].toUpperCase() : '?';
-    final preview = room.application.message;
+    final preview = room.application.message ?? '';
     final time = _formatTime(room.createdAt);
+    final hasResume = room.application.resume != null;
+    final hasContent =
+        room.application.message != null &&
+        room.application.message!.isNotEmpty;
+    final status = room.application.status ?? '';
+
     return Card(
       color: AppColors.cardColor,
       shape: RoundedRectangleBorder(
@@ -128,27 +134,50 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      sender,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: Responsive.scaleFont(16, context),
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textColor,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          sender,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: Responsive.scaleFont(16, context),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textColor,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        if (status == 'accepted')
+                          Icon(
+                            Icons.done_all,
+                            color: AppColors.primaryColor,
+                            size: Responsive.scaleFont(16, context),
+                          )
+                        else
+                          Icon(
+                            Icons.done,
+                            color: AppColors.iconColor.withOpacity(0.7),
+                            size: Responsive.scaleFont(16, context),
+                          ),
+                      ],
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      preview,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: Responsive.scaleFont(14, context),
-                        color: AppColors.iconColor.withOpacity(0.8),
+                    if (hasResume) ...[
+                      _buildResumePreview(context, room.application.resume!),
+                      SizedBox(height: 4),
+                    ],
+                    if (hasContent) ...[
+                      Text(
+                        preview,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: Responsive.scaleFont(14, context),
+                          color: AppColors.iconColor.withOpacity(0.8),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 4),
+                      SizedBox(height: 4),
+                    ],
                     Text(
                       time,
                       style: TextStyle(
@@ -166,6 +195,63 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
     );
   }
 
+  Widget _buildResumePreview(BuildContext context, dynamic resume) {
+    final title = resume.title ?? 'Resume';
+    final firstExperience =
+        resume.experience != null && resume.experience!.isNotEmpty
+            ? resume.experience![0]
+            : null;
+
+    return Container(
+      padding: EdgeInsets.all(AppDimensions.paddingSmall),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundColor,
+        borderRadius: BorderRadius.circular(AppDimensions.cardRadius / 2),
+        border: Border.all(
+          color: AppColors.primaryColor.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.description_outlined,
+            color: AppColors.primaryColor,
+            size: Responsive.scaleFont(16, context),
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: Responsive.scaleFont(14, context),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textColor,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (firstExperience != null)
+                  Text(
+                    firstExperience.position ?? '',
+                    style: TextStyle(
+                      fontSize: Responsive.scaleFont(12, context),
+                      color: AppColors.iconColor.withOpacity(0.8),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   String _formatTime(String createdAt) {
     try {
       final dateTime = DateTime.parse(createdAt).toLocal();
@@ -174,79 +260,12 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
       if (difference.inDays == 0) {
         return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
       } else if (difference.inDays == 1) {
-        return 'Yesterday';
+        return 'Kecha'.tr;
       } else {
         return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
       }
     } catch (e) {
       return createdAt;
     }
-  }
-
-  void _showMoreOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimensions.cardRadius),
-        ),
-      ),
-      builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.delete, color: AppColors.red),
-              title: Text(
-                'Xabarni o\'chirish',
-                style: TextStyle(color: AppColors.textColor),
-              ),
-              onTap: () {
-                Get.back();
-                Get.snackbar(
-                  'Xabar',
-                  'Xabar o‘chirildi!',
-                  backgroundColor: AppColors.primaryColor,
-                  colorText: AppColors.textColor,
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.block, color: AppColors.red),
-              title: Text(
-                'Foydalanuvchini bloklash',
-                style: TextStyle(color: AppColors.textColor),
-              ),
-              onTap: () {
-                Get.back();
-                Get.snackbar(
-                  'Xabar',
-                  'Foydalanuvchi bloklandi!',
-                  backgroundColor: AppColors.primaryColor,
-                  colorText: AppColors.textColor,
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.report, color: AppColors.red),
-              title: Text(
-                'Shikoyat qilish',
-                style: TextStyle(color: AppColors.textColor),
-              ),
-              onTap: () {
-                Get.back();
-                Get.snackbar(
-                  'Xabar',
-                  'Shikoyat yuborildi!',
-                  backgroundColor: AppColors.primaryColor,
-                  colorText: AppColors.textColor,
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

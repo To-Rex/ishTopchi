@@ -673,7 +673,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             const SizedBox(height: 24),
                             Center(
                               child: Text(
-                                'Ishtopchi v1.2',
+                                'Ishtopchi v${controller.appVersion}',
                                 style: TextStyle(
                                   color: AppColors.textSecondaryColor,
                                   fontSize: 13,

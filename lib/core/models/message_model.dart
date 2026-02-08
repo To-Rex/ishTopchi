@@ -31,28 +31,28 @@ class ChatMessage {
 // New models for Chat Room Messages API
 class MessageSender {
   final int id;
-  final String firstName;
-  final String lastName;
+  final String? firstName;
+  final String? lastName;
   final String? profilePicture;
-  final String birthDate;
-  final String gender;
+  final String? birthDate;
+  final String? gender;
   final bool verified;
   final bool isBlocked;
-  final String role;
+  final String? role;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
 
   MessageSender({
     required this.id,
-    required this.firstName,
-    required this.lastName,
+    this.firstName,
+    this.lastName,
     this.profilePicture,
-    required this.birthDate,
-    required this.gender,
+    this.birthDate,
+    this.gender,
     required this.verified,
     required this.isBlocked,
-    required this.role,
+    this.role,
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -61,16 +61,20 @@ class MessageSender {
   factory MessageSender.fromJson(Map<String, dynamic> json) {
     return MessageSender(
       id: json['id'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
       profilePicture: json['profile_picture'],
-      birthDate: json['birth_date'],
-      gender: json['gender'],
-      verified: json['verified'],
-      isBlocked: json['is_blocked'],
-      role: json['role'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      birthDate: json['birth_date'] ?? '',
+      gender: json['gender'] ?? '',
+      verified: json['verified'] ?? false,
+      isBlocked: json['is_blocked'] ?? false,
+      role: json['role'] ?? '',
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
       deletedAt:
           json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
     );
@@ -79,28 +83,28 @@ class MessageSender {
 
 class MessageReceiver {
   final int id;
-  final String firstName;
-  final String lastName;
+  final String? firstName;
+  final String? lastName;
   final String? profilePicture;
-  final String birthDate;
-  final String gender;
+  final String? birthDate;
+  final String? gender;
   final bool verified;
   final bool isBlocked;
-  final String role;
+  final String? role;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
 
   MessageReceiver({
     required this.id,
-    required this.firstName,
-    required this.lastName,
+    this.firstName,
+    this.lastName,
     this.profilePicture,
-    required this.birthDate,
-    required this.gender,
+    this.birthDate,
+    this.gender,
     required this.verified,
     required this.isBlocked,
-    required this.role,
+    this.role,
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -109,16 +113,20 @@ class MessageReceiver {
   factory MessageReceiver.fromJson(Map<String, dynamic> json) {
     return MessageReceiver(
       id: json['id'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
       profilePicture: json['profile_picture'],
-      birthDate: json['birth_date'],
-      gender: json['gender'],
-      verified: json['verified'],
-      isBlocked: json['is_blocked'],
-      role: json['role'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      birthDate: json['birth_date'] ?? '',
+      gender: json['gender'] ?? '',
+      verified: json['verified'] ?? false,
+      isBlocked: json['is_blocked'] ?? false,
+      role: json['role'] ?? '',
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
       deletedAt:
           json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
     );
@@ -138,9 +146,13 @@ class MessageChatRoom {
 
   factory MessageChatRoom.fromJson(Map<String, dynamic> json) {
     return MessageChatRoom(
-      id: json['id'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      id: json['id'] ?? 0,
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updated_at'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 }
@@ -193,8 +205,8 @@ class MessageResumeExperience {
 
 class MessageResume {
   final int id;
-  final String title;
-  final String content;
+  final String? title;
+  final String? content;
   final List<MessageResumeEducation> education;
   final List<MessageResumeExperience> experience;
   final DateTime createdAt;
@@ -203,8 +215,8 @@ class MessageResume {
 
   MessageResume({
     required this.id,
-    required this.title,
-    required this.content,
+    this.title,
+    this.content,
     required this.education,
     required this.experience,
     required this.createdAt,
@@ -215,8 +227,8 @@ class MessageResume {
   factory MessageResume.fromJson(Map<String, dynamic> json) {
     return MessageResume(
       id: json['id'],
-      title: json['title'],
-      content: json['content'],
+      title: json['title'] ?? '',
+      content: json['content'] ?? '',
       education:
           (json['education'] as List<dynamic>?)
               ?.map((e) => MessageResumeEducation.fromJson(e))
@@ -227,8 +239,12 @@ class MessageResume {
               ?.map((e) => MessageResumeExperience.fromJson(e))
               .toList() ??
           [],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updated_at'] ?? DateTime.now().toIso8601String(),
+      ),
       fileUrl: json['file_url'],
     );
   }
@@ -240,7 +256,7 @@ class ChatRoomMessage {
   final MessageReceiver receiver;
   final MessageChatRoom chatRoom;
   final MessageResume? resume;
-  final String content;
+  final String? content;
   final String? mediaUrl;
   final DateTime createdAt;
   final bool isRead;
@@ -251,7 +267,7 @@ class ChatRoomMessage {
     required this.receiver,
     required this.chatRoom,
     this.resume,
-    required this.content,
+    this.content,
     this.mediaUrl,
     required this.createdAt,
     required this.isRead,
@@ -260,17 +276,19 @@ class ChatRoomMessage {
   factory ChatRoomMessage.fromJson(Map<String, dynamic> json) {
     return ChatRoomMessage(
       id: json['id'],
-      sender: MessageSender.fromJson(json['sender']),
-      receiver: MessageReceiver.fromJson(json['receiver']),
-      chatRoom: MessageChatRoom.fromJson(json['chatRoom']),
+      sender: MessageSender.fromJson(json['sender'] ?? {}),
+      receiver: MessageReceiver.fromJson(json['receiver'] ?? {}),
+      chatRoom: MessageChatRoom.fromJson(json['chatRoom'] ?? {}),
       resume:
           json['resume'] != null
               ? MessageResume.fromJson(json['resume'])
               : null,
-      content: json['content'],
+      content: json['content'] ?? '',
       mediaUrl: json['media_url'],
-      createdAt: DateTime.parse(json['created_at']),
-      isRead: json['is_read'],
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
+      isRead: json['is_read'] ?? false,
     );
   }
 }
@@ -290,10 +308,10 @@ class ChatRoomMessagesMeta {
 
   factory ChatRoomMessagesMeta.fromJson(Map<String, dynamic> json) {
     return ChatRoomMessagesMeta(
-      total: json['total'],
-      page: json['page'],
-      limit: json['limit'],
-      totalPages: json['totalPages'],
+      total: json['total'] ?? 0,
+      page: json['page'] ?? 1,
+      limit: json['limit'] ?? 20,
+      totalPages: json['totalPages'] ?? 1,
     );
   }
 }

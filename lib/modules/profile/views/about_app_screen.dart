@@ -64,7 +64,7 @@ class AboutAppScreen extends StatelessWidget {
               ),
             ),
             Text(
-              '${'Versiya'.tr} 1.0.0',
+              '${'Versiya'.tr} ${profileController.appVersion}',
               style: TextStyle(
                 color: AppColors.textSecondaryColor,
                 fontSize: Responsive.scaleFont(14, context),

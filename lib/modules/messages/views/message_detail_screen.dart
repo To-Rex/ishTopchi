@@ -162,9 +162,9 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       final messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
       final difference = today.difference(messageDate).inDays;
       if (difference == 0) {
-        return 'Today';
+        return 'Bugun'.tr;
       } else if (difference == 1) {
-        return 'Yesterday';
+        return 'Kecha'.tr;
       } else {
         return '${messageDate.day}/${messageDate.month}/${messageDate.year}';
       }
@@ -273,7 +273,9 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             backgroundColor: AppColors.primaryColor,
             radius: Responsive.scaleWidth(20, context),
             child: Text(
-              _otherUser.firstName[0].toUpperCase(),
+              (_otherUser.firstName?.isNotEmpty ?? false)
+                  ? _otherUser.firstName![0].toUpperCase()
+                  : 'U',
               style: TextStyle(
                 color: AppColors.white,
                 fontSize: Responsive.scaleFont(16, context),
@@ -283,7 +285,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           SizedBox(width: AppDimensions.paddingSmall),
           Expanded(
             child: Text(
-              _otherUser.firstName,
+              _otherUser.firstName ?? 'User',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 fontSize: Responsive.scaleFont(18, context),
                 color: AppColors.textColor,
@@ -297,60 +299,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         icon: Icon(Icons.arrow_back, color: AppColors.textColor),
         onPressed: () => Get.back(),
       ),
-      actions: [
-        PopupMenuButton<String>(
-          icon: Icon(Icons.more_vert, color: AppColors.textColor),
-          color: AppColors.cardColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-          ),
-          onSelected: (value) {
-            _handleMenuSelection(value);
-          },
-          itemBuilder:
-              (BuildContext context) => [
-                PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, color: AppColors.red, size: 20),
-                      SizedBox(width: 12),
-                      Text(
-                        'Xabarni o\'chirish',
-                        style: TextStyle(color: AppColors.textColor),
-                      ),
-                    ],
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'block',
-                  child: Row(
-                    children: [
-                      Icon(Icons.block, color: AppColors.red, size: 20),
-                      SizedBox(width: 12),
-                      Text(
-                        'Foydalanuvchini bloklash',
-                        style: TextStyle(color: AppColors.textColor),
-                      ),
-                    ],
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'report',
-                  child: Row(
-                    children: [
-                      Icon(Icons.report, color: AppColors.red, size: 20),
-                      SizedBox(width: 12),
-                      Text(
-                        'Shikoyat qilish',
-                        style: TextStyle(color: AppColors.textColor),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-        ),
-      ],
     );
   }
 
@@ -423,9 +371,11 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
     // Get user initials
     final user = isMe ? _currentUser : _otherUser;
-    final initials =
-        (user.firstName[0] + (user.lastName != null ? user.lastName![0] : ''))
-            .toUpperCase();
+    final firstNameInitial =
+        (user.firstName?.isNotEmpty ?? false) ? user.firstName![0] : 'U';
+    final lastNameInitial =
+        (user.lastName?.isNotEmpty ?? false) ? user.lastName![0] : '';
+    final initials = (firstNameInitial + lastNameInitial).toUpperCase();
 
     // Get experience preview
     final firstExperience =
@@ -509,7 +459,8 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                             // User name
                             Expanded(
                               child: Text(
-                                '${user.firstName} ${user.lastName ?? ''}',
+                                '${user.firstName ?? ''} ${user.lastName ?? ''}'
+                                    .trim(),
                                 style: TextStyle(
                                   color: titleColor,
                                   fontSize: Responsive.scaleFont(14, context),
@@ -641,25 +592,18 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                                 ),
                                 if (isMe) ...[
                                   SizedBox(width: 4),
-                                  Text(
-                                    status == 'seen'
-                                        ? 'Seen'
-                                        : status == 'delivered'
-                                        ? 'Delivered'
-                                        : '',
-                                    style: TextStyle(
-                                      color:
-                                          status == 'seen'
-                                              ? AppColors.white
-                                              : AppColors.white.withOpacity(
-                                                0.7,
-                                              ),
-                                      fontSize: Responsive.scaleFont(
-                                        10,
-                                        context,
-                                      ),
+                                  if (status == 'seen')
+                                    Icon(
+                                      Icons.done_all,
+                                      color: AppColors.white,
+                                      size: Responsive.scaleFont(14, context),
+                                    )
+                                  else
+                                    Icon(
+                                      Icons.done,
+                                      color: AppColors.white.withOpacity(0.7),
+                                      size: Responsive.scaleFont(14, context),
                                     ),
-                                  ),
                                 ],
                               ],
                             ),
@@ -697,9 +641,41 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   }
 
   Widget _buildMessageBubble(BuildContext context, Map<String, dynamic> msg) {
-    if (msg.containsKey('resume') && msg['resume'] != null) {
+    final isMe = msg['senderId'] == _currentUserId;
+    final GlobalKey bubbleKey = GlobalKey();
+
+    // Check if message has resume
+    final hasResume = msg.containsKey('resume') && msg['resume'] != null;
+    // Check if message has content text
+    final hasContent = msg['content'] != null && msg['content']!.isNotEmpty;
+
+    // If message has both resume and content, display both
+    if (hasResume && hasContent) {
+      return Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          _buildResumeMessageBubble(context, msg),
+          SizedBox(height: AppDimensions.paddingSmall),
+          _buildTextMessageBubble(context, msg, bubbleKey),
+        ],
+      );
+    }
+
+    // If message has only resume, display resume bubble
+    if (hasResume) {
       return _buildResumeMessageBubble(context, msg);
     }
+
+    // Otherwise, display regular text message
+    return _buildTextMessageBubble(context, msg, bubbleKey);
+  }
+
+  Widget _buildTextMessageBubble(
+    BuildContext context,
+    Map<String, dynamic> msg,
+    GlobalKey bubbleKey,
+  ) {
     final isMe = msg['senderId'] == _currentUserId;
     final time = _formatTime(msg['createdAt']);
     final status = msg['status'] ?? 'sent';
@@ -708,10 +684,6 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
         isMe
             ? AppColors.white.withOpacity(0.7)
             : AppColors.iconColor.withOpacity(0.7);
-    final avatarTextColor = isMe ? AppColors.white : AppColors.white;
-
-    final GlobalKey bubbleKey = GlobalKey();
-
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
       child: Align(
@@ -768,20 +740,18 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                           ),
                           if (isMe) ...[
                             SizedBox(width: AppDimensions.paddingSmall / 2),
-                            Text(
-                              status == 'seen'
-                                  ? 'Seen'
-                                  : status == 'delivered'
-                                  ? 'Delivered'
-                                  : '',
-                              style: TextStyle(
-                                color:
-                                    status == 'seen'
-                                        ? AppColors.white
-                                        : AppColors.white.withOpacity(0.7),
-                                fontSize: Responsive.scaleFont(10, context),
+                            if (status == 'seen')
+                              Icon(
+                                Icons.done_all,
+                                color: AppColors.white,
+                                size: Responsive.scaleFont(14, context),
+                              )
+                            else
+                              Icon(
+                                Icons.done,
+                                color: AppColors.white.withOpacity(0.7),
+                                size: Responsive.scaleFont(14, context),
                               ),
-                            ),
                           ],
                         ],
                       ),
@@ -1278,13 +1248,15 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                               backgroundColor: AppColors.primaryColor,
                               radius: Responsive.scaleWidth(30, context),
                               child: Text(
-                                _otherUser.firstName[0].toUpperCase(),
+                                (_otherUser.firstName?.isNotEmpty ?? false)
+                                    ? _otherUser.firstName![0].toUpperCase()
+                                    : 'U',
                                 style: TextStyle(color: avatarTextColor),
                               ),
                             ),
                             SizedBox(width: AppDimensions.paddingMedium),
                             Text(
-                              _otherUser.firstName,
+                              _otherUser.firstName ?? 'User',
                               style: TextStyle(
                                 color: AppColors.textColor,
                                 fontSize: Responsive.scaleFont(18, context),

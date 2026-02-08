@@ -282,7 +282,7 @@ class MessagesScreen extends GetView<MessagesController> {
     final sender =
         '${otherUser.firstName ?? ''} ${otherUser.lastName ?? ''}'.trim();
     final senderInitial = sender.isNotEmpty ? sender[0].toUpperCase() : '?';
-    final preview = room.application.message;
+    final preview = room.application.message ?? '';
     final time = _formatTime(room.createdAt);
 
     return Card(

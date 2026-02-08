@@ -344,6 +344,10 @@ class AppTranslations extends Translations {
       'daqiqa oldin':'daqiqa oldin',
       'soat oldin':'soat oldin',
       'kun oldin':'kun oldin',
+      'hafta oldin':'hafta oldin',
+      'Kecha':'Kecha',
+      'Bugun':'Bugun',
+      
     },
     'oz': {
       'Kirish': 'Кириш',
@@ -683,6 +687,9 @@ class AppTranslations extends Translations {
       'daqiqa oldin':'дақиқа олдин',
       'soat oldin':'соат олдин',
       'kun oldin':'кун олдин',
+      'hafta oldin':'ҳафта олдин',
+      'Kecha':'Кеча',
+      'Bugun':'Бугун',
     },
     'en': {
       'Kirish': 'Login',
@@ -1018,6 +1025,9 @@ class AppTranslations extends Translations {
       'daqiqa oldin':'minutes ago',
       'soat oldin':'hours ago',
       'kun oldin':'days ago',
+      'hafta oldin':'weeks ago',
+      'Kecha':'Yesterday',
+      'Bugun':'Today',
     },
     'ru': {
       'Kirish': 'Вход',
@@ -1358,6 +1368,9 @@ class AppTranslations extends Translations {
       'daqiqa oldin':'минут назад',
       'soat oldin':'часов назад',
       'kun oldin':'дней назад',
+      'hafta oldin':'недель назад',
+      'Kecha':'Вчера',
+      'Bugun':'Сегодня',
     },
   };
 }

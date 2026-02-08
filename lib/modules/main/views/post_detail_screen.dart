@@ -950,7 +950,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                             print(
                               'Selected Resume ID: ${selectedResumeId.value}',
                             );
-                            //Get.back();
+                            Get.back();
                             await apiController.createApplication(
                               postId,
                               messageController.text ?? '',
@@ -996,14 +996,14 @@ class _PostDetailScreenState extends State<PostDetailScreen>
       final difference = now.difference(date);
 
       if (difference.inDays == 0) {
-        return 'Bugun';
+        return 'Bugun'.tr;
       } else if (difference.inDays == 1) {
-        return 'Kecha';
+        return 'Kecha'.tr;
       } else if (difference.inDays < 7) {
-        return '${difference.inDays} kun oldin';
+        return '${difference.inDays} ${'kun oldin'.tr}';
       } else if (difference.inDays < 30) {
         final weeks = (difference.inDays / 7).floor();
-        return '$weeks hafta oldin';
+        return '$weeks ${'hafta oldin'.tr}';
       } else {
         return '${date.day}.${date.month}.${date.year}';
       }

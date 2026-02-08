@@ -160,28 +160,28 @@ class OtherRoom {
 
 class User {
   final int id;
-  final String firstName;
+  final String? firstName;
   final String? lastName;
   final String? profilePicture;
   final String? birthDate;
   final String? gender;
   final bool verified;
   final bool isBlocked;
-  final String role;
+  final String? role;
   final String createdAt;
   final String updatedAt;
   final String? deletedAt;
 
   User({
     required this.id,
-    required this.firstName,
+    this.firstName,
     this.lastName,
     this.profilePicture,
     this.birthDate,
     this.gender,
     required this.verified,
     required this.isBlocked,
-    required this.role,
+    this.role,
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -189,17 +189,17 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      firstName: json['first_name'],
+      id: json['id'] ?? 0,
+      firstName: json['first_name'] ?? '',
       lastName: json['last_name'] as String?,
       profilePicture: json['profile_picture'] as String?,
       birthDate: json['birth_date'] as String?,
       gender: json['gender'] as String?,
-      verified: json['verified'],
-      isBlocked: json['is_blocked'],
-      role: json['role'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
+      verified: json['verified'] ?? false,
+      isBlocked: json['is_blocked'] ?? false,
+      role: json['role'] ?? '',
+      createdAt: json['createdAt'] ?? DateTime.now().toIso8601String(),
+      updatedAt: json['updatedAt'] ?? DateTime.now().toIso8601String(),
       deletedAt: json['deletedAt'] as String?,
     );
   }
@@ -207,8 +207,8 @@ class User {
 
 class Application {
   final int id;
-  final String status;
-  final String message;
+  final String? status;
+  final String? message;
   final User applicant;
   final Post post;
   final ResumesData? resume;
@@ -217,8 +217,8 @@ class Application {
 
   Application({
     required this.id,
-    required this.status,
-    required this.message,
+    this.status,
+    this.message,
     required this.applicant,
     required this.post,
     this.resume,
@@ -228,30 +228,30 @@ class Application {
 
   factory Application.fromJson(Map<String, dynamic> json) {
     return Application(
-      id: json['id'],
-      status: json['status'],
-      message: json['message'],
-      applicant: User.fromJson(json['applicant']),
-      post: Post.fromJson(json['post']),
+      id: json['id'] ?? 0,
+      status: json['status'] ?? '',
+      message: json['message'] ?? '',
+      applicant: User.fromJson(json['applicant'] ?? {}),
+      post: Post.fromJson(json['post'] ?? {}),
       resume:
           json['resume'] != null ? ResumesData.fromJson(json['resume']) : null,
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      createdAt: json['created_at'] ?? DateTime.now().toIso8601String(),
+      updatedAt: json['updated_at'] ?? DateTime.now().toIso8601String(),
     );
   }
 }
 
 class Post {
   final int id;
-  final String title;
-  final String content;
+  final String? title;
+  final String? content;
   final String? phoneNumber;
   final String? email;
   final String? pictureUrl;
-  final String salaryFrom;
-  final String salaryTo;
+  final String? salaryFrom;
+  final String? salaryTo;
   final bool isOpen;
-  final String status;
+  final String? status;
   final int views;
   final String? jobType;
   final String? employmentType;
@@ -261,15 +261,15 @@ class Post {
 
   Post({
     required this.id,
-    required this.title,
-    required this.content,
+    this.title,
+    this.content,
     this.phoneNumber,
     this.email,
     this.pictureUrl,
-    required this.salaryFrom,
-    required this.salaryTo,
+    this.salaryFrom,
+    this.salaryTo,
     required this.isOpen,
-    required this.status,
+    this.status,
     required this.views,
     this.jobType,
     this.employmentType,
@@ -280,22 +280,22 @@ class Post {
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      id: json['id'],
-      title: json['title'],
-      content: json['content'],
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      content: json['content'] ?? '',
       phoneNumber: json['phone_number'],
       email: json['email'],
       pictureUrl: json['picture_url'],
-      salaryFrom: json['salary_from'],
-      salaryTo: json['salary_to'],
-      isOpen: json['is_open'],
-      status: json['status'],
-      views: json['views'],
+      salaryFrom: json['salary_from']?.toString() ?? '0',
+      salaryTo: json['salary_to']?.toString() ?? '0',
+      isOpen: json['is_open'] ?? false,
+      status: json['status'] ?? '',
+      views: json['views'] ?? 0,
       jobType: json['job_type'],
       employmentType: json['employment_type'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      user: User.fromJson(json['user']),
+      createdAt: json['created_at'] ?? DateTime.now().toIso8601String(),
+      updatedAt: json['updated_at'] ?? DateTime.now().toIso8601String(),
+      user: User.fromJson(json['user'] ?? {}),
     );
   }
 }
@@ -315,10 +315,10 @@ class Meta {
 
   factory Meta.fromJson(Map<String, dynamic> json) {
     return Meta(
-      total: json['total'],
-      page: json['page'],
-      limit: json['limit'],
-      totalPages: json['totalPages'],
+      total: json['total'] ?? 0,
+      page: json['page'] ?? 1,
+      limit: json['limit'] ?? 10,
+      totalPages: json['totalPages'] ?? 1,
     );
   }
 }

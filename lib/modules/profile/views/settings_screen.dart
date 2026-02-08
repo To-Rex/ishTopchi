@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:ishtopchi/modules/profile/controllers/profile_controller.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../config/theme/app_colors.dart';
@@ -503,7 +504,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             _buildVersionRow(
               'Ilova versiyasi'.tr,
-              '1.2.0',
+              //'1.2.0',
+              ProfileController().appVersion,
               labelColor,
               valueColor,
             ),
