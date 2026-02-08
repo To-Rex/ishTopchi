@@ -15,6 +15,7 @@ import '../core/models/resumes_model.dart';
 import '../core/models/user_me.dart' hide Data;
 import '../core/models/wish_list.dart';
 import '../core/models/chat_rooms.dart' hide Data, Meta;
+import '../core/models/notification_model.dart';
 import '../modules/login/views/otp_verification_screen.dart';
 import '../modules/main/views/blocked_screen.dart';
 import '../modules/profile/views/edit_profile_screen.dart';
@@ -104,7 +105,15 @@ class ApiController extends GetxController {
     }
   }
 
-  Future<void> sendGoogleIdToken(String idToken, String platform,String fullName,String fcmToken,String deviceId,String devicePlatform,String deviceName,) async {
+  Future<void> sendGoogleIdToken(
+    String idToken,
+    String platform,
+    String fullName,
+    String fcmToken,
+    String deviceId,
+    String devicePlatform,
+    String deviceName,
+  ) async {
     debugPrint('ID Token: $idToken');
     debugPrint('Platform: $platform');
     try {
@@ -113,7 +122,15 @@ class ApiController extends GetxController {
         options: Options(
           headers: {'accept': '*/*', 'Content-Type': 'application/json'},
         ),
-        data: {'idToken': idToken, 'platform': platform, 'fullName': fullName, 'fcmToken': fcmToken, 'deviceId': deviceId, 'devicePlatform': devicePlatform, 'deviceName': deviceName},
+        data: {
+          'idToken': idToken,
+          'platform': platform,
+          'fullName': fullName,
+          'fcmToken': fcmToken,
+          'deviceId': deviceId,
+          'devicePlatform': devicePlatform,
+          'deviceName': deviceName,
+        },
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint('API javobi: ${response.data}');
@@ -307,7 +324,9 @@ class ApiController extends GetxController {
   Future<bool> loginWithOtp({required String otp}) async {
     final fingerprint = funcController.getOtpToken();
     final phone = funcController.getOtpPhone();
-    print('OTP: $otp, Fingerprint: $fingerprint, Phone: $phone, fcmToken ${funcController.fcmToken.value}, deviceId ${funcController.deviceId.value}, platform ${funcController.platform.value}, deviceName ${funcController.deviceName.value}');
+    print(
+      'OTP: $otp, Fingerprint: $fingerprint, Phone: $phone, fcmToken ${funcController.fcmToken.value}, deviceId ${funcController.deviceId.value}, platform ${funcController.platform.value}, deviceName ${funcController.deviceName.value}',
+    );
     try {
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/login',
@@ -538,7 +557,7 @@ class ApiController extends GetxController {
           },
         ),
       );
-      //debugPrint('API javobi posts (page $page): ${response.data}');
+      debugPrint('API javobi posts (page $page): ${response.data}');
       //debugPrint('Status code: ${response.statusCode}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
@@ -1343,6 +1362,88 @@ class ApiController extends GetxController {
     } catch (e) {
       ShowToast.show('Xatolik', 'Murojaat oldin yuborilgan', 3, 1);
       debugPrint('createApplication xatolik: $e');
+    }
+  }
+
+  // Notifications
+  Future<NotificationResponse?> fetchNotifications({
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await _dio.get(
+        '$_baseUrl/user-notifications?page=$page&limit=$limit',
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ${funcController.globalToken.value}',
+          },
+        ),
+      );
+      debugPrint('API javobi notifications: ${response.data}');
+      if (response.statusCode == 200) {
+        return NotificationResponse.fromJson(response.data);
+      } else {
+        debugPrint('Notifications olishda xatolik: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('fetchNotifications xatolik: $e');
+      return null;
+    }
+  }
+
+  // Mark notification as read
+  Future<bool> markNotificationAsRead(int notificationId) async {
+    try {
+      final response = await _dio.patch(
+        '$_baseUrl/user-notifications/$notificationId/read',
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ${funcController.globalToken.value}',
+          },
+        ),
+      );
+      debugPrint('Mark notification as read response: ${response.statusCode}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint('Mark notification as read xatolik: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('markNotificationAsRead xatolik: $e');
+      return false;
+    }
+  }
+
+  // Mark all notifications as read
+  Future<bool> markAllNotificationsAsRead() async {
+    try {
+      final response = await _dio.patch(
+        '$_baseUrl/user-notifications/read-all',
+        options: Options(
+          headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ${funcController.globalToken.value}',
+          },
+        ),
+      );
+      debugPrint(
+        'Mark all notifications as read response: ${response.statusCode}',
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint(
+          'Mark all notifications as read xatolik: ${response.statusCode}',
+        );
+        return false;
+      }
+    } catch (e) {
+      debugPrint('markAllNotificationsAsRead xatolik: $e');
+      return false;
     }
   }
 }

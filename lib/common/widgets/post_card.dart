@@ -23,7 +23,6 @@ class PostCard extends StatelessWidget {
     final screenWidth = Responsive.screenWidth(context);
     final isSmallScreen = screenWidth < 400;
 
-    ApiController().fetchPostById(post.id);
     return Obx(
       () =>
           funcController.isGridView.value

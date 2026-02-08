@@ -54,6 +54,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
     if (latitude != null && longitude != null) {
       controller.setInitialLocation(LatLng(latitude, longitude));
     }
+    ApiController().fetchPostById(widget.post.id!.toInt());
   }
 
   @override
