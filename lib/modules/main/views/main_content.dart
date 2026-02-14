@@ -1061,12 +1061,121 @@ class MainContent extends StatelessWidget {
               } else if (funcController.posts.isEmpty) {
                 return SizedBox.expand(
                   child: Center(
-                    child: Text(
-                      'Postlar mavjud emas'.tr,
-                      style: TextStyle(
-                        color: AppColors.textColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Responsive.scaleWidth(32, context),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Icon container with gradient background
+                          Container(
+                            width: Responsive.scaleWidth(120, context),
+                            height: Responsive.scaleWidth(120, context),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppColors.primaryColor.withOpacity(0.1),
+                                  AppColors.secondaryColor.withOpacity(0.1),
+                                ],
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              LucideIcons.fileText,
+                              size: Responsive.scaleWidth(56, context),
+                              color: AppColors.iconColor.withOpacity(0.6),
+                            ),
+                          ),
+                          SizedBox(height: Responsive.scaleHeight(24, context)),
+                          // Title
+                          Text(
+                            'Postlar mavjud emas'.tr,
+                            style: TextStyle(
+                              color: AppColors.textColor,
+                              fontSize: Responsive.scaleFont(20, context),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(height: Responsive.scaleHeight(12, context)),
+                          // Subtitle
+                          Text(
+                            'Postlar topilmadi tavsifi'.tr,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.textSecondaryColor,
+                              fontSize: Responsive.scaleFont(14, context),
+                              fontWeight: FontWeight.w400,
+                              height: 1.5,
+                            ),
+                          ),
+                          SizedBox(height: Responsive.scaleHeight(32, context)),
+                          // Refresh button
+                          InkWell(
+                            onTap: () {
+                              funcController.currentPage.value = 1;
+                              funcController.hasMore.value = true;
+                              funcController.posts.clear();
+                              apiController.fetchPosts(
+                                search: funcController.searchQuery.value,
+                                page: 1,
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: Responsive.scaleWidth(24, context),
+                                vertical: Responsive.scaleHeight(14, context),
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    AppColors.primaryColor,
+                                    AppColors.secondaryColor,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primaryColor.withOpacity(
+                                      0.3,
+                                    ),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    LucideIcons.refreshCw,
+                                    size: Responsive.scaleWidth(18, context),
+                                    color: AppColors.white,
+                                  ),
+                                  SizedBox(
+                                    width: Responsive.scaleWidth(8, context),
+                                  ),
+                                  Text(
+                                    'Qayta yuklash'.tr,
+                                    style: TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: Responsive.scaleFont(
+                                        14,
+                                        context,
+                                      ),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

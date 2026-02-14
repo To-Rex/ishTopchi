@@ -59,9 +59,9 @@ class LoginController extends GetxController {
       }
       //print cleint id ni konsolda chop etish
       print('Client ID: ${_googleSignInIos.clientId}');
-      print('Client ID: ${_googleSignInIos.currentUser}');
-      print('Client ID: ${_googleSignInIos.forceAccountName}');
-      print('Client ID: ${_googleSignInIos.serverClientId}');
+      print('Current User: ${_googleSignInIos.currentUser}');
+      print('Force Account Name: ${_googleSignInIos.forceAccountName}');
+      print('Server Client Id: ${_googleSignInIos.serverClientId}');
 
       // Google auth ma'lumotlarini olish
       final GoogleSignInAuthentication googleAuth =

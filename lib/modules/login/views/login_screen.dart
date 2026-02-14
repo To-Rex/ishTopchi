@@ -106,7 +106,7 @@ class LoginScreenState extends State<LoginScreen>
                             const SizedBox(height: 48),
 
                             //platform is android
-                            if (Platform.isAndroid)
+                            if (Platform.isAndroid || Platform.isIOS)
                               Obx(
                                 () => CustomButton(
                                   text: 'Google bilan kirish'.tr,
@@ -122,6 +122,8 @@ class LoginScreenState extends State<LoginScreen>
                                   textColor: AppColors.midBlue,
                                 ),
                               ),
+                            if (Platform.isIOS)
+                              const SizedBox(height: 16),
                             if (Platform.isIOS)
                               Obx(
                                 () => CustomButton(
