@@ -318,7 +318,7 @@ class _AdPostingScreenState extends State<AdPostingScreen>
               (value) => controller.selectedJobType.value = value ?? '',
               fieldKey: _jobTypeFieldKey,
             ),
-            SizedBox(height: AppDimensions.paddingMedium),
+            /*SizedBox(height: AppDimensions.paddingMedium),
             _buildDropdownJobType<String>(
               context,
               'Bandlik turi'.tr,
@@ -327,7 +327,7 @@ class _AdPostingScreenState extends State<AdPostingScreen>
               LucideIcons.clock,
               (value) => controller.selectedEmploymentType.value = value ?? '',
               fieldKey: _employmentTypeFieldKey,
-            ),
+            ),*/
             SizedBox(height: AppDimensions.paddingMedium),
             _buildMapPicker(context),
             SizedBox(height: AppDimensions.paddingMedium),

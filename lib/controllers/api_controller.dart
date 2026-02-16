@@ -125,7 +125,7 @@ class ApiController extends GetxController {
         data: {
           'idToken': idToken,
           'platform': platform,
-          'fullName': fullName,
+          //'fullName': fullName,
           'fcmToken': fcmToken,
           'deviceId': deviceId,
           'devicePlatform': devicePlatform,
