@@ -52,10 +52,10 @@ class ProfileController extends GetxController {
     });
   }
 
-  void launchUrl(String url) async {
+  void launchExternalUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
-      // launchUrl(uri, mode: LaunchMode.externalApplication); // hozircha o‘chirib qo‘yilgan
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       Get.snackbar('Xatolik', 'Havola ochilmadi');
     }

@@ -633,14 +633,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                             _buildMenuItem(
                               Icons.telegram,
                               'Telegram'.tr,
-                              () => controller.launchUrl(
+                              () => controller.launchExternalUrl(
                                 'https://t.me/ishtopchi',
                               ),
                             ),
                             _buildMenuItem(
                               Icons.camera_alt_outlined,
                               'Instagram'.tr,
-                              () => controller.launchUrl(
+                              () => controller.launchExternalUrl(
                                 'https://instagram.com/ishtopchi',
                               ),
                             ),
