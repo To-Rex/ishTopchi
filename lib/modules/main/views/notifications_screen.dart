@@ -22,7 +22,7 @@ class NotificationsScreen extends GetView<NotificationController> {
           ),
           leading: IconButton(
             icon: Icon(LucideIcons.arrowLeft, color: AppColors.textColor),
-            onPressed: () => Get.back(),
+            onPressed: () =>Navigator.of(context).pop(),
           ),
           actions: [
             Obx(

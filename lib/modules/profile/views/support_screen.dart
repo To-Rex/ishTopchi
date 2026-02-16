@@ -34,7 +34,7 @@ class _SupportScreenState extends State<SupportScreen> {
             color: AppColors.textColor,
             size: Responsive.scaleFont(20, context),
           ),
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
       ),
@@ -52,8 +52,8 @@ class _SupportScreenState extends State<SupportScreen> {
               context,
               Icons.phone,
               'Telefon'.tr,
-              '+998 90 123 45 67',
-              () => _launchURL('tel:+998901234567'),
+              '+998 77 050 01 25',
+              () => _launchURL('tel:+998770500125'),
             ),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             _buildContactItem(
@@ -112,7 +112,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   elevation: 2,
                 ),
                 child: Text(
-                  'Yordam so\'rash'.tr,
+                  'Yordam so‘rash'.tr,
                   style: TextStyle(
                     fontSize: Responsive.scaleFont(16, context),
                     color: AppColors.white,
@@ -265,7 +265,7 @@ class _SupportScreenState extends State<SupportScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Yordam so\'rash'.tr,
+                  'Yordam so‘rash'.tr,
                   style: TextStyle(
                     color: AppColors.textColor,
                     fontSize: Responsive.scaleFont(16, context),
@@ -318,7 +318,7 @@ class _SupportScreenState extends State<SupportScreen> {
                           Navigator.pop(context);
                           Get.snackbar(
                             'Muvaffaqiyatli'.tr,
-                            'Yordam so\'rovi yuborildi'.tr,
+                            'Yordam so‘rovi yuborildi'.tr,
                             colorText: AppColors.textColor,
                             backgroundColor: AppColors.primaryColor.withAlpha(
                               100,

@@ -88,7 +88,7 @@ class MyPostsScreenState extends State<MyPostsScreen> {
             color: AppColors.textColor,
             size: 24,
           ),
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Mening e’lonlarim'.tr,

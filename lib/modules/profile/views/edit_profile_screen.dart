@@ -170,7 +170,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               color: AppColors.textColor,
               size: Responsive.scaleFont(20, context),
             ),
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(context).pop(),
           ),
           elevation: 0,
         ),

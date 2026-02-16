@@ -48,7 +48,7 @@ class DevicesScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  device.deviceName ?? 'Noma\'lum qurilma'.tr,
+                  device.deviceName ?? 'Noma’lum qurilma'.tr,
                   style: TextStyle(
                     color: AppColors.textColor,
                     fontSize: Responsive.scaleFont(18, context),
@@ -60,14 +60,14 @@ class DevicesScreen extends StatelessWidget {
                   context,
                   icon: LucideIcons.hash,
                   label: 'ID',
-                  value: device.id?.toString() ?? 'Noma\'lum'.tr,
+                  value: device.id?.toString() ?? 'Noma’lum'.tr,
                 ),
                 SizedBox(height: Responsive.scaleHeight(8, context)),
                 _buildInfoRow(
                   context,
                   icon: LucideIcons.smartphone,
                   label: 'Model'.tr,
-                  value: device.deviceModel ?? 'Noma\'lum'.tr,
+                  value: device.deviceModel ?? 'Noma’lum'.tr,
                 ),
                 SizedBox(height: Responsive.scaleHeight(8, context)),
                 _buildInfoRow(
@@ -77,21 +77,21 @@ class DevicesScreen extends StatelessWidget {
                           ? LucideIcons.tablet
                           : LucideIcons.apple,
                   label: 'Platforma'.tr,
-                  value: device.platform ?? 'Noma\'lum'.tr,
+                  value: device.platform ?? 'Noma’lum'.tr,
                 ),
                 SizedBox(height: Responsive.scaleHeight(8, context)),
                 _buildInfoRow(
                   context,
                   icon: LucideIcons.clock,
                   label: 'Oxirgi kirish'.tr,
-                  value: device.lastLogin?.split('T')[0] ?? 'Noma\'lum'.tr,
+                  value: device.lastLogin?.split('T')[0] ?? 'Noma’lum'.tr,
                 ),
                 SizedBox(height: Responsive.scaleHeight(8, context)),
                 _buildInfoRow(
                   context,
                   icon: LucideIcons.circleCheck,
                   label: 'Faol'.tr,
-                  value: device.isActive == true ? 'Ha'.tr : 'Yo\'q'.tr,
+                  value: device.isActive == true ? 'Ha'.tr : 'Yo‘q'.tr,
                   valueColor:
                       device.isActive == true ? Colors.green : Colors.redAccent,
                 ),
@@ -141,7 +141,7 @@ class DevicesScreen extends StatelessWidget {
                               horizontal: Responsive.scaleWidth(16, context),
                             ),
                             child: Text(
-                              'Qurilmani o\'chirish'.tr,
+                              'Qurilmani o‘chirish'.tr,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: Responsive.scaleFont(14, context),
@@ -184,7 +184,7 @@ class DevicesScreen extends StatelessWidget {
             color: AppColors.textColor,
             size: Responsive.scaleFont(25, context),
           ),
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Mening qurilmalarim'.tr,
@@ -362,8 +362,8 @@ class DevicesScreen extends StatelessWidget {
                     children: [
                       Text(
                         isCurrentDevice
-                            ? '${device.deviceName ?? 'Noma\'lum qurilma'.tr} ${'Joriy'.tr}'
-                            : device.deviceName ?? 'Noma\'lum qurilma'.tr,
+                            ? '${device.deviceName ?? 'Noma’lum qurilma'.tr} ${'Joriy'.tr}'
+                            : device.deviceName ?? 'Noma’lum qurilma'.tr,
                         style: TextStyle(
                           color: AppColors.textColor,
                           fontSize: Responsive.scaleFont(16, context),
@@ -374,7 +374,7 @@ class DevicesScreen extends StatelessWidget {
                       ),
                       SizedBox(height: Responsive.scaleHeight(4, context)),
                       Text(
-                        device.deviceModel ?? 'Noma\'lum model'.tr,
+                        device.deviceModel ?? 'Noma’lum model'.tr,
                         style: TextStyle(
                           color: AppColors.textSecondaryColor,
                           fontSize: Responsive.scaleFont(14, context),
@@ -387,7 +387,7 @@ class DevicesScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            '${'Faol'.tr}: ${device.isActive == true ? 'Ha'.tr : 'Yo\'q'.tr}',
+                            '${'Faol'.tr}: ${device.isActive == true ? 'Ha'.tr : 'Yo‘q'.tr}',
                             style: TextStyle(
                               color:
                                   device.isActive == true
@@ -399,7 +399,7 @@ class DevicesScreen extends StatelessWidget {
                           ),
                           SizedBox(width: Responsive.scaleWidth(8, context)),
                           Text(
-                            device.lastLogin?.split('T')[0] ?? 'Noma\'lum'.tr,
+                            device.lastLogin?.split('T')[0] ?? 'Noma’lum'.tr,
                             style: TextStyle(
                               color: AppColors.textSecondaryColor,
                               fontSize: Responsive.scaleFont(13, context),

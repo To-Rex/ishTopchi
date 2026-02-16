@@ -45,7 +45,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
               color: AppColors.textColor,
               size: Responsive.scaleFont(25, context),
             ),
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
             'Mening Rezyumelarim'.tr,
@@ -168,7 +168,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
               size: Responsive.scaleFont(35, context),
             ),
             title: Text(
-              resume.title ?? 'Noma\'lum'.tr,
+              resume.title ?? 'Noma’lum'.tr,
               style: TextStyle(
                 color: AppColors.textColor,
                 fontSize: Responsive.scaleFont(14, context),
@@ -176,7 +176,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
               ),
             ),
             subtitle: Text(
-              '${'Yaratilgan sana'.tr}: ${resume.createdAt?.substring(0, 10) ?? 'Noma\'lum'.tr}',
+              '${'Yaratilgan sana'.tr}: ${resume.createdAt?.substring(0, 10) ?? 'Noma’lum'.tr}',
               style: TextStyle(
                 color: AppColors.textSecondaryColor,
                 fontSize: Responsive.scaleFont(12, context),
@@ -206,7 +206,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
           ),
         ),
         title: Text(
-          'O\'chirish'.tr,
+          'O‘chirish'.tr,
           style: TextStyle(
             color: AppColors.textColor,
             fontSize: Responsive.scaleFont(16, context),
@@ -223,7 +223,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
           TextButton(
             onPressed: () => Get.back(),
             child: Text(
-              'Yo\'q'.tr,
+              'Yo‘q'.tr,
               style: TextStyle(
                 color: AppColors.textSecondaryColor,
                 fontSize: Responsive.scaleFont(14, context),

@@ -146,7 +146,7 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
                   // Telefon karta
                   GestureDetector(
                       onTapDown: (_) => setState(() => _isPhoneTapped = true),
-                      onTapUp: (_) => _launchPhone('+998123456789'),
+                      onTapUp: (_) => _launchPhone('+998770500125'),
                       onTapCancel: () => setState(() => _isPhoneTapped = false),
                       child: ScaleTransition(
                           scale: Tween<double>(begin: 1.0, end: _isPhoneTapped ? 0.95 : 1.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut)),

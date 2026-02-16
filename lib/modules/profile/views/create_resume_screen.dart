@@ -67,7 +67,7 @@ class _CreateResumeScreenState extends State<CreateResumeScreen> {
               color: AppColors.textColor,
               size: Responsive.scaleFont(25, context),
             ),
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
             'Rezyume yaratish'.tr,

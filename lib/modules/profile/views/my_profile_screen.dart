@@ -95,7 +95,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                   color: AppColors.textColor,
                   size: Responsive.scaleFont(25, context),
                 ),
-                onPressed: () => Get.back(),
+                onPressed: () => Navigator.of(context).pop(),
               ),
               flexibleSpace: FlexibleSpaceBar(
                 background: _buildHeader(context, user),

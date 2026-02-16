@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ishtopchi/controllers/api_controller.dart';
 import 'package:ishtopchi/controllers/funcController.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../common/widgets/not_logged.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_theme.dart';
@@ -51,53 +52,109 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
         // Show empty state if wishlist is empty
         if (funcController.wishList.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.favorite_border,
-                    size: 54.sp,
-                    color: AppColors.textSecondaryColor,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Saqlangan postlar yo‘q'.tr,
-                    style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
-                      color: AppColors.textColor,
-                      fontFamily: 'Poppins',
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Saqlangan postlar yo‘q tavsifi'.tr,
-                    style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
-                      color: AppColors.textSecondaryColor,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.r),
+          return SizedBox.expand(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.scaleWidth(32, context),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Icon container with gradient background
+                    Container(
+                      width: Responsive.scaleWidth(120, context),
+                      height: Responsive.scaleWidth(120, context),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primaryColor.withOpacity(0.1),
+                            AppColors.secondaryColor.withOpacity(0.1),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
                       ),
-                      backgroundColor: AppColors.cardColor,
+                      child: Icon(
+                        LucideIcons.heart,
+                        size: Responsive.scaleWidth(56, context),
+                        color: AppColors.iconColor.withOpacity(0.6),
+                      ),
                     ),
-                    onPressed: () => funcController.setBarIndex(0),
-                    child: Text(
-                      'Asosiy sahifaga o‘tish'.tr,
+                    SizedBox(height: Responsive.scaleHeight(24, context)),
+                    // Title
+                    Text(
+                      'Saqlangan postlar yo‘q'.tr,
                       style: TextStyle(
                         color: AppColors.textColor,
-                        fontSize: 14.sp,
+                        fontSize: Responsive.scaleFont(20, context),
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: Responsive.scaleHeight(12, context)),
+                    // Subtitle
+                    Text(
+                      'Saqlangan postlar yo‘q tavsifi'.tr,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.textSecondaryColor,
+                        fontSize: Responsive.scaleFont(14, context),
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                      ),
+                    ),
+                    SizedBox(height: Responsive.scaleHeight(32, context)),
+                    // Refresh button
+                    InkWell(
+                      onTap: () => funcController.setBarIndex(0),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Responsive.scaleWidth(24, context),
+                          vertical: Responsive.scaleHeight(14, context),
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.primaryColor,
+                              AppColors.secondaryColor,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primaryColor.withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              LucideIcons.arrowLeft,
+                              size: Responsive.scaleWidth(18, context),
+                              color: AppColors.white,
+                            ),
+                            SizedBox(width: Responsive.scaleWidth(8, context)),
+                            Text(
+                              'Asosiy sahifaga o‘tish'.tr,
+                              style: TextStyle(
+                                color: AppColors.white,
+                                fontSize: Responsive.scaleFont(14, context),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

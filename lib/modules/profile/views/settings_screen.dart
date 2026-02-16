@@ -83,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: textColor,
               size: Responsive.scaleFont(25, context),
             ),
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
             'Sozlamalar'.tr,
@@ -143,43 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
 
               SizedBox(height: Responsive.scaleHeight(20, context)),
-              _buildSectionHeader('Ma’lumot'.tr),
-              _buildMenuTile(
-                icon: LucideIcons.shield,
-                title: 'Xavfsizlik'.tr,
-                subtitle: 'Xavfsizlik sozlamalari'.tr,
-                onTap: () {
-                  Get.snackbar(
-                    'Xavfsizlik'.tr,
-                    'Xavfsizlik sozlamalari tez orada qo‘shiladi'.tr,
-                    backgroundColor: AppColors.darkBlue,
-                    colorText: Colors.white,
-                  );
-                },
-              ),
-              _buildMenuTile(
-                icon: LucideIcons.database,
-                title: 'Keshni tozalash'.tr,
-                subtitle: 'Ilova keshini tozalash'.tr,
-                onTap: () {
-                  _showClearCacheDialog();
-                },
-              ),
-              SizedBox(height: Responsive.scaleHeight(20, context)),
               _buildSectionHeader('Boshqa'.tr),
-              _buildMenuTile(
-                icon: LucideIcons.fileText,
-                title: 'Foydalanish shartlari'.tr,
-                subtitle: 'Foydalanish shartlarini ko‘rish'.tr,
-                onTap: () {
-                  Get.snackbar(
-                    'Foydalanish shartlari'.tr,
-                    'Foydalanish shartlari tez orada qo‘shiladi'.tr,
-                    backgroundColor: AppColors.darkBlue,
-                    colorText: Colors.white,
-                  );
-                },
-              ),
               _buildMenuTile(
                 icon: LucideIcons.info,
                 title: 'Versiya ma’lumotlari'.tr,
@@ -398,183 +362,191 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showClearCacheDialog() {
-    final dialogColor = AppColors.cardColor;
-    final titleColor = AppColors.textColor;
-    final contentColor = AppColors.textSecondaryColor;
-    final buttonColor = AppColors.primaryColor;
-    final overlayColor = AppColors.backgroundColor;
-    final textColor = AppColors.textColor;
-
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: dialogColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Keshni tozalash'.tr,
-          style: TextStyle(
-            fontSize: 18.sp,
-            color: titleColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          'Keshni tozalashdan so‘ng ba’zi ma’lumotlar qayta yuklanishi kerak bo‘ladi. Davom etasizmi?'
-              .tr,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: contentColor,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        actionsAlignment: MainAxisAlignment.end,
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            style: TextButton.styleFrom(
-              overlayColor: overlayColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            ),
-            child: Text(
-              'Bekor qilish'.tr,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: textColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              Get.snackbar(
-                'Muvaffaqiyatli'.tr,
-                'Kesh tozalandi'.tr,
-                backgroundColor: Colors.green,
-                colorText: Colors.white,
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: buttonColor,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text(
-              'Tozalash'.tr,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showVersionInfo() {
-    final dialogColor = AppColors.cardColor;
+    final themeController = Get.find<ThemeController>();
     final titleColor = AppColors.textColor;
     final labelColor = AppColors.textSecondaryColor;
     final valueColor = AppColors.textColor;
     final buttonColor = AppColors.primaryColor;
-    final overlayColor = AppColors.backgroundColor;
+    final gradientColors =
+        themeController.isDarkMode.value
+            ? [AppColors.darkNavy, AppColors.darkBlue]
+            : [AppColors.lightBackground, AppColors.lightSurface];
 
     Get.dialog(
-      AlertDialog(
-        backgroundColor: dialogColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Versiya ma’lumotlari'.tr,
-          style: TextStyle(
-            fontSize: 18.sp,
-            color: titleColor,
-            fontWeight: FontWeight.bold,
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: gradientColors,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowColor.withOpacity(0.3),
+                blurRadius: 20,
+                offset: Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(24.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // App Logo
+                Container(
+                  width: 80.w,
+                  height: 80.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset('assets/logo.png', fit: BoxFit.contain),
+                  ),
+                ),
+                SizedBox(height: 20.h),
+
+                // Title
+                Text(
+                  'Versiya ma’lumotlari'.tr,
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    color: titleColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+
+                // Version Info Cards
+                _buildVersionCard(
+                  icon: LucideIcons.smartphone,
+                  label: 'Ilova versiyasi'.tr,
+                  value: ProfileController().appVersion,
+                  labelColor: labelColor,
+                  valueColor: valueColor,
+                ),
+                SizedBox(height: 12.h),
+                _buildVersionCard(
+                  icon: LucideIcons.monitor,
+                  label: 'Qurilma'.tr,
+                  value: 'Android / iOS',
+                  labelColor: labelColor,
+                  valueColor: valueColor,
+                ),
+                SizedBox(height: 12.h),
+                _buildVersionCard(
+                  icon: LucideIcons.code,
+                  label: 'Build'.tr,
+                  value: '2025.01.10',
+                  labelColor: labelColor,
+                  valueColor: valueColor,
+                ),
+                SizedBox(height: 24.h),
+
+                // Close Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Yopish'.tr,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildVersionRow(
-              'Ilova versiyasi'.tr,
-              //'1.2.0',
-              ProfileController().appVersion,
-              labelColor,
-              valueColor,
-            ),
-            SizedBox(height: 8.h),
-            _buildVersionRow(
-              'Qurilma'.tr,
-              'Android / iOS',
-              labelColor,
-              valueColor,
-            ),
-            SizedBox(height: 8.h),
-            _buildVersionRow('Build'.tr, '2024.01.10', labelColor, valueColor),
-          ],
-        ),
-        actions: [
-          Center(
-            child: TextButton(
-              onPressed: () => Get.back(),
-              style: TextButton.styleFrom(
-                overlayColor: overlayColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 10,
-                ),
-              ),
-              child: Text(
-                'Yopish'.tr,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: buttonColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildVersionRow(
-    String label,
-    String value,
-    Color labelColor,
-    Color valueColor,
-  ) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: labelColor,
-            fontWeight: FontWeight.w500,
-          ),
+  Widget _buildVersionCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color labelColor,
+    required Color valueColor,
+  }) {
+    final themeController = Get.find<ThemeController>();
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      decoration: BoxDecoration(
+        color: AppColors.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.dividerColor.withOpacity(0.3),
+          width: 1,
         ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: valueColor,
-            fontWeight: FontWeight.w600,
+        boxShadow:
+            themeController.isDarkMode.value
+                ? null
+                : [
+                  BoxShadow(
+                    color: AppColors.shadowColor.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40.w,
+            height: 40.w,
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: AppColors.iconColor, size: 20.sp),
           ),
-        ),
-      ],
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: labelColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: valueColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

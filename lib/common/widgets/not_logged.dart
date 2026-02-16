@@ -50,71 +50,116 @@ class _NotLoggedState extends State<NotLogged>
     final ThemeController themeController = Get.find<ThemeController>();
 
     return Obx(
-      () => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: Icon(
-                  LucideIcons.userCheck,
-                  size: 80.sp,
-                  color: AppColors.textColor,
-                ),
-              ),
+      () => SizedBox.expand(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.scaleWidth(32, context),
             ),
-            SizedBox(height: 20.sp),
-
-            TextSmall(
-              text: 'Siz ro‘yxatdan o‘tmagansiz'.tr,
-              fontSize: Responsive.scaleFont(20, context),
-              color: AppColors.textColor,
-              fontWeight: FontWeight.w600,
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 5.sp),
-
-            TextSmall(
-              text: "Iltimos, hisobingizga kiring yoki ro‘yxatdan o‘ting".tr,
-              fontSize: Responsive.scaleFont(16, context),
-              color: AppColors.textColor,
-              fontWeight: FontWeight.w400,
-              textAlign: TextAlign.center,
-              maxLines: 4,
-            ),
-            SizedBox(height: 30.sp),
-            GestureDetector(
-              onTap: () => Get.offNamed('/login'),
-              onTapDown: (_) => setState(() => _isPressed = true),
-              onTapUp: (_) => setState(() => _isPressed = false),
-              child: AnimatedScale(
-                scale: _isPressed ? 0.95 : 1.0,
-                duration: const Duration(milliseconds: 100),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.midBlue, AppColors.lightBlue],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: Container(
+                      width: Responsive.scaleWidth(120, context),
+                      height: Responsive.scaleWidth(120, context),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primaryColor.withOpacity(0.1),
+                            AppColors.secondaryColor.withOpacity(0.1),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        LucideIcons.userCheck,
+                        size: Responsive.scaleWidth(56, context),
+                        color: AppColors.iconColor.withOpacity(0.6),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(12.sp),
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.sp,
-                    vertical: 12.sp,
-                  ),
-                
-                  child: TextSmall(
-                    text: 'Ro‘yxatdan o‘ting va boshlang!'.tr,
-                    fontSize: Responsive.scaleFont(16, context),
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w500,
-                    maxLines: 2
                   ),
                 ),
-              ),
+                SizedBox(height: Responsive.scaleHeight(24, context)),
+
+                TextSmall(
+                  text: "Siz ro‘yxatdan o‘tmagansiz".tr,
+                  fontSize: Responsive.scaleFont(20, context),
+                  color: AppColors.textColor,
+                  fontWeight: FontWeight.w600,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: Responsive.scaleHeight(12, context)),
+
+                TextSmall(
+                  text:
+                      "Iltimos, hisobingizga kiring yoki ro‘yxatdan o‘ting".tr,
+                  fontSize: Responsive.scaleFont(14, context),
+                  color: AppColors.textSecondaryColor,
+                  fontWeight: FontWeight.w400,
+                  textAlign: TextAlign.center,
+                  maxLines: 4,
+                ),
+                SizedBox(height: Responsive.scaleHeight(32, context)),
+                GestureDetector(
+                  onTap: () => Get.offNamed('/login'),
+                  onTapDown: (_) => setState(() => _isPressed = true),
+                  onTapUp: (_) => setState(() => _isPressed = false),
+                  child: AnimatedScale(
+                    scale: _isPressed ? 0.95 : 1.0,
+                    duration: const Duration(milliseconds: 100),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Responsive.scaleWidth(24, context),
+                        vertical: Responsive.scaleHeight(14, context),
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primaryColor,
+                            AppColors.secondaryColor,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryColor.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            LucideIcons.logIn,
+                            size: Responsive.scaleWidth(18, context),
+                            color: AppColors.white,
+                          ),
+                          SizedBox(width: Responsive.scaleWidth(8, context)),
+                          TextSmall(
+                            text: "Ro‘yxatdan o‘ting va boshlang!".tr,
+                            fontSize: Responsive.scaleFont(14, context),
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w600,
+                            maxLines: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -739,7 +739,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                                                             ),
                                                       ),
                                                       Text(
-                                                        '$educationCount ${'ta\'lim'.tr}',
+                                                        '$educationCount ${'Ta’lim'.tr}',
                                                         style: TextStyle(
                                                           color:
                                                               AppColors

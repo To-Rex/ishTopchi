@@ -81,51 +81,109 @@ class MessagesScreen extends GetView<MessagesController> {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.message_outlined,
-              size: 54.sp,
-              color: AppColors.textSecondaryColor,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Hozircha xabarlar yo\'q'.tr,
-              style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
-                color: AppColors.textColor,
-                fontFamily: 'Poppins',
-                fontSize: 12.sp,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Xabarlar bo‘lishi uchun e’lonlarga ariza yuboring'.tr,
-              style: AppTheme.theme.textTheme.bodyMedium!.copyWith(
-                color: AppColors.textSecondaryColor,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.r),
+    return SizedBox.expand(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: Responsive.scaleWidth(32, context),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon container with gradient background
+              Container(
+                width: Responsive.scaleWidth(120, context),
+                height: Responsive.scaleWidth(120, context),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primaryColor.withOpacity(0.1),
+                      AppColors.secondaryColor.withOpacity(0.1),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
                 ),
-                backgroundColor: AppColors.cardColor,
+                child: Icon(
+                  LucideIcons.messageSquare,
+                  size: Responsive.scaleWidth(56, context),
+                  color: AppColors.iconColor.withOpacity(0.6),
+                ),
               ),
-              onPressed: () => Get.toNamed(AppRoutes.main),
-              child: Text(
-                'Asosiy sahifaga o‘tish'.tr,
-                style: TextStyle(color: AppColors.textColor, fontSize: 14.sp),
+              SizedBox(height: Responsive.scaleHeight(24, context)),
+              // Title
+              Text(
+                "Hozircha xabarlar yo'q".tr,
+                style: TextStyle(
+                  color: AppColors.textColor,
+                  fontSize: Responsive.scaleFont(20, context),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: Responsive.scaleHeight(12, context)),
+              // Subtitle
+              Text(
+                "Xabarlar bo'lishi uchun e'lonlarga ariza yuboring".tr,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.textSecondaryColor,
+                  fontSize: Responsive.scaleFont(14, context),
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: Responsive.scaleHeight(32, context)),
+              // Button
+              InkWell(
+                onTap: () => Get.toNamed(AppRoutes.main),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Responsive.scaleWidth(24, context),
+                    vertical: Responsive.scaleHeight(14, context),
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primaryColor,
+                        AppColors.secondaryColor,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryColor.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        LucideIcons.house,
+                        size: Responsive.scaleWidth(18, context),
+                        color: AppColors.white,
+                      ),
+                      SizedBox(width: Responsive.scaleWidth(8, context)),
+                      Text(
+                        "Asosiy sahifaga o'tish".tr,
+                        style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: Responsive.scaleFont(14, context),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

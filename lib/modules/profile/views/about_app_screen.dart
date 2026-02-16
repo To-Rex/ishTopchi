@@ -30,7 +30,7 @@ class AboutAppScreen extends StatelessWidget {
             color: AppColors.textColor,
             size: Responsive.scaleFont(20, context),
           ),
-          onPressed: () => Get.back(),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
       ),
@@ -86,7 +86,7 @@ class AboutAppScreen extends StatelessWidget {
               Icons.lock_outline,
               'Ruxsatlar'.tr,
               'Maxfiylik siyosati va shartlar'.tr,
-              () => _launchURL('https://ishtopchi.uz/uz/privacy')
+              () => _launchURL('https://ishtopchi.uz/uz/privacy'),
             ),
             SizedBox(height: Responsive.scaleHeight(12, context)),
             // Havolalar
@@ -119,7 +119,7 @@ class AboutAppScreen extends StatelessWidget {
     IconData icon,
     String title,
     String detail,
-VoidCallback? onTap,
+    VoidCallback? onTap,
   ) {
     return Container(
       padding: EdgeInsets.all(Responsive.scaleWidth(12, context)),
@@ -138,40 +138,40 @@ VoidCallback? onTap,
                 ],
       ),
       child: InkWell(
-      onTap: onTap,
+        onTap: onTap,
         child: Row(
-        children: [
-          Icon(
-            icon,
-            color: AppColors.iconColor,
-            size: Responsive.scaleFont(20, context),
-          ),
-          SizedBox(width: Responsive.scaleWidth(16, context)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: AppColors.textColor,
-                    fontSize: Responsive.scaleFont(14, context),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  detail,
-                  style: TextStyle(
-                    color: AppColors.textSecondaryColor,
-                    fontSize: Responsive.scaleFont(12, context),
-                  ),
-                ),
-              ],
+          children: [
+            Icon(
+              icon,
+              color: AppColors.iconColor,
+              size: Responsive.scaleFont(20, context),
             ),
-          ),
-        ],
+            SizedBox(width: Responsive.scaleWidth(16, context)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: AppColors.textColor,
+                      fontSize: Responsive.scaleFont(14, context),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    detail,
+                    style: TextStyle(
+                      color: AppColors.textSecondaryColor,
+                      fontSize: Responsive.scaleFont(12, context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-      )
     );
   }
 
