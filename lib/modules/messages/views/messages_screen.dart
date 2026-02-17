@@ -136,7 +136,8 @@ class MessagesScreen extends GetView<MessagesController> {
               SizedBox(height: Responsive.scaleHeight(32, context)),
               // Button
               InkWell(
-                onTap: () => Get.toNamed(AppRoutes.main),
+                //onTap: () => Get.toNamed(AppRoutes.main),
+                onTap: () => funcController.setBarIndex(0),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: EdgeInsets.symmetric(

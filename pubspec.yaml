@@ -5,7 +5,7 @@ description: "IshTopchi — O‘zbekiston bozorida ish qidiruvchilar va ish beru
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.7+9
+version: 1.0.8+10
 
 environment:
   sdk: ^3.7.2

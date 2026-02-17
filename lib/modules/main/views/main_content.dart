@@ -723,7 +723,7 @@ class MainContent extends StatelessWidget {
                         page: 1,
                         search: funcController.searchQuery.value,
                       );
-                      Get.back();
+                      Navigator.of(context).pop();
                     },
                     child: Text(
                       'Tozalash'.tr,
@@ -743,7 +743,7 @@ class MainContent extends StatelessWidget {
                         page: 1,
                         search: funcController.searchQuery.value,
                       );
-                      Get.back();
+                      Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
@@ -1115,13 +1115,7 @@ class MainContent extends StatelessWidget {
                           // Refresh button
                           InkWell(
                             onTap: () {
-                              funcController.currentPage.value = 1;
-                              funcController.hasMore.value = true;
-                              funcController.posts.clear();
-                              apiController.fetchPosts(
-                                search: funcController.searchQuery.value,
-                                page: 1,
-                              );
+                              onRefresh();
                             },
                             borderRadius: BorderRadius.circular(12),
                             child: Container(

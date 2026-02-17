@@ -23,7 +23,8 @@ class MapLauncherBottomSheet {
     try {
       availableMaps = await MapLauncher.installedMaps;
     } catch (e) {
-      Get.back();
+      //Get.back();
+      Navigator.of(context).pop();
       Get.snackbar(
         'Xatolik'.tr,
         'Xarita ilovalari topilmadi'.tr,
@@ -35,7 +36,8 @@ class MapLauncherBottomSheet {
     }
 
     if (availableMaps.isEmpty) {
-      Get.back();
+      Navigator.of(context).pop();
+      //Get.back();
       Get.snackbar(
         'Xatolik'.tr,
         'Xarita ilovalari topilmadi'.tr,
@@ -111,7 +113,7 @@ class MapLauncherBottomSheet {
                                 padding: EdgeInsets.only(right: 8),
                                 child: InkWell(
                                   onTap: () async {
-                                    Get.back();
+                                    Navigator.of(context).pop();
                                     HapticFeedback.lightImpact();
                                     await map.showMarker(
                                       coords: Coords(
@@ -184,7 +186,8 @@ class MapLauncherBottomSheet {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  Get.back();
+                 // Get.back();
+                  Navigator.of(context).pop();
                   HapticFeedback.lightImpact();
                 },
                 style: ElevatedButton.styleFrom(

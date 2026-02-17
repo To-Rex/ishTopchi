@@ -77,7 +77,8 @@ class BlockedScreenState extends State<BlockedScreen> with SingleTickerProviderS
             onPressed: () async {
               await funcController.deleteToken();
               //funcController.userMe.value = null;
-              Get.back();
+              //Get.back();
+              Navigator.of(context).pop();
               Get.offAllNamed('/login');
               ShowToast.show('Muvaffaqiyatli'.tr, 'Tizimdan chiqildi'.tr, 1, 1);
             },

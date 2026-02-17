@@ -148,7 +148,8 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () => Get.back(),
+                        //onPressed: () => Get.back(),
+                        onPressed: () => Navigator.of(context).pop(),
                         child: TextSmall(
                           text: 'Bekor qilish'.tr,
                           color: AppColors.red,
@@ -175,6 +176,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                           ),
                         ),
                         onPressed: () async {
+                          Navigator.of(context).pop();
                           if (complaintController.text.trim().isEmpty) {
                             ShowToast.show(
                               'Xatolik'.tr,
@@ -184,7 +186,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                             );
                             return;
                           }
-                          Get.back();
+                         // Get.back();
                         },
                         child: TextSmall(
                           text: 'Yuborish'.tr,
@@ -263,7 +265,8 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
-                        onPressed: () => Get.back(),
+                        //onPressed: () => Get.back(),
+                        onPressed: () => Navigator.of(context).pop(),
                         style: TextButton.styleFrom(
                           backgroundColor: AppColors.cardColor,
                           shape: RoundedRectangleBorder(
