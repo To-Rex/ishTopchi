@@ -16,8 +16,15 @@ import '../../../core/utils/responsive.dart';
 
 class CachedTileProvider extends TileProvider {
   @override
-  ImageProvider<Object> getImage(TileCoordinates coordinates, TileLayer options) {
-    final url = options.urlTemplate!.replaceAll('{x}', coordinates.x.toString()).replaceAll('{y}', coordinates.y.toString()).replaceAll('{z}', coordinates.z.toString()).replaceAll('{s}', options.subdomains.first);
+  ImageProvider<Object> getImage(
+    TileCoordinates coordinates,
+    TileLayer options,
+  ) {
+    final url = options.urlTemplate!
+        .replaceAll('{x}', coordinates.x.toString())
+        .replaceAll('{y}', coordinates.y.toString())
+        .replaceAll('{z}', coordinates.z.toString())
+        .replaceAll('{s}', options.subdomains.first);
     return NetworkImage(url);
   }
 }
@@ -30,7 +37,7 @@ class AdPostingController extends GetxController {
   final phoneNumberController = TextEditingController();
   final emailController = TextEditingController();
   final isOpen = true.obs;
-  final selectedCategory = 1.obs;
+  final selectedCategory = Rx<int?>(null);
   final locationTitleController = TextEditingController();
   final latitudeController = TextEditingController();
   final longitudeController = TextEditingController();
@@ -38,8 +45,8 @@ class AdPostingController extends GetxController {
   final regions = <Map<String, dynamic>>[].obs;
   final districts = <Map<String, dynamic>>[].obs;
   final categories = <Map<String, dynamic>>[].obs;
-  final selectedRegionId = ''.obs;
-  final selectedDistrictId = '0'.obs;
+  final selectedRegionId = Rx<String?>(null);
+  final selectedDistrictId = Rx<String?>(null);
   final isLoadingDistricts = false.obs;
   final selectedLocation = LatLng(41.3111, 69.2401).obs;
   final currentLocation = Rx<LatLng?>(null);
@@ -50,6 +57,8 @@ class AdPostingController extends GetxController {
   static const double _optimalZoom = 13.0;
   final selectedJobType = ''.obs;
   final selectedEmploymentType = ''.obs;
+  final isSubmitting = false.obs;
+  final submissionSuccess = false.obs;
 
   final ImagePicker _picker = ImagePicker();
   final ApiController apiController = Get.find<ApiController>();
@@ -67,7 +76,8 @@ class AdPostingController extends GetxController {
     if (categories.isEmpty) {
       await loadCategories();
     }
-    if (FuncController().getToken() == null || FuncController().getToken() == '') {
+    if (FuncController().getToken() == null ||
+        FuncController().getToken() == '') {
       return;
     }
     final token = await _waitForToken();
@@ -96,7 +106,7 @@ class AdPostingController extends GetxController {
       if (fetchedRegions.isNotEmpty) {
         regions.value = fetchedRegions;
         selectedRegionId.value = fetchedRegions.first['id'].toString();
-        await loadDistricts(int.parse(selectedRegionId.value));
+        await loadDistricts(int.parse(selectedRegionId.value!));
       }
     } catch (e) {
       print('Viloyatlarni yuklashda xato: $e');
@@ -125,7 +135,7 @@ class AdPostingController extends GetxController {
       if (fetchedDistricts.isNotEmpty) {
         selectedDistrictId.value = fetchedDistricts.first['id'].toString();
       } else {
-        selectedDistrictId.value = '0';
+        selectedDistrictId.value = null;
       }
     } catch (e) {
       print('Tumanlarni yuklashda xato: $e');
@@ -148,36 +158,58 @@ class AdPostingController extends GetxController {
   }
 
   Future<bool> checkLocationPermission() async {
-    if (FuncController().getToken() == null || FuncController().getToken() == '') {
+    if (FuncController().getToken() == null ||
+        FuncController().getToken() == '') {
       return false;
     }
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ShowToast.show('Joylashuv o‘chirilgan', 'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.', 4, 1);
+      ShowToast.show(
+        'Joylashuv o‘chirilgan',
+        'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.',
+        4,
+        1,
+      );
       return false;
     }
 
     var status = await Permission.locationWhenInUse.status;
-    if (status.isGranted) {debugPrint('✅ Permission GRANTED');return true;}
+    if (status.isGranted) {
+      debugPrint('✅ Permission GRANTED');
+      return true;
+    }
     if (status.isPermanentlyDenied) {
-      ShowToast.show('Ruxsat kerak', 'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.', 5, 1);
+      ShowToast.show(
+        'Ruxsat kerak',
+        'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
+        5,
+        1,
+      );
       await openAppSettings();
       return false;
     }
 
-    ShowToast.show('Xato', 'Joylashuv ruxsatini aniqlashda muammo yuz berdi.', 3, 1);
+    ShowToast.show(
+      'Xato',
+      'Joylashuv ruxsatini aniqlashda muammo yuz berdi.',
+      3,
+      1,
+    );
     return false;
   }
 
   Future<void> initializeApp() async {
     print('MainController: Initializing app...');
-    if (FuncController().getToken() == null || FuncController().getToken() == '') {
+    if (FuncController().getToken() == null ||
+        FuncController().getToken() == '') {
       return;
     }
     if (await checkLocationPermission()) {
       try {
         Position position = await Geolocator.getCurrentPosition();
-        print('MainController: Initial location: ${position.latitude}, ${position.longitude}');
+        print(
+          'MainController: Initial location: ${position.latitude}, ${position.longitude}',
+        );
       } catch (e) {
         print('MainController: Initial location error: $e');
       }
@@ -186,11 +218,16 @@ class AdPostingController extends GetxController {
 
   Future<void> getCurrentLocation(void Function(LatLng, double) onMove) async {
     if (!isMapReady.value) {
-      ShowToast.show('Xato', 'Xarita hali tayyor emas, iltimos bir oz kuting', 3, 1);
+      ShowToast.show(
+        'Xato',
+        'Xarita hali tayyor emas, iltimos bir oz kuting',
+        3,
+        1,
+      );
       return;
     }
 
-    // Ruxsatlarni tekshirish va so‘rash
+    // Ruxsatlarni tekshirish va so'rash
     bool hasPermission = await checkLocationPermission();
     print('Has permission: $hasPermission');
     if (!hasPermission) {
@@ -203,7 +240,9 @@ class AdPostingController extends GetxController {
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: Duration(seconds: 10),
       );
-      debugPrint('Current location obtained: ${position.latitude}, ${position.longitude}');
+      debugPrint(
+        'Current location obtained: ${position.latitude}, ${position.longitude}',
+      );
       final newLocation = LatLng(position.latitude, position.longitude);
       currentLocation.value = newLocation;
       selectedLocation.value = newLocation;
@@ -217,7 +256,9 @@ class AdPostingController extends GetxController {
           targetZoom = currentZoom.value;
         }
         onMove(newLocation, targetZoom);
-        print('Xarita yangilandi (joriy joylashuv): $newLocation, Zoom: $targetZoom');
+        print(
+          'Xarita yangilandi (joriy joylashuv): $newLocation, Zoom: $targetZoom',
+        );
         isLocationInitialized.value = true;
       } catch (e) {
         print('Xarita harakatlantirishda xato: $e');
@@ -239,7 +280,9 @@ class AdPostingController extends GetxController {
     longitudeController.text = point.longitude.toString();
     try {
       onMove(point, currentZoom.value);
-      print('Xarita yangilandi (tanlangan joy): $point, Zoom: ${currentZoom.value}');
+      print(
+        'Xarita yangilandi (tanlangan joy): $point, Zoom: ${currentZoom.value}',
+      );
     } catch (e) {
       print('Xarita harakatlantirishda xato: $e');
       ShowToast.show('Xato', 'Xarita yangilashda xato: $e', 3, 1);
@@ -276,39 +319,82 @@ class AdPostingController extends GetxController {
     }
   }
 
-  bool validateForm() => titleController.text.isNotEmpty && contentController.text.isNotEmpty && phoneNumberController.text.isNotEmpty && selectedRegionId.value.isNotEmpty && selectedDistrictId.value != '0' && selectedCategory.value != 0 && latitudeController.text.isNotEmpty && longitudeController.text.isNotEmpty;
+  bool validateForm() =>
+      titleController.text.isNotEmpty &&
+      contentController.text.isNotEmpty &&
+      phoneNumberController.text.isNotEmpty &&
+      selectedRegionId.value != null &&
+      selectedDistrictId.value != null &&
+      selectedCategory.value != null &&
+      latitudeController.text.isNotEmpty &&
+      longitudeController.text.isNotEmpty;
 
   Future<void> submitAd() async {
-    if (!validateForm()) {
-      print('Form validate failed');
-      print('titleController.text: ${titleController.text} /n contentController.text: ${contentController.text} /n phoneNumberController.text: ${phoneNumberController.text} /n selectedRegionId.value: ${selectedRegionId.value} /n selectedDistrictId.value: ${selectedDistrictId.value} /n selectedCategory.value: ${selectedCategory.value} /n latitudeController.text: ${latitudeController.text} /n longitudeController.text: ${longitudeController.text}');
-      ShowToast.show('Xato', 'Iltimos, majburiy maydonlarni to‘ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!', 3, 1);
+    // Prevent double submit
+    if (isSubmitting.value) {
       return;
     }
+
+    if (!validateForm()) {
+      print('Form validate failed');
+      print(
+        'titleController.text: ${titleController.text} /n contentController.text: ${contentController.text} /n phoneNumberController.text: ${phoneNumberController.text} /n selectedRegionId.value: ${selectedRegionId.value} /n selectedDistrictId.value: ${selectedDistrictId.value} /n selectedCategory.value: ${selectedCategory.value} /n latitudeController.text: ${latitudeController.text} /n longitudeController.text: ${longitudeController.text}',
+      );
+      ShowToast.show(
+        'Xato',
+        'Iltimos, majburiy maydonlarni to‘ldiring (sarlavha, tavsif, telefon, viloyat, tuman, kategoriya, joylashuv)!',
+        3,
+        1,
+      );
+      return;
+    }
+
     try {
+      // Set submitting state
+      isSubmitting.value = true;
+
       final token = apiController.funcController.getToken();
-      if (token == null) {return;}
+      if (token == null) {
+        isSubmitting.value = false;
+        return;
+      }
+
       String? imageUrl;
       if (selectedImage.value != null) {
         imageUrl = await apiController.uploadImage(selectedImage.value!, token);
-        if (imageUrl == null) {ShowToast.show('Xato', 'Rasm yuklashda xato yuz berdi', 3, 1);return;}
+        if (imageUrl == null) {
+          isSubmitting.value = false;
+          ShowToast.show('Xato', 'Rasm yuklashda xato yuz berdi', 3, 1);
+          return;
+        }
       }
+
       final Map<String, dynamic> postData = {
         'title': titleController.text,
         'content': contentController.text,
         'phone_number': phoneNumberController.text,
         'email': emailController.text.isNotEmpty ? emailController.text : null,
-        'salary_from': salaryFromController.text.isNotEmpty ? int.parse(salaryFromController.text) : null,
-        'salary_to': salaryToController.text.isNotEmpty ? int.parse(salaryToController.text) : null,
+        'salary_from':
+            salaryFromController.text.isNotEmpty
+                ? int.parse(salaryFromController.text)
+                : null,
+        'salary_to':
+            salaryToController.text.isNotEmpty
+                ? int.parse(salaryToController.text)
+                : null,
         'is_open': isOpen.value,
         'category_id': selectedCategory.value,
-        'district_id': int.parse(selectedDistrictId.value),
+        'district_id': int.parse(selectedDistrictId.value!),
         'location': {
-          'title': locationTitleController.text.isNotEmpty ? locationTitleController.text : 'Default Location',
+          'title':
+              locationTitleController.text.isNotEmpty
+                  ? locationTitleController.text
+                  : 'Default Location',
           'latitude': double.parse(latitudeController.text),
-          'longitude': double.parse(longitudeController.text)
+          'longitude': double.parse(longitudeController.text),
         },
       };
+
       if (selectedJobType.value.isNotEmpty) {
         postData['job_type'] = selectedJobType.value;
       }
@@ -318,13 +404,23 @@ class AdPostingController extends GetxController {
       if (imageUrl != null && imageUrl.isNotEmpty) {
         postData['picture_url'] = imageUrl;
       }
+
       print('Yuborilayotgan ma\'lumotlar: ${jsonEncode(postData)}');
-      await apiController.createPost(postData, token).then((value) => clearForm());
-      ShowToast.show('Muvaffaqiyat', 'E’lon muvaffaqiyatli yuborildi', 1, 1);
-      Get.back();
+
+      // Create the post
+      await apiController.createPost(postData, token);
+
+      // Set success state
+      submissionSuccess.value = true;
+
+      // Clear form after successful submission
+      await clearForm();
     } catch (e) {
       print('submitAd xatolik: $e');
       ShowToast.show('Xato', 'E\'lon yuborishda xato yuz berdi: $e', 3, 1);
+    } finally {
+      // Reset submitting state
+      isSubmitting.value = false;
     }
   }
 
@@ -338,7 +434,9 @@ class AdPostingController extends GetxController {
     locationTitleController.clear();
     latitudeController.clear();
     longitudeController.clear();
-    selectedCategory.value = 0;
+    selectedCategory.value = null;
+    selectedRegionId.value = null;
+    selectedDistrictId.value = null;
     selectedJobType.value = '';
     selectedEmploymentType.value = '';
     selectedImage.value = null;
@@ -358,5 +456,4 @@ class AdPostingController extends GetxController {
     mapController.dispose();
     super.onClose();
   }
-
 }

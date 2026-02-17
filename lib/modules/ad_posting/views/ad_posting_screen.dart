@@ -10,6 +10,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../common/widgets/not_logged.dart';
+import '../../../common/widgets/success_notification.dart';
+import '../../../config/routes/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
 import '../../../controllers/theme_controller.dart';
@@ -93,6 +95,22 @@ class _AdPostingScreenState extends State<AdPostingScreen>
       vsync: this,
     );
     controller.phoneNumberController.text = '+998 ';
+
+    // Listen for submission success
+    ever(controller.submissionSuccess, (bool success) {
+      if (success) {
+        // Show success notification
+        SuccessNotificationOverlay.show(
+          context,
+          onDismiss: () {
+            // Navigate to HomePage after animation completes
+            funcController.setBarIndex(0);
+          },
+        );
+        // Reset success state
+        controller.submissionSuccess.value = false;
+      }
+    });
   }
 
   @override
@@ -234,12 +252,10 @@ class _AdPostingScreenState extends State<AdPostingScreen>
               controller.categories,
               controller.selectedCategory,
               LucideIcons.briefcase,
-              (value) => controller.selectedCategory.value = value ?? 0,
+              (value) => controller.selectedCategory.value = value,
               validator:
                   (value) =>
-                      value == null || value == 0
-                          ? 'Kategoriya tanlanishi shart'.tr
-                          : null,
+                      value == null ? 'Kategoriya tanlanishi shart'.tr : null,
               isInt: true,
               fieldKey: _categoryFieldKey,
             ),
@@ -251,21 +267,19 @@ class _AdPostingScreenState extends State<AdPostingScreen>
               controller.selectedRegionId,
               LucideIcons.map,
               (value) {
-                controller.selectedRegionId.value = value ?? '0';
-                if (value != null && value != '0') {
+                controller.selectedRegionId.value = value;
+                if (value != null) {
                   controller.loadDistricts(int.parse(value));
                 } else {
                   controller.districts.value = [
                     {'id': '0', 'name': 'Tanlang'.tr},
                   ];
-                  controller.selectedDistrictId.value = '0';
+                  controller.selectedDistrictId.value = null;
                 }
               },
               validator:
                   (value) =>
-                      value == null || value == '0'
-                          ? 'Viloyat tanlanishi shart'.tr
-                          : null,
+                      value == null ? 'Viloyat tanlanishi shart'.tr : null,
               fieldKey: _regionFieldKey,
             ),
             SizedBox(height: AppDimensions.paddingMedium),
@@ -287,11 +301,10 @@ class _AdPostingScreenState extends State<AdPostingScreen>
                         controller.districts,
                         controller.selectedDistrictId,
                         LucideIcons.mapPin,
-                        (value) =>
-                            controller.selectedDistrictId.value = value ?? '0',
+                        (value) => controller.selectedDistrictId.value = value,
                         validator:
                             (value) =>
-                                value == null || value == '0'
+                                value == null
                                     ? 'Tuman tanlanishi shart'.tr
                                     : null,
                         fieldKey: _districtFieldKey,
@@ -751,7 +764,7 @@ class _AdPostingScreenState extends State<AdPostingScreen>
     BuildContext context,
     String label,
     RxList<dynamic> items,
-    Rx<T> selectedValue,
+    Rx<T?> selectedValue,
     IconData icon,
     Function(T?) onChanged, {
     String? Function(T?)? validator,
@@ -841,30 +854,48 @@ class _AdPostingScreenState extends State<AdPostingScreen>
     ),
   );
 
-  Widget _buildSubmitButton(BuildContext context) => SizedBox(
-    width: double.infinity,
-    height: AppDimensions.buttonHeight,
-    child: ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          controller.submitAd();
-        } else {
-          _scrollToErrorField();
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.red,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+  Widget _buildSubmitButton(BuildContext context) => Obx(
+    () => SizedBox(
+      width: double.infinity,
+      height: AppDimensions.buttonHeight,
+      child: ElevatedButton(
+        onPressed:
+            controller.isSubmitting.value
+                ? null
+                : () {
+                  if (_formKey.currentState!.validate()) {
+                    controller.submitAd();
+                  } else {
+                    _scrollToErrorField();
+                  }
+                },
+        style: ElevatedButton.styleFrom(
+          backgroundColor:
+              controller.isSubmitting.value
+                  ? AppColors.red.withOpacity(0.6)
+                  : AppColors.red,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+          ),
+          elevation: 2,
         ),
-        elevation: 2,
-      ),
-      child: Text(
-        'E’lonni yuborish'.tr,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          fontSize: Responsive.scaleFont(16, context),
-          color: AppColors.white,
-        ),
+        child:
+            controller.isSubmitting.value
+                ? SizedBox(
+                  width: Responsive.scaleWidth(20, context),
+                  height: Responsive.scaleWidth(20, context),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                  ),
+                )
+                : Text(
+                  'E’lonni yuborish'.tr,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontSize: Responsive.scaleFont(16, context),
+                    color: AppColors.white,
+                  ),
+                ),
       ),
     ),
   );

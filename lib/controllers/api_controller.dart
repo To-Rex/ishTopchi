@@ -287,7 +287,7 @@ class ApiController extends GetxController {
   }
 
   Future generateOtp(String phoneNumber) async {
-    debugPrint('Phone number: $phoneNumber');
+    //debugPrint('Phone number: $phoneNumber');
     try {
       final response = await _dio.post(
         '$_baseUrl/otp-based-auth/generate-otp',
@@ -557,7 +557,7 @@ class ApiController extends GetxController {
           },
         ),
       );
-      debugPrint('API javobi posts (page $page): ${response.data}');
+      //debugPrint('API javobi posts (page $page): ${response.data}');
       //debugPrint('Status code: ${response.statusCode}');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
@@ -760,7 +760,7 @@ class ApiController extends GetxController {
       }
     } catch (e) {
       funcController.clearWishList();
-      debugPrint('fetchWishlist xatolik: $e');
+      //debugPrint('fetchWishlist xatolik: $e');
     } finally {
       funcController.isLoading.value = false;
     }

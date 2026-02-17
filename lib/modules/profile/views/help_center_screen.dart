@@ -38,8 +38,6 @@ class HelpCenterScreenState extends State<HelpCenterScreen>
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.find<ThemeController>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -147,8 +145,8 @@ class HelpCenterScreenState extends State<HelpCenterScreen>
                 context,
                 Icons.telegram,
                 'Telegram'.tr,
-                '@IshtopchiSupport',
-                () => _launchURL('https://t.me/IshtopchiSupport'),
+                '@Ishtopchi_uz',
+                () => _launchURL('https://t.me/Ishtopchi_uz'),
               ),
               SizedBox(height: Responsive.scaleHeight(16, context)),
               // Mualliflik
