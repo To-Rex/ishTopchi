@@ -100,7 +100,7 @@ class _SuccessNotificationState extends State<SuccessNotification>
                       ),
                       SizedBox(height: Responsive.scaleHeight(16, context)),
                       Text(
-                        'E\'lon muvaffaqiyatli joylandi'.tr,
+                        'E’lon muvaffaqiyatli joylandi'.tr,
                         style: TextStyle(
                           fontSize: Responsive.scaleFont(16, context),
                           fontWeight: FontWeight.w600,

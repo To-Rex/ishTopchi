@@ -21,7 +21,7 @@ import '../views/support_screen.dart';
 import '../../../core/services/show_toast.dart';
 
 class ProfileController extends GetxController {
-  final appVersion = '1.0.4';
+  final appVersion = '1.0.5';
   final hasToken = false.obs;
   final RxBool isLoadingUser = false.obs;
   final RxBool isLoadingRegions = false.obs;
@@ -53,9 +53,36 @@ class ProfileController extends GetxController {
   }
 
   void launchExternalUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    // Map web URLs to deep link schemes
+    final Map<String, String> deepLinkMap = {
+      'https://t.me//': 'tg://resolve?domain=',
+      'https://www.instagram.com/': 'instagram://user?username=',
+      'https://instagram.com/': 'instagram://user?username=',
+    };
+
+    String deepLinkUrl = url;
+    String fallbackUrl = url;
+
+    // Check if URL matches any deep link pattern
+    for (var entry in deepLinkMap.entries) {
+      if (url.startsWith(entry.key)) {
+        final username = url.substring(entry.key.length);
+        deepLinkUrl = '${entry.value}$username';
+        break;
+      }
+    }
+
+    // Try to launch deep link first
+    final deepLinkUri = Uri.parse(deepLinkUrl);
+    if (await canLaunchUrl(deepLinkUri)) {
+      await launchUrl(deepLinkUri, mode: LaunchMode.externalApplication);
+      return;
+    }
+
+    // Fall back to web URL
+    final webUri = Uri.parse(fallbackUrl);
+    if (await canLaunchUrl(webUri)) {
+      await launchUrl(webUri, mode: LaunchMode.externalApplication);
     } else {
       Get.snackbar('Xatolik', 'Havola ochilmadi');
     }

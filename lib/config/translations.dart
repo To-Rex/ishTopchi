@@ -353,6 +353,7 @@ class AppTranslations extends Translations {
           'Hozircha hech qanday bildirishnoma yo‘q. Iltimos, keyinroq qayta tekshiring.',
       'Hech qanday bildirishnoma yo‘q': 'Hech qanday bildirishnoma yo‘q',
       'Qayta yuklash': 'Qayta yuklash',
+      'E’lon muvaffaqiyatli joylandi': 'E’lon muvaffaqiyatli joylandi',
     },
     'oz': {
       'Kirish': 'Кириш',
@@ -701,6 +702,7 @@ class AppTranslations extends Translations {
           'Ҳозирча ҳеч қандай билдиришнома йўқ. Илтимос, кейинроқ қайта текширинг.',
       'Hech qanday bildirishnoma yo‘q': 'Ҳеч қандай билдиришнома йўқ',
       'Qayta yuklash': 'Қайта юклаш',
+      'E’lon muvaffaqiyatli joylandi': 'Эълон муваффақиятли жойланди',
     },
     'en': {
       'Kirish': 'Login',
@@ -1045,6 +1047,7 @@ class AppTranslations extends Translations {
           'No notifications yet. Please check again later.',
       'Hech qanday bildirishnoma yo‘q': 'No notifications',
       'Qayta yuklash': 'Reload',
+      'E’lon muvaffaqiyatli joylandi': 'Announcement successfully posted',
     },
     'ru': {
       'Kirish': 'Вход',
@@ -1394,6 +1397,7 @@ class AppTranslations extends Translations {
           'Пока нет никаких уведомлений. Пожалуйста, проверьте позже.',
       'Hech qanday bildirishnoma yo‘q': 'Нет уведомлений',
       'Qayta yuklash': 'Перезагрузить',
+      'E’lon muvaffaqiyatli joylandi': 'Объявление успешно размещено',
     },
   };
 }
