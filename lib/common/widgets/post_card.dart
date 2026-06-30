@@ -455,7 +455,7 @@ class PostCard extends StatelessWidget {
                           onPressed: () {
                             Navigator.of(context).pop();
                             //Get.back();
-                            funcController.setBarIndex(2);
+                            funcController.setBarIndex(1);
                           },
                         ),
                     ],
@@ -960,7 +960,7 @@ class PostCard extends StatelessWidget {
                             onPressed: () {
                               //Get.back();
                               Navigator.of(context).pop();
-                              funcController.setBarIndex(2);
+                              funcController.setBarIndex(1);
                             },
                           ),
                       ],

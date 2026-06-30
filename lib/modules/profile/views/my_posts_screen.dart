@@ -306,7 +306,7 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                           ElevatedButton(
                             onPressed: () {
                               Get.back();
-                              funcController.setBarIndex(2);
+                              funcController.setBarIndex(1);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,

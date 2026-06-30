@@ -7,7 +7,6 @@ import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../../../controllers/theme_controller.dart';
 import '../../../core/utils/responsive.dart';
-import '../../favorites/views/favorites_screen.dart';
 import '../../ad_posting/views/ad_posting_screen.dart';
 import '../../messages/views/messages_screen.dart';
 import '../../profile/views/edit_profile_screen.dart';
@@ -34,7 +33,6 @@ class MainScreen extends StatelessWidget {
     // Sahifalar ro'yxati
     final List<Widget> pages = [
       const MainContent(),
-      const FavoritesScreen(),
       const AdPostingScreen(),
       MessagesScreen(),
       ProfileScreen(),
@@ -85,19 +83,20 @@ class MainScreen extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                IconButton(
-                  icon: Icon(
-                    themeController.isDarkMode.value
-                        ? LucideIcons.sun
-                        : LucideIcons.moon,
-                    color: AppColors.textColor,
-                  ),
-                  onPressed: () => themeController.toggleTheme(),
-                  tooltip:
+                if (funcController.barIndex.value == 3)
+                  IconButton(
+                    icon: Icon(
                       themeController.isDarkMode.value
-                          ? 'Yorqin mavzu'
-                          : 'Tungi mavzu',
-                ),
+                          ? LucideIcons.sun
+                          : LucideIcons.moon,
+                      color: AppColors.textColor,
+                    ),
+                    onPressed: () => themeController.toggleTheme(),
+                    tooltip:
+                        themeController.isDarkMode.value
+                            ? 'Yorqin mavzu'
+                            : 'Tungi mavzu',
+                  ),
                 IconButton(
                   icon: Icon(LucideIcons.heart, color: AppColors.textColor),
                   onPressed: () => Get.toNamed('/favorites'),
@@ -118,10 +117,6 @@ class MainScreen extends StatelessWidget {
               BottomNavigationBarItem(
                 icon: Icon(LucideIcons.house),
                 label: 'Asosiy'.tr,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(LucideIcons.heart),
-                label: 'Saqlanganlar'.tr,
               ),
               BottomNavigationBarItem(
                 icon: Icon(LucideIcons.circlePlus),

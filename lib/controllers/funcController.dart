@@ -71,8 +71,7 @@ class FuncController extends GetxController {
   }
 
   void setBarIndex(int index) {
-    if (index >= 0 && index < 5) {
-      // 5 ta sahifa bor
+    if (index >= 0 && index < 4) {
       barIndex.value = index;
     } else {
       print('Noto‘g‘ri index: $index');
