@@ -477,7 +477,9 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                               ElevatedButton.icon(
                                 onPressed: () {
                                   Get.back();
-                                  Get.to(CreateResumeScreen());
+                                  Future.delayed(const Duration(milliseconds: 300), () {
+                                    Get.to(() => CreateResumeScreen());
+                                  });
                                 },
                                 icon: Icon(
                                   LucideIcons.plus,
