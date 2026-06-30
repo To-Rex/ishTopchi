@@ -177,6 +177,7 @@ class ProfileController extends GetxController {
   void onPrivacyTap() => Get.to(() => PrivacyScreen());
 
   void onHelpTap() => Get.to(() => HelpCenterScreen());
+  void onNotificationsTap() => Get.toNamed(AppRoutes.notifications);
 
   void onLogoutTap() {
     final ThemeController themeController = Get.find<ThemeController>();

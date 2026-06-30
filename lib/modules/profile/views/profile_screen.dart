@@ -589,10 +589,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 'Mening e’lonlarim',
                                 controller.onMyPostsTap,
                               ),
+
                             _buildMenuItem(
                               LucideIcons.settings,
                               'Sozlamalar'.tr,
                               controller.onSettingsTap,
+                            ),
+                            _buildMenuItem(
+                              LucideIcons.bell,
+                              'Bildirishnomalar'.tr,
+                              controller.onNotificationsTap,
                             ),
                             _buildMenuItem(
                               LucideIcons.smartphone,

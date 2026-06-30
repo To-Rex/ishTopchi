@@ -99,8 +99,8 @@ class MainScreen extends StatelessWidget {
                           : 'Tungi mavzu',
                 ),
                 IconButton(
-                  icon: Icon(LucideIcons.bell, color: AppColors.textColor),
-                  onPressed: () => Get.toNamed('/notifications'),
+                  icon: Icon(LucideIcons.heart, color: AppColors.textColor),
+                  onPressed: () => Get.toNamed('/favorites'),
                 ),
               ],
             ),
