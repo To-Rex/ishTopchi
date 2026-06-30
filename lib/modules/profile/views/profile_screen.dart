@@ -620,11 +620,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                               'Xavfsizlik va Maxfiylik'.tr,
                               controller.onPrivacyTap,
                             ),
-                            _buildMenuItem(
+                            /*_buildMenuItem(
                               LucideIcons.handHelping,
                               'Yordam markazi'.tr,
                               controller.onHelpTap,
-                            ),
+                            ),*/
                             const SizedBox(height: 20),
                             Align(
                               alignment: Alignment.centerLeft,

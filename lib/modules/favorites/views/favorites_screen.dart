@@ -40,10 +40,36 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
     // Check token outside Obx since it's not an observable
     if (funcController.getToken() == null || funcController.getToken() == '') {
-      return Scaffold(body: NotLogged());
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
+          title: Text(
+            'Saqlanganlar'.tr,
+            style: TextStyle(color: AppColors.textColor, fontSize: 18),
+          ),
+          leading: IconButton(
+            icon: Icon(LucideIcons.arrowLeft, color: AppColors.textColor),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          elevation: 0,
+        ),
+        body: NotLogged(),
+      );
     }
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundColor,
+        title: Text(
+          'Saqlanganlar'.tr,
+          style: TextStyle(color: AppColors.textColor, fontSize: 18),
+        ),
+        leading: IconButton(
+          icon: Icon(LucideIcons.arrowLeft, color: AppColors.textColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        elevation: 0,
+      ),
       body: Obx(() {
         // Show loading indicator while fetching
         if (funcController.isLoading.value) {
