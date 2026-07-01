@@ -276,7 +276,7 @@ class ApiController extends GetxController {
         if (statusCode == 404) {
           errorMessage = 'Foydalanuvchi topilmadi';
           await funcController.deleteToken();
-          Get.back();
+          Navigator.of(Get.context!).pop();
           Get.offAllNamed('/login');
         }
       } else {

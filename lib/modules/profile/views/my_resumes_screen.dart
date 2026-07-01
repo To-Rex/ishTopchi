@@ -440,7 +440,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(context).pop(),
             style: TextButton.styleFrom(
               foregroundColor: AppColors.textSecondaryColor,
               padding: EdgeInsets.symmetric(
@@ -460,7 +460,7 @@ class MyResumesScreenState extends State<MyResumesScreen> {
             onPressed: () async {
               if (resumeId != null) {
                 await apiController.deleteResume(resumeId);
-                Get.back();
+                Navigator.of(context).pop();
               }
             },
             style: ElevatedButton.styleFrom(

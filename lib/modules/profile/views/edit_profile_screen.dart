@@ -112,7 +112,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         );
         if (success) {
           await profileController.loadUser();
-          Get.back();
+          Navigator.of(context).pop();
           ShowToast.show(
             'Muvaffaqiyatli'.tr,
             'Profil muvaffaqiyatli yangilandi'.tr,

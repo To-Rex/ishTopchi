@@ -226,7 +226,7 @@ class NotificationsScreen extends GetView<NotificationController> {
                               if (!notification.isRead) {
                                 await controller.markAsRead(index);
                               }
-                              _showNotificationBottomSheet(notification);
+                              _showNotificationBottomSheet(notification, context);
                             },
                           ),
                         );
@@ -238,7 +238,7 @@ class NotificationsScreen extends GetView<NotificationController> {
     });
   }
 
-  void _showNotificationBottomSheet(Notification notification) {
+  void _showNotificationBottomSheet(Notification notification, BuildContext context) {
     Get.bottomSheet(
       Container(
         decoration: BoxDecoration(
@@ -265,7 +265,7 @@ class NotificationsScreen extends GetView<NotificationController> {
                 ),
                 IconButton(
                   icon: Icon(LucideIcons.x, color: AppColors.textColor),
-                  onPressed: () => Get.back(),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
             ),

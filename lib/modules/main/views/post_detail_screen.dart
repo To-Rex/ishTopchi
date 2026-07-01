@@ -149,7 +149,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                     children: [
                       TextButton(
                         //onPressed: () => Get.back(),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                         child: TextSmall(
                           text: 'Bekor qilish'.tr,
                           color: AppColors.red,
@@ -176,7 +176,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                           ),
                         ),
                         onPressed: () async {
-                          Navigator.of(context).pop();
+                          Navigator.of(context, rootNavigator: true).pop();
                           if (complaintController.text.trim().isEmpty) {
                             ShowToast.show(
                               'Xatolik'.tr,
@@ -266,7 +266,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                     children: [
                       TextButton(
                         //onPressed: () => Get.back(),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                         style: TextButton.styleFrom(
                           backgroundColor: AppColors.cardColor,
                           shape: RoundedRectangleBorder(
@@ -301,7 +301,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                           ),
                         ),
                         onPressed: () {
-                          Get.back();
+                          Navigator.of(context, rootNavigator: true).pop();
                           Get.offNamed('/login');
                         },
                         child: TextSmall(
@@ -396,7 +396,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                           ),
                         ),
                         IconButton(
-                          onPressed: () => Get.back(),
+                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                           icon: Icon(
                             LucideIcons.x,
                             color: AppColors.textSecondaryColor,
@@ -476,7 +476,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                               SizedBox(height: AppDimensions.paddingMedium),
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  Get.back();
+                                  Navigator.of(context, rootNavigator: true).pop();
                                   Future.delayed(const Duration(milliseconds: 300), () {
                                     Get.to(() => CreateResumeScreen());
                                   });
@@ -907,7 +907,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: () => Get.back(),
+                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.symmetric(
                               horizontal: AppDimensions.paddingMedium,
@@ -955,7 +955,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
                             print(
                               'Selected Resume ID: ${selectedResumeId.value}',
                             );
-                            Get.back();
+                            Navigator.of(context, rootNavigator: true).pop();
                             await apiController.createApplication(
                               postId,
                               messageController.text ?? '',
@@ -1047,7 +1047,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
               color: AppColors.textColor,
               size: Responsive.scaleFont(22, context),
             ),
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
             'E’lon tafsilotlari'.tr,

@@ -305,7 +305,7 @@ class MyPostsScreenState extends State<MyPostsScreen> {
                           SizedBox(height: 16.sp),
                           ElevatedButton(
                             onPressed: () {
-                              Get.back();
+                              Navigator.of(context).pop();
                               funcController.setBarIndex(1);
                             },
                             style: ElevatedButton.styleFrom(

@@ -27,7 +27,7 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
     final args = Get.arguments;
     if (args == null) {
       Get.snackbar('Error', 'Room not found');
-      Get.back();
+      Navigator.of(context).pop();
       return;
     }
     _postOwnerRoom = args as PostOwnerRoom;
@@ -54,7 +54,7 @@ class _PostOwnerDetailScreenState extends State<PostOwnerDetailScreen> {
       ),
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: AppColors.textColor),
-        onPressed: () => Get.back(),
+        onPressed: () => Navigator.of(context).pop(),
       ),
     );
   }

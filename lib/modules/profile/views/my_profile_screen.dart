@@ -369,7 +369,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           ),
                           SizedBox(height: Responsive.scaleHeight(16, context)),
                           TextButton(
-                            onPressed: () => Get.back(),
+                            onPressed: () => Navigator.of(context).pop(),
                             child: Text(
                               'Yopish',
                               style: TextStyle(
@@ -640,7 +640,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: () => Get.back(result: false),
+                          onPressed: () => Navigator.of(context).pop(false),
                           child: Text(
                             'Bekor qilish'.tr,
                             style: TextStyle(
@@ -671,7 +671,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(12),
-                              onTap: () => Get.back(result: true),
+                              onTap: () => Navigator.of(context).pop(true),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
                                   vertical: Responsive.scaleHeight(10, context),
@@ -844,7 +844,7 @@ class FullScreenImage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
-        onTap: () => Get.back(),
+        onTap: () => Navigator.of(context).pop(),
         child: Center(
           child: Hero(
             tag: 'profile-image',

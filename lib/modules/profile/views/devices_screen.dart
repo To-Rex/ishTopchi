@@ -100,7 +100,7 @@ class DevicesScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () => Get.back(),
+                      onPressed: () => Navigator.of(context).pop(),
                       child: Text(
                         'Yopish'.tr,
                         style: TextStyle(
@@ -133,7 +133,7 @@ class DevicesScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           onTap: () {
                             apiController.deleteDevice(device.id!);
-                            Get.back();
+                            Navigator.of(context).pop();
                           },
                           child: Padding(
                             padding: EdgeInsets.symmetric(

@@ -9,7 +9,7 @@ class BottomSheets {
   //getcontroller
   final FuncController funcController = Get.put(FuncController());
 
-  void showLanguageBottomSheet() {
+  void showLanguageBottomSheet(BuildContext context) {
     Get.bottomSheet(
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16))),
       Container(
@@ -28,7 +28,7 @@ class BottomSheets {
               onTap: () {
                 //Get.updateLocale(const Locale('uz'));
                 funcController.saveLanguage('uz');
-                Get.back();
+                Navigator.of(context).pop();
               }
             ),
             Divider(color: AppColors.lightBlue, thickness: 0.8, radius: BorderRadius.circular(10)),
@@ -38,7 +38,7 @@ class BottomSheets {
               onTap: () {
                 //Get.updateLocale(const Locale('oz'));
                 funcController.saveLanguage('oz');
-                Get.back();
+                Navigator.of(context).pop();
               }
             ),
             Divider(color: AppColors.lightBlue, thickness: 0.8, radius: BorderRadius.circular(10)),
@@ -48,7 +48,7 @@ class BottomSheets {
               onTap: () {
                 //Get.updateLocale(const Locale('ru'));
                 funcController.saveLanguage('ru');
-                Get.back();
+                Navigator.of(context).pop();
               }
             ),
             Divider(color: AppColors.lightBlue, thickness: 0.8, radius: BorderRadius.circular(10)),
@@ -58,7 +58,7 @@ class BottomSheets {
               onTap: () {
                 //Get.updateLocale(const Locale('en'));
                 funcController.saveLanguage('en');
-                Get.back();
+                Navigator.of(context).pop();
               }
             )
           ]

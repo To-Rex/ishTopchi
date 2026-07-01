@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../controllers/api_controller.dart';
@@ -120,7 +121,7 @@ class CreateResumeController extends GetxController {
           file: selectedFile.value,
         );
       }
-      Get.back(); // Sahifadan chiqish
+      Navigator.of(Get.context!).pop(); // Sahifadan chiqish
     } catch (e) {
       ShowToast.show('Xatolik', 'Resume saqlashda xato: $e', 3, 1);
     } finally {

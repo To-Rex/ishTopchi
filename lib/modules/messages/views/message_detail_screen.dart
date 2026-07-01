@@ -40,7 +40,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
     _room = Get.arguments;
     if (_room == null) {
       Get.snackbar('Error', 'Room not found');
-      Get.back();
+      Navigator.of(context).pop();
       return;
     }
     _currentUserId = _funcController.userMe.value.data!.id;
@@ -297,7 +297,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       ),
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: AppColors.textColor),
-        onPressed: () => Get.back(),
+        onPressed: () => Navigator.of(context).pop()
       ),
     );
   }
@@ -1157,7 +1157,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
-                Get.back();
+                Navigator.of(context).pop();
                 Get.snackbar(
                   'Xabar',
                   'Xabar o‘chirildi!',
@@ -1173,7 +1173,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
-                Get.back();
+                Navigator.of(context).pop();
                 Get.snackbar(
                   'Xabar',
                   'Foydalanuvchi bloklandi!',
@@ -1189,7 +1189,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 style: TextStyle(color: AppColors.textColor),
               ),
               onTap: () {
-                Get.back();
+                Navigator.of(context).pop();
                 Get.snackbar(
                   'Xabar',
                   'Shikoyat yuborildi!',

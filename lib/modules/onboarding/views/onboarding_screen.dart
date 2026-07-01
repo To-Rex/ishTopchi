@@ -35,7 +35,7 @@ class OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPro
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(backgroundColor: AppColors.darkBlue, elevation: 0, actions: [IconButton(icon: const Icon(Icons.language, color: Color(0xFFE0E1DD), size: 24), onPressed: () => BottomSheets().showLanguageBottomSheet(), tooltip: 'Tilni o‘zgartirish'.tr)]),
+      appBar: AppBar(backgroundColor: AppColors.darkBlue, elevation: 0, actions: [IconButton(icon: const Icon(Icons.language, color: Color(0xFFE0E1DD), size: 24), onPressed: () => BottomSheets().showLanguageBottomSheet(context), tooltip: 'Tilni o‘zgartirish'.tr)]),
       body: SafeArea( // Qurilma chetlarini hisobga olish
         child: Container(
           margin: EdgeInsets.only(bottom: Platform.isAndroid ? 50 : 0),

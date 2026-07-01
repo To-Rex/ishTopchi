@@ -164,7 +164,7 @@ class ProfileController extends GetxController {
 
   void onMyPostsTap() => Get.to(() => MyPostsScreen());
 
-  void onLanguagesTap() => BottomSheets().showLanguageBottomSheet();
+  void onLanguagesTap() => BottomSheets().showLanguageBottomSheet(Get.context!);
 
   void onSettingsTap() => Get.toNamed(AppRoutes.settings);
 
@@ -204,7 +204,7 @@ class ProfileController extends GetxController {
         actionsAlignment: MainAxisAlignment.end,
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(Get.context!).pop(),
             style: TextButton.styleFrom(
               overlayColor: AppColors.textColor.withOpacity(0.1),
               shape: RoundedRectangleBorder(
@@ -225,7 +225,7 @@ class ProfileController extends GetxController {
             onPressed: () async {
               await funcController.deleteToken();
               hasToken.value = false;
-              Get.back();
+              Navigator.of(Get.context!).pop();
               Get.offAllNamed('/login');
               ShowToast.show('Muvaffaqiyatli'.tr, 'Tizimdan chiqildi'.tr, 1, 1);
             },
