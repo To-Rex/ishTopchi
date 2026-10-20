@@ -1,14 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/utils/breakpoints.dart';
+import '../../../common/widgets/app_ui.dart';
 import '../../../config/theme/app_colors.dart';
+import '../../../config/theme/app_theme.dart';
 import '../../../controllers/funcController.dart';
-import '../../../controllers/theme_controller.dart';
-import '../../../core/utils/responsive.dart';
 import '../controllers/profile_controller.dart';
 
+/// Profil boʻlimi: foydalanuvchi kartasi va menyu.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -16,20 +17,15 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>
-    with TickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen> {
   late final ProfileController controller;
   late final FuncController funcController;
-  late final ThemeController themeController;
-
-  double _buttonScale = 1.0;
 
   @override
   void initState() {
     super.initState();
     controller = Get.find<ProfileController>();
     funcController = Get.find<FuncController>();
-    themeController = Get.find<ThemeController>();
   }
 
   String _getProfileUrl(String? url) {
@@ -49,722 +45,275 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return Scaffold(
-        body:
-            (funcController.isLoading.value &&
-                    funcController.getToken()!.isNotEmpty)
-                ? Center(
-                  child: CircularProgressIndicator(color: AppColors.iconColor),
-                )
-                : CustomScrollView(
-                  slivers: [
-                    SliverAppBar(
-                      backgroundColor: AppColors.backgroundColor,
-                      pinned: true,
-                      expandedHeight: 260,
-                      collapsedHeight: 60,
-                      foregroundColor: AppColors.textColor,
-                      surfaceTintColor: AppColors.backgroundColor,
-                      flexibleSpace: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final isCollapsed = constraints.maxHeight <= 80;
-                          return FlexibleSpaceBar(
-                            centerTitle: true,
-                            titlePadding: EdgeInsets.symmetric(
-                              horizontal: 20.sp,
-                            ),
-                            collapseMode: CollapseMode.pin,
-                            stretchModes: [
-                              StretchMode.zoomBackground,
-                              StretchMode.blurBackground,
-                              StretchMode.fadeTitle,
-                            ],
-                            title:
-                                isCollapsed
-                                    ? funcController
-                                            .globalToken
-                                            .value
-                                            .isNotEmpty
-                                        ? Center(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              CircleAvatar(
-                                                radius: 16,
-                                                backgroundImage: NetworkImage(
-                                                  _getProfileUrl(
-                                                    funcController
-                                                        .userMe
-                                                        .value
-                                                        .data
-                                                        ?.profilePicture,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 10),
-                                              Text(
-                                                funcController
-                                                        .userMe
-                                                        .value
-                                                        .data
-                                                        ?.firstName ??
-                                                    'Ism kiritilmagan'.tr,
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      Responsive.scaleFont(
-                                                        14,
-                                                        context,
-                                                      ),
-                                                  color: AppColors.textColor,
-                                                ),
-                                              ),
-                                              Spacer(),
-                                            ],
-                                          ),
-                                        )
-                                        : Center(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                LucideIcons.userPlus,
-                                                size: 24.sp,
-                                                color: AppColors.textColor,
-                                              ),
-                                              SizedBox(width: 10.w),
-                                              Text(
-                                                'Ro‘yxatdan o‘ting va boshlang!'
-                                                    .tr,
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      Responsive.scaleFont(
-                                                        14,
-                                                        context,
-                                                      ),
-                                                  color: AppColors.textColor,
-                                                ),
-                                              ),
-                                              Spacer(),
-                                              _buildLoginButton(),
-                                            ],
-                                          ),
-                                        )
-                                    : null,
-                            background: Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.only(
-                                    top: 10,
-                                    right: 16,
-                                    left: 16,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      if (funcController
-                                          .globalToken
-                                          .value
-                                          .isNotEmpty)
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            1000,
-                                          ),
-                                          child: SizedBox(
-                                            height: Responsive.scaleHeight(
-                                              130,
-                                              context,
-                                            ),
-                                            width: Responsive.scaleWidth(
-                                              130,
-                                              context,
-                                            ),
-                                            child: CachedNetworkImage(
-                                              imageUrl: _getProfileUrl(
-                                                funcController
-                                                    .userMe
-                                                    .value
-                                                    .data
-                                                    ?.profilePicture,
-                                              ),
-                                              fit: BoxFit.cover,
-                                              placeholder:
-                                                  (context, url) => Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                          color:
-                                                              AppColors
-                                                                  .iconColor,
-                                                          strokeWidth: 2,
-                                                        ),
-                                                  ),
-                                              errorWidget:
-                                                  (
-                                                    context,
-                                                    url,
-                                                    error,
-                                                  ) => Container(
-                                                    height:
-                                                        Responsive.scaleHeight(
-                                                          130,
-                                                          context,
-                                                        ),
-                                                    width:
-                                                        Responsive.scaleWidth(
-                                                          130,
-                                                          context,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          themeController
-                                                                  .isDarkMode
-                                                                  .value
-                                                              ? AppColors
-                                                                  .darkBlue
-                                                              : AppColors
-                                                                  .lightPrimary,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            1000,
-                                                          ),
-                                                    ),
-                                                    child: Center(
-                                                      child: Icon(
-                                                        LucideIcons.imageOff,
-                                                        size:
-                                                            Responsive.scaleFont(
-                                                              48,
-                                                              context,
-                                                            ),
-                                                        color:
-                                                            AppColors.textColor,
-                                                      ),
-                                                    ),
-                                                  ),
-                                            ),
-                                          ),
-                                        )
-                                      else
-                                        TweenAnimationBuilder<double>(
-                                          tween: Tween(begin: 0.0, end: 1.0),
-                                          duration: const Duration(
-                                            milliseconds: 500,
-                                          ),
-                                          builder:
-                                              (
-                                                context,
-                                                opacity,
-                                                child,
-                                              ) => Opacity(
-                                                opacity: opacity,
-                                                child: Container(
-                                                  width: Responsive.scaleWidth(
-                                                    500,
-                                                    context,
-                                                  ),
-                                                  padding: const EdgeInsets.all(
-                                                    20,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        themeController
-                                                                .isDarkMode
-                                                                .value
-                                                            ? null
-                                                            : AppColors
-                                                                .lightCard,
-                                                    gradient:
-                                                        themeController
-                                                                .isDarkMode
-                                                                .value
-                                                            ? LinearGradient(
-                                                              colors: [
-                                                                AppColors
-                                                                    .primaryColor,
-                                                                AppColors
-                                                                    .secondaryColor,
-                                                              ],
-                                                              begin:
-                                                                  Alignment
-                                                                      .topLeft,
-                                                              end:
-                                                                  Alignment
-                                                                      .bottomRight,
-                                                            )
-                                                            : null,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          16.r,
-                                                        ),
-                                                    boxShadow:
-                                                        themeController
-                                                                .isDarkMode
-                                                                .value
-                                                            ? [
-                                                              BoxShadow(
-                                                                color: AppColors
-                                                                    .midBlue
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.3,
-                                                                    ),
-                                                                blurRadius: 10,
-                                                                offset:
-                                                                    const Offset(
-                                                                      0,
-                                                                      5,
-                                                                    ),
-                                                              ),
-                                                            ]
-                                                            : [
-                                                              BoxShadow(
-                                                                color:
-                                                                    AppColors
-                                                                        .lightShadow,
-                                                                blurRadius: 10,
-                                                                offset:
-                                                                    const Offset(
-                                                                      0,
-                                                                      5,
-                                                                    ),
-                                                              ),
-                                                            ],
-                                                  ),
-                                                  child: Column(
-                                                    children: [
-                                                      TweenAnimationBuilder<
-                                                        double
-                                                      >(
-                                                        tween: Tween(
-                                                          begin: 0.8,
-                                                          end: 1.0,
-                                                        ),
-                                                        duration:
-                                                            const Duration(
-                                                              milliseconds:
-                                                                  1000,
-                                                            ),
-                                                        curve: Curves.bounceOut,
-                                                        builder:
-                                                            (
-                                                              context,
-                                                              scale,
-                                                              child,
-                                                            ) => Transform.scale(
-                                                              scale: scale,
-                                                              child: Icon(
-                                                                LucideIcons
-                                                                    .userPlus,
-                                                                size:
-                                                                    Responsive.scaleFont(
-                                                                      60,
-                                                                      context,
-                                                                    ),
-                                                                color:
-                                                                    AppColors
-                                                                        .textColor,
-                                                              ),
-                                                            ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 16,
-                                                      ),
-                                                      Text(
-                                                        'Ro‘yxatdan o‘ting va boshlang!'
-                                                            .tr,
-                                                        style: TextStyle(
-                                                          color:
-                                                              AppColors
-                                                                  .textColor,
-                                                          fontSize:
-                                                              Responsive.scaleFont(
-                                                                16,
-                                                                context,
-                                                              ),
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      GestureDetector(
-                                                        onTapDown:
-                                                            (_) => setState(
-                                                              () =>
-                                                                  _buttonScale =
-                                                                      0.95,
-                                                            ),
-                                                        onTapUp:
-                                                            (_) => setState(
-                                                              () =>
-                                                                  _buttonScale =
-                                                                      1.0,
-                                                            ),
-                                                        onTapCancel:
-                                                            () => setState(
-                                                              () =>
-                                                                  _buttonScale =
-                                                                      1.0,
-                                                            ),
-                                                        onTap:
-                                                            controller
-                                                                .onLoginTap,
-                                                        child: AnimatedScale(
-                                                          scale: _buttonScale,
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    100,
-                                                              ),
-                                                          child: ElevatedButton(
-                                                            onPressed:
-                                                                controller
-                                                                    .onLoginTap,
-                                                            style: ElevatedButton.styleFrom(
-                                                              minimumSize: Size(
-                                                                Responsive.scaleWidth(
-                                                                  200,
-                                                                  context,
-                                                                ),
-                                                                50,
-                                                              ),
-                                                              padding:
-                                                                  const EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        20,
-                                                                    vertical:
-                                                                        12,
-                                                                  ),
-                                                              backgroundColor:
-                                                                  themeController
-                                                                          .isDarkMode
-                                                                          .value
-                                                                      ? AppColors
-                                                                          .darkNavy
-                                                                      : AppColors
-                                                                          .lightPrimary,
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius.circular(
-                                                                      12,
-                                                                    ),
-                                                              ),
-                                                              elevation: 5,
-                                                            ),
-                                                            child: Text(
-                                                              'Kirish'.tr,
-                                                              style: TextStyle(
-                                                                color:
-                                                                    AppColors
-                                                                        .white,
-                                                                fontSize:
-                                                                    Responsive.scaleFont(
-                                                                      16,
-                                                                      context,
-                                                                    ),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                        ),
-                                      const SizedBox(height: 8),
-                                      if (funcController
-                                          .globalToken
-                                          .value
-                                          .isNotEmpty)
-                                        Column(
-                                          children: [
-                                            Text(
-                                              funcController
-                                                          .userMe
-                                                          .value
-                                                          .data
-                                                          ?.firstName !=
-                                                      null
-                                                  ? '${funcController.userMe.value.data!.firstName} ${funcController.userMe.value.data?.lastName ?? ''}'
-                                                  : funcController
-                                                          .userMe
-                                                          .value
-                                                          .data
-                                                          ?.lastName ??
-                                                      'Ism kiritilmagan'.tr,
-                                              style: TextStyle(
-                                                color: AppColors.textColor,
-                                                fontSize: Responsive.scaleFont(
-                                                  16,
-                                                  context,
-                                                ),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Text(
-                                              funcController
-                                                          .userMe
-                                                          .value
-                                                          .data
-                                                          ?.authProviders
-                                                          ?.isNotEmpty ==
-                                                      true
-                                                  ? funcController
-                                                          .userMe
-                                                          .value
-                                                          .data!
-                                                          .authProviders!
-                                                          .first
-                                                          .email ??
-                                                      funcController
-                                                          .userMe
-                                                          .value
-                                                          .data!
-                                                          .authProviders!
-                                                          .first
-                                                          .providersUserId ??
-                                                      'Ma’lumot yo‘q'.tr
-                                                  : 'Ma’lumot yo‘q'.tr,
-                                              style: TextStyle(
-                                                color:
-                                                    AppColors
-                                                        .textSecondaryColor,
-                                                fontSize: Responsive.scaleFont(
-                                                  16,
-                                                  context,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: 10,
-                          left: 16.w,
-                          right: 16.w,
-                          bottom: 60.h,
-                        ),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 10),
-                            if (controller.hasToken.value)
-                              _buildMenuItem(
-                                LucideIcons.userRound,
-                                'Mening Profilim'.tr,
-                                controller.onMyProfileTap,
-                              ),
-                            if (controller.hasToken.value)
-                              _buildMenuItem(
-                                LucideIcons.squareLibrary,
-                                'Mening Rezyumelarim'.tr,
-                                controller.onMyResumesTap,
-                              ),
-                            if (controller.hasToken.value)
-                              _buildMenuItem(
-                                LucideIcons.megaphone,
-                                'Mening e’lonlarim',
-                                controller.onMyPostsTap,
-                              ),
+      if (funcController.isLoading.value &&
+          funcController.getToken()!.isNotEmpty) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
 
-                            _buildMenuItem(
-                              LucideIcons.settings,
-                              'Sozlamalar'.tr,
-                              controller.onSettingsTap,
-                            ),
-                            _buildMenuItem(
-                              LucideIcons.bell,
-                              'Bildirishnomalar'.tr,
-                              controller.onNotificationsTap,
-                            ),
-                            _buildMenuItem(
-                              LucideIcons.smartphone,
-                              'Qurilmalar'.tr,
-                              controller.onDevicesTap,
-                            ),
-                            _buildMenuItem(
-                              LucideIcons.headset,
-                              'Qo‘llab-quvvatlash'.tr,
-                              controller.onSupportTap,
-                            ),
-                            _buildMenuItem(
-                              LucideIcons.badgeInfo,
-                              'Ilova haqida'.tr,
-                              controller.onAboutAppTap,
-                            ),
-                            _buildMenuItem(
-                              LucideIcons.shieldAlert,
-                              'Xavfsizlik va Maxfiylik'.tr,
-                              controller.onPrivacyTap,
-                            ),
-                            /*_buildMenuItem(
-                              LucideIcons.handHelping,
-                              'Yordam markazi'.tr,
-                              controller.onHelpTap,
-                            ),*/
-                            const SizedBox(height: 20),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Ijtimoiy tarmoqlar'.tr,
-                                style: TextStyle(
-                                  color: AppColors.textSecondaryColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            _buildMenuItem(
-                              Icons.telegram,
-                              'Telegram'.tr,
-                              () => controller.launchExternalUrl(
-                                'https://t.me/ishtopchi',
-                              ),
-                            ),
-                            _buildMenuItem(
-                              Icons.camera_alt_outlined,
-                              'Instagram'.tr,
-                              () => controller.launchExternalUrl(
-                                'https://instagram.com/ishtopchi',
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            if (controller.hasToken.value)
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  onPressed: controller.onLogoutTap,
-                                  icon: Icon(
-                                    LucideIcons.logOut,
-                                    color: AppColors.white,
-                                  ),
-                                  label: Text(
-                                    'Chiqish'.tr,
-                                    style: TextStyle(color: AppColors.white),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.redAccent.shade200,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 32,
-                                      vertical: 14,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(height: 24),
-                            Center(
-                              child: Text(
-                                'Ishtopchi v${controller.appVersion}',
-                                style: TextStyle(
-                                  color: AppColors.textSecondaryColor,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+      return Scaffold(
+        body: AppContentWidth(
+          child: ListView(
+            // Oxirgi qator pastki suzuvchi panel ostida qolmasin.
+            padding: EdgeInsets.fromLTRB(
+              16,
+              12,
+              16,
+              28 + MediaQuery.paddingOf(context).bottom,
+            ),
+            children: [
+              AppReveal(child: _buildIdentityCard()),
+              const SizedBox(height: 20),
+              if (controller.hasToken.value) ...[
+                AppSectionLabel(text: 'Hisobim'.tr),
+                AppReveal(
+                  delay: AppReveal.step(1),
+                  child: AppTile(
+                    icon: LucideIcons.userRound,
+                    title: 'Mening Profilim'.tr,
+                    onTap: controller.onMyProfileTap,
+                  ),
                 ),
+                AppReveal(
+                  delay: AppReveal.step(2),
+                  child: AppTile(
+                    icon: LucideIcons.squareLibrary,
+                    title: 'Mening Rezyumelarim'.tr,
+                    onTap: controller.onMyResumesTap,
+                  ),
+                ),
+                AppReveal(
+                  delay: AppReveal.step(3),
+                  child: AppTile(
+                    icon: LucideIcons.megaphone,
+                    title: 'Mening e’lonlarim'.tr,
+                    onTap: controller.onMyPostsTap,
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+              AppSectionLabel(text: 'Ilova'.tr),
+              AppReveal(
+                delay: AppReveal.step(4),
+                child: AppTile(
+                  icon: LucideIcons.settings,
+                  title: 'Sozlamalar'.tr,
+                  onTap: controller.onSettingsTap,
+                ),
+              ),
+              AppReveal(
+                delay: AppReveal.step(5),
+                child: AppTile(
+                  icon: LucideIcons.bell,
+                  title: 'Bildirishnomalar'.tr,
+                  onTap: controller.onNotificationsTap,
+                ),
+              ),
+              AppReveal(
+                delay: AppReveal.step(6),
+                child: AppTile(
+                  icon: LucideIcons.smartphone,
+                  title: 'Qurilmalar'.tr,
+                  onTap: controller.onDevicesTap,
+                ),
+              ),
+              AppReveal(
+                delay: AppReveal.step(7),
+                child: AppTile(
+                  icon: LucideIcons.headset,
+                  title: 'Qo‘llab-quvvatlash'.tr,
+                  onTap: controller.onSupportTap,
+                ),
+              ),
+              AppReveal(
+                delay: AppReveal.step(8),
+                child: AppTile(
+                  icon: LucideIcons.badgeInfo,
+                  title: 'Ilova haqida'.tr,
+                  onTap: controller.onAboutAppTap,
+                ),
+              ),
+              AppReveal(
+                delay: AppReveal.step(9),
+                child: AppTile(
+                  icon: LucideIcons.shieldAlert,
+                  title: 'Xavfsizlik va Maxfiylik'.tr,
+                  onTap: controller.onPrivacyTap,
+                ),
+              ),
+              /*AppTile(
+              icon: LucideIcons.handHelping,
+              title: 'Yordam markazi'.tr,
+              onTap: controller.onHelpTap,
+            ),*/
+              const SizedBox(height: 10),
+              AppSectionLabel(text: 'Ijtimoiy tarmoqlar'.tr),
+              AppReveal(
+                delay: AppReveal.step(10),
+                child: AppTile(
+                  // Lucide brend belgilarini olib tashlagan, shuning uchun
+                  // FontAwesome'dagi haqiqiy belgilar ishlatiladi.
+                  icon: FontAwesomeIcons.telegram.data,
+                  title: 'Telegram'.tr,
+                  onTap:
+                      () => controller.launchExternalUrl(
+                        'https://t.me/ishtopchi',
+                      ),
+                ),
+              ),
+              AppReveal(
+                delay: AppReveal.step(11),
+                child: AppTile(
+                  icon: FontAwesomeIcons.instagram.data,
+                  title: 'Instagram'.tr,
+                  onTap:
+                      () => controller.launchExternalUrl(
+                        'https://instagram.com/ishtopchi',
+                      ),
+                ),
+              ),
+              if (controller.hasToken.value) ...[
+                const SizedBox(height: 18),
+                AppReveal(
+                  delay: AppReveal.step(12),
+                  child: AppButton(
+                    label: 'Chiqish'.tr,
+                    leading: const Icon(LucideIcons.logOut),
+                    onPressed: controller.onLogoutTap,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 22),
+              Center(
+                child: Text(
+                  'Ishtopchi v${controller.appVersion}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontSize: 12.5,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.45),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     });
   }
 
-  Widget _buildLoginButton() {
-    return ElevatedButton(
-      onPressed: controller.onLoginTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        elevation: 0,
-      ),
-      child: Text(
-        'Kirish'.tr,
-        style: TextStyle(
-          color: AppColors.white,
-          fontSize: Responsive.scaleFont(14, context),
-          fontWeight: FontWeight.w600,
+  /// Foydalanuvchi kartasi: surat, ism va hisob maʼlumoti.
+  ///
+  /// Avval bu 260 piksellik yigʻiladigan `SliverAppBar` edi — bir xil
+  /// maʼlumot ikki marta (yigʻilgan va ochilgan holat uchun) yozilgan edi.
+  Widget _buildIdentityCard() {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final user = funcController.userMe.value.data;
+    final loggedIn = controller.hasToken.value;
+
+    final name =
+        user?.firstName != null
+            ? '${user!.firstName} ${user.lastName ?? ''}'.trim()
+            : 'Ism kiritilmagan'.tr;
+
+    final detail =
+        user?.authProviders?.isNotEmpty == true
+            ? user!.authProviders!.first.email ??
+                user.authProviders!.first.providersUserId ??
+                'Ma’lumot yo‘q'.tr
+            : 'Ma’lumot yo‘q'.tr;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.cardTheme.color ?? colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+        border: Border.all(
+          color: colors.onSurface.withValues(alpha: 0.08),
+          width: 1,
         ),
       ),
-    );
-  }
-
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: onTap,
-          splashColor: AppColors.textColor.withOpacity(0.24),
-          highlightColor: AppColors.textColor.withOpacity(0.1),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: Row(
+        children: [
+          Container(
+            width: 64,
+            height: 64,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: AppColors.cardColor,
-              boxShadow:
-                  themeController.isDarkMode.value
-                      ? null
-                      : [
-                        BoxShadow(
-                          color: AppColors.shadowColor,
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+              color: colors.onSurface.withValues(alpha: 0.06),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: colors.onSurface.withValues(alpha: 0.10),
+                width: 1,
+              ),
             ),
-            child: Row(
+            clipBehavior: Clip.antiAlias,
+            child:
+                loggedIn
+                    ? Image.network(
+                      _getProfileUrl(user?.profilePicture),
+                      fit: BoxFit.cover,
+                      errorBuilder:
+                          (context, _, _) => Icon(
+                            LucideIcons.user,
+                            size: 26,
+                            color: colors.onSurface.withValues(alpha: 0.45),
+                          ),
+                    )
+                    : Icon(
+                      LucideIcons.user,
+                      size: 26,
+                      color: colors.onSurface.withValues(alpha: 0.45),
+                    ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, color: AppColors.textColor),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    title.tr,
-                    style: TextStyle(color: AppColors.textColor),
-                  ),
+                Text(
+                  loggedIn ? name : 'Ism kiritilmagan'.tr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 17),
                 ),
-                const SizedBox(width: 6),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: Colors.white60,
+                const SizedBox(height: 4),
+                Text(
+                  loggedIn ? detail : 'Ma’lumot yo‘q'.tr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 13,
+                    color: colors.onSurface.withValues(alpha: 0.6),
+                  ),
                 ),
               ],
             ),
           ),
-        ),
+          if (!loggedIn) ...[
+            const SizedBox(width: 10),
+            FilledButton(
+              onPressed: controller.onLoginTap,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                foregroundColor: AppColors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 11,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(11),
+                ),
+              ),
+              child: Text(
+                'Kirish'.tr,
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

@@ -24,16 +24,27 @@ val flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "
 val flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
 
 // Load keystore properties
+//
+// `key.properties` git'ga tushmaydi (har bir dasturchida / CI'da alohida
+// boʻladi). Fayl boʻlmasa release build debug kaliti bilan imzolanadi —
+// aks holda `signReleaseBundle` boʻsh (null) imzo sozlamalari bilan
+// yiqiladi (NullPointerException).
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+val releaseStoreFile =
+    (keystoreProperties.getProperty("storeFile") ?: "").takeIf { it.isNotBlank() }
+val hasReleaseSigning = releaseStoreFile != null &&
+    keystoreProperties.getProperty("storePassword").orEmpty().isNotEmpty() &&
+    keystoreProperties.getProperty("keyAlias").orEmpty().isNotEmpty()
+
 android {
     namespace = "torex.top.ishtopchi"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -54,16 +65,27 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String?
+            if (hasReleaseSigning) {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(releaseStoreFile!!)
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
         }
     }
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig =
+                if (hasReleaseSigning) {
+                    signingConfigs.getByName("release")
+                } else {
+                    logger.lifecycle(
+                        "key.properties topilmadi — release build debug kaliti bilan " +
+                            "imzolanadi (Play Store'ga yuklab boʻlmaydi).",
+                    )
+                    signingConfigs.getByName("debug")
+                }
         }
     }
 }

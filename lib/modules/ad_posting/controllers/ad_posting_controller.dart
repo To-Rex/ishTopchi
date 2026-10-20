@@ -6,13 +6,10 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../../config/theme/app_colors.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../../../core/services/show_toast.dart';
 import 'dart:convert';
-
-import '../../../core/utils/responsive.dart';
 
 class CachedTileProvider extends TileProvider {
   @override
@@ -62,6 +59,7 @@ class AdPostingController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
   final ApiController apiController = Get.find<ApiController>();
+  final FuncController funcController = Get.find<FuncController>();
 
   @override
   void onInit() {
@@ -76,8 +74,7 @@ class AdPostingController extends GetxController {
     if (categories.isEmpty) {
       await loadCategories();
     }
-    if (FuncController().getToken() == null ||
-        FuncController().getToken() == '') {
+    if (funcController.getToken() == null || funcController.getToken() == '') {
       return;
     }
     final token = await _waitForToken();
@@ -90,7 +87,7 @@ class AdPostingController extends GetxController {
   Future<String?> _waitForToken() async {
     int retries = 5;
     while (retries > 0) {
-      final token = apiController.funcController.getToken();
+      final token = funcController.getToken();
       if (token != null && token.isNotEmpty) {
         return token;
       }
@@ -158,8 +155,7 @@ class AdPostingController extends GetxController {
   }
 
   Future<bool> checkLocationPermission() async {
-    if (FuncController().getToken() == null ||
-        FuncController().getToken() == '') {
+    if (funcController.getToken() == null || funcController.getToken() == '') {
       return false;
     }
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -200,8 +196,7 @@ class AdPostingController extends GetxController {
 
   Future<void> initializeApp() async {
     print('MainController: Initializing app...');
-    if (FuncController().getToken() == null ||
-        FuncController().getToken() == '') {
+    if (funcController.getToken() == null || funcController.getToken() == '') {
       return;
     }
     if (await checkLocationPermission()) {
@@ -353,7 +348,7 @@ class AdPostingController extends GetxController {
       // Set submitting state
       isSubmitting.value = true;
 
-      final token = apiController.funcController.getToken();
+      final token = funcController.getToken();
       if (token == null) {
         isSubmitting.value = false;
         return;

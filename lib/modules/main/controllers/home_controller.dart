@@ -35,11 +35,7 @@ class HomeController extends GetxController {
     try {
       final response = await _dio.get(
         'https://ishtopchi.uz/api/posts',
-        queryParameters: {
-          'page': page,
-          'limit': limit,
-          'search': searchQuery,
-        },
+        queryParameters: {'page': page, 'limit': limit, 'search': searchQuery},
       );
 
       final List data = response.data['data'];

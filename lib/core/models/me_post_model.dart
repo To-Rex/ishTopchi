@@ -66,7 +66,27 @@ class MeData implements MePostInterface {
   @override
   MeDistrict? district;
 
-  MeData({this.id, this.title, this.content, this.phoneNumber, this.email, this.pictureUrl, this.salaryFrom, this.salaryTo, this.isOpen, this.status, this.views, this.jobType, this.employmentType, this.createdAt, this.updatedAt, this.user, this.location, this.category, this.district});
+  MeData({
+    this.id,
+    this.title,
+    this.content,
+    this.phoneNumber,
+    this.email,
+    this.pictureUrl,
+    this.salaryFrom,
+    this.salaryTo,
+    this.isOpen,
+    this.status,
+    this.views,
+    this.jobType,
+    this.employmentType,
+    this.createdAt,
+    this.updatedAt,
+    this.user,
+    this.location,
+    this.category,
+    this.district,
+  });
 
   MeData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -85,9 +105,12 @@ class MeData implements MePostInterface {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     user = json['user'] != null ? MeUser.fromJson(json['user']) : null;
-    location = json['location'] != null ? MeLocation.fromJson(json['location']) : null;
-    category = json['category'] != null ? MeCategory.fromJson(json['category']) : null;
-    district = json['district'] != null ? MeDistrict.fromJson(json['district']) : null;
+    location =
+        json['location'] != null ? MeLocation.fromJson(json['location']) : null;
+    category =
+        json['category'] != null ? MeCategory.fromJson(json['category']) : null;
+    district =
+        json['district'] != null ? MeDistrict.fromJson(json['district']) : null;
   }
 
   @override
@@ -138,7 +161,20 @@ class MeUser {
   String? updatedAt;
   String? deletedAt;
 
-  MeUser({this.id, this.firstName, this.lastName, this.profilePicture, this.birthDate, this.gender, this.verified, this.isBlocked, this.role, this.createdAt, this.updatedAt, this.deletedAt});
+  MeUser({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.profilePicture,
+    this.birthDate,
+    this.gender,
+    this.verified,
+    this.isBlocked,
+    this.role,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
 
   MeUser.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -227,8 +263,7 @@ class MeDistrict {
   MeDistrict.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    region =
-    json['region'] != null ? MeRegion.fromJson(json['region']) : null;
+    region = json['region'] != null ? MeRegion.fromJson(json['region']) : null;
   }
 
   Map<String, dynamic> toJson() {

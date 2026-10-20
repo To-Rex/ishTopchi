@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -31,7 +30,8 @@ class PostDetailController extends GetxController {
       ShowToast.show(
         'Joylashuv o‘chirilgan',
         'Iltimos, iPhone Sozlamalaridan Location Services ni yoqing.',
-        4, 1,
+        4,
+        1,
       );
       return false;
     }
@@ -56,7 +56,8 @@ class PostDetailController extends GetxController {
         ShowToast.show(
           'Ruxsat berilmadi',
           'Siz ilovada joylashuv ruxsatini bermadingiz. Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
-          5, 1,
+          5,
+          1,
         );
         await openAppSettings();
         return false;
@@ -68,7 +69,8 @@ class PostDetailController extends GetxController {
       ShowToast.show(
         'Ruxsat kerak',
         'Siz joylashuv ruxsatini doimiy rad etgansiz. Iltimos, Sozlamalardan yoqing va ilovani qayta ishga tushiring.',
-        5, 1,
+        5,
+        1,
       );
       await openAppSettings();
       return false;
@@ -77,14 +79,20 @@ class PostDetailController extends GetxController {
     ShowToast.show(
       'Xato',
       'Joylashuv ruxsatini aniqlashda muammo yuz berdi.',
-      3, 1,
+      3,
+      1,
     );
     return false;
   }
 
   Future<void> getCurrentLocation(void Function(LatLng, double) onMove) async {
     if (!isMapReady.value) {
-      ShowToast.show('Xato', 'Xarita hali tayyor emas, iltimos bir oz kuting', 3, 1);
+      ShowToast.show(
+        'Xato',
+        'Xarita hali tayyor emas, iltimos bir oz kuting',
+        3,
+        1,
+      );
       return;
     }
 
@@ -100,7 +108,9 @@ class PostDetailController extends GetxController {
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
-      print('Current location obtained: ${position.latitude}, ${position.longitude}');
+      print(
+        'Current location obtained: ${position.latitude}, ${position.longitude}',
+      );
       final newLocation = LatLng(position.latitude, position.longitude);
       currentLocation.value = newLocation;
       try {
@@ -112,7 +122,9 @@ class PostDetailController extends GetxController {
         }
 
         onMove(newLocation, targetZoom);
-        print('Xarita yangilandi (joriy joylashuv): $newLocation, Zoom: $targetZoom');
+        print(
+          'Xarita yangilandi (joriy joylashuv): $newLocation, Zoom: $targetZoom',
+        );
       } catch (e) {
         print('Xarita harakatlantirishda xato: $e');
         ShowToast.show('Xato', 'Xarita yangilashda xato: $e', 3, 1);

@@ -354,6 +354,16 @@ class AppTranslations extends Translations {
       'Hech qanday bildirishnoma yo‘q': 'Hech qanday bildirishnoma yo‘q',
       'Qayta yuklash': 'Qayta yuklash',
       'E’lon muvaffaqiyatli joylandi': 'E’lon muvaffaqiyatli joylandi',
+      // Asosiy sahifa va filtr varagʻi
+      'Filtrlash': 'Filtrlash',
+      'Joylashuv': 'Joylashuv',
+      'Maosh': 'Maosh',
+      'Narxdan': 'Narxdan',
+      'Narxgacha': 'Narxgacha',
+      "Qo'llash": "Qo'llash",
+      'Shahar/Tuman': 'Shahar/Tuman',
+      'Katak ko‘rinishi': 'Katak ko‘rinishi',
+      'Ro‘yxat ko‘rinishi': 'Ro‘yxat ko‘rinishi',
     },
     'oz': {
       'Kirish': 'Кириш',
@@ -703,6 +713,16 @@ class AppTranslations extends Translations {
       'Hech qanday bildirishnoma yo‘q': 'Ҳеч қандай билдиришнома йўқ',
       'Qayta yuklash': 'Қайта юклаш',
       'E’lon muvaffaqiyatli joylandi': 'Эълон муваффақиятли жойланди',
+      // Asosiy sahifa va filtr varagʻi
+      'Filtrlash': 'Филтрлаш',
+      'Joylashuv': 'Жойлашув',
+      'Maosh': 'Маош',
+      'Narxdan': 'Нархдан',
+      'Narxgacha': 'Нархгача',
+      "Qo'llash": 'Қўллаш',
+      'Shahar/Tuman': 'Шаҳар/Туман',
+      'Katak ko‘rinishi': 'Катак кўриниши',
+      'Ro‘yxat ko‘rinishi': 'Рўйхат кўриниши',
     },
     'en': {
       'Kirish': 'Login',
@@ -1048,6 +1068,16 @@ class AppTranslations extends Translations {
       'Hech qanday bildirishnoma yo‘q': 'No notifications',
       'Qayta yuklash': 'Reload',
       'E’lon muvaffaqiyatli joylandi': 'Announcement successfully posted',
+      // Asosiy sahifa va filtr varagʻi
+      'Filtrlash': 'Filters',
+      'Joylashuv': 'Location',
+      'Maosh': 'Salary',
+      'Narxdan': 'From',
+      'Narxgacha': 'To',
+      "Qo'llash": 'Apply',
+      'Shahar/Tuman': 'City/District',
+      'Katak ko‘rinishi': 'Grid view',
+      'Ro‘yxat ko‘rinishi': 'List view',
     },
     'ru': {
       'Kirish': 'Вход',
@@ -1398,6 +1428,16 @@ class AppTranslations extends Translations {
       'Hech qanday bildirishnoma yo‘q': 'Нет уведомлений',
       'Qayta yuklash': 'Перезагрузить',
       'E’lon muvaffaqiyatli joylandi': 'Объявление успешно размещено',
+      // Asosiy sahifa va filtr varagʻi
+      'Filtrlash': 'Фильтры',
+      'Joylashuv': 'Местоположение',
+      'Maosh': 'Зарплата',
+      'Narxdan': 'От',
+      'Narxgacha': 'До',
+      "Qo'llash": 'Применить',
+      'Shahar/Tuman': 'Город/Район',
+      'Katak ko‘rinishi': 'Плиткой',
+      'Ro‘yxat ko‘rinishi': 'Списком',
     },
   };
 }

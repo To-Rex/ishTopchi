@@ -108,8 +108,6 @@ class NotificationResponse {
   }
 }
 
-
-
 class Notification {
   final String title;
   final String description;

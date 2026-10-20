@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:ishtopchi/controllers/api_controller.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../common/widgets/text_small.dart';
-import '../../../config/theme/app_colors.dart';
-import '../../../controllers/theme_controller.dart';
+import '../../../common/widgets/app_ui.dart';
+import '../../../config/theme/app_brand.dart';
 import '../controllers/otp_controller.dart';
 
+/// Telegram orqali kirishning ikkinchi qadami — tasdiqlash kodi.
 class OtpVerificationScreen extends StatelessWidget {
-  final String phone;
-
   OtpVerificationScreen({super.key, required this.phone});
+
+  final String phone;
 
   final OtpController controller = Get.put(OtpController());
 
@@ -26,222 +27,188 @@ class OtpVerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String otpCode = '';
-    final ThemeController themeController = Get.find<ThemeController>();
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
-    return Obx(
-      () => Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
-          title: Text(
-            'Tasdiqlash kodi'.tr,
-            style: TextStyle(color: AppColors.textColor),
-          ),
-          backgroundColor: AppColors.backgroundColor,
-          foregroundColor: AppColors.textColor,
-          elevation: 0,
-        ),
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.lock_outline_rounded,
-                    size: 60,
-                    color: AppColors.iconColor,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Tasdiqlash kodi'.tr,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppColors.textColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'SMS orqali yuborilgan kodni kiriting'.tr,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondaryColor,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '+998 $phone',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(color: AppColors.textColor),
-                  ),
-                  const SizedBox(height: 24),
-                  GestureDetector(
-                    onTap: _openTelegram,
-                    child: Container(
-                      width: Get.width,
-                      margin: const EdgeInsets.symmetric(horizontal: 24),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.cardColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(Icons.telegram, color: AppColors.iconColor),
-                          const SizedBox(width: 16),
-                          // MUHIM: matnni Expanded bilan o'rab, o'ralishiga ruxsat beramiz
-                          Expanded(
-                            child: TextSmall(
-                              text:
-                                  'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!'
-                                      .tr,
-                              color: AppColors.textColor,
-                              maxLines: 3,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 36),
-                  // OtpVerificationScreen ichidagi o'zgarishlar
-
-                  // 1) PinCodeTextField blokini almashtiring:
-                  Obx(
-                    () => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: PinCodeTextField(
-                        appContext: context,
-                        length: 6,
-                        controller: controller.pinTEC, // <— qo'shildi
-                        errorAnimationController:
-                            controller.errorCtrl, // <— qo'shildi
-                        keyboardType: TextInputType.number,
-                        animationType: AnimationType.fade,
-                        textStyle: TextStyle(
-                          fontSize: 20,
-                          color:
-                              themeController.isDarkMode.value
-                                  ? AppColors.lightGray
-                                  : AppColors.lightText,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        pinTheme: PinTheme(
-                          shape: PinCodeFieldShape.box,
-                          borderRadius: BorderRadius.circular(10),
-                          fieldHeight: 50,
-                          fieldWidth: 42,
-                          // Ranglarni xatolik holatiga qarab boshqaramiz:
-                          activeFillColor:
-                              controller.isError.value
-                                  ? Colors.red
-                                  : AppColors.cardColor,
-                          inactiveFillColor:
-                              controller.isError.value
-                                  ? Colors.red.withOpacity(0.85)
-                                  : AppColors.cardColor,
-                          selectedFillColor:
-                              controller.isError.value
-                                  ? Colors.redAccent
-                                  : (themeController.isDarkMode.value
-                                      ? AppColors.midBlue
-                                      : AppColors.lightBlue),
-                          activeColor: Colors.transparent,
-                          inactiveColor: Colors.transparent,
-                          selectedColor:
-                              controller.isError.value
-                                  ? Colors.redAccent
-                                  : (themeController.isDarkMode.value
-                                      ? AppColors.midBlue
-                                      : AppColors.lightBlue),
-                        ),
-                        animationDuration: const Duration(milliseconds: 200),
-                        enableActiveFill: true,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        onChanged: (value) async {
-                          if (value.length == 6) {
-                            final ok = await ApiController().loginWithOtp(
-                              otp: value,
-                            );
-                            if (!ok) {
-                              controller
-                                  .triggerOtpError(); // <— qizarish + shake + clear + 3s tiklash
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  /*Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child:  PinCodeTextField(
-                       length: 6,
-                       keyboardType: TextInputType.number,
-                       animationType: AnimationType.fade,
-                       textStyle: const TextStyle(fontSize: 20, color: AppColors.white, fontWeight: FontWeight.bold),
-                       pinTheme: PinTheme(
-                         shape: PinCodeFieldShape.box,
-                         borderRadius: BorderRadius.circular(10),
-                         fieldHeight: 50,
-                         fieldWidth: 42,
-                         activeFillColor: AppColors.darkBlue,
-                         inactiveFillColor: AppColors.darkBlue,
-                         selectedFillColor: AppColors.midBlue,
-                         activeColor: Colors.transparent,
-                         inactiveColor: Colors.transparent,
-                         selectedColor: AppColors.midBlue,
-                       ),
-                       animationDuration: const Duration(milliseconds: 200),
-                       enableActiveFill: true,
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       onChanged: (value) {
-                         otpCode = value;
-                         if (value.length == 6) {
-                           ApiController().loginWithOtp(otp: value);
-                         }
-                       },
-                       appContext: context
-                   )
-                  ),*/
-                  Obx(
-                    () =>
-                        controller.resendAvailable.value
-                            ? TextButton(
-                              onPressed: () {
-                                if (controller.resendAvailable.value) {
-                                  controller.resendCode(phone);
-                                }
-                              },
-                              child: Text(
-                                controller.resendAvailable.value
-                                    ? 'Kodni qayta yuborish'.tr
-                                    : '',
-                                style: TextStyle(
-                                  color:
-                                      controller.resendAvailable.value
-                                          ? AppColors.iconColor
-                                          : Colors.grey.shade600,
-                                ),
-                              ),
-                            )
-                            : TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                'Qayta yuborish mumkin: ${controller.remainingSeconds.value}s',
-                                style: TextStyle(color: AppColors.iconColor),
-                              ),
-                            ),
-                  ),
-                  SizedBox(height: 150),
-                ],
+    return AppScreen(
+      title: 'Tasdiqlash kodi'.tr,
+      child: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(28, 12, 28, 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 12),
+            AppReveal(
+              child: AppHeading(
+                title: 'SMS orqali yuborilgan kodni kiriting'.tr,
+                titleSize: 26,
               ),
             ),
+            const SizedBox(height: 12),
+            AppReveal(
+              delay: const Duration(milliseconds: 50),
+              child: Text(
+                '+998 $phone',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ),
+            const SizedBox(height: 28),
+            // Yoʻriqnoma kod maydonidan oldin turadi: foydalanuvchi
+            // avval Telegramdan kodni olishi kerak.
+            AppReveal(
+              delay: const Duration(milliseconds: 100),
+              child: _buildTelegramHint(theme, colors),
+            ),
+            const SizedBox(height: 30),
+            AppReveal(
+              delay: const Duration(milliseconds: 150),
+              child: _buildPinField(context, colors),
+            ),
+            const SizedBox(height: 10),
+            AppReveal(
+              delay: const Duration(milliseconds: 200),
+              child: _buildResend(colors),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Olti xonali kod maydoni.
+  ///
+  /// Ranglari telefon raqam maydoni bilan bir xil manbadan olinadi.
+  /// Xatolikda kontur va raqamlar qizaradi, silkinish animatsiyasi
+  /// avvalgidek `errorCtrl` orqali keladi.
+  Widget _buildPinField(BuildContext context, ColorScheme colors) {
+    return Obx(() {
+      final hasError = controller.isError.value;
+      final field = AppBrand.fieldColors(colors, Theme.of(context).brightness);
+      final borderColor = hasError ? colors.error : field.border;
+      final selectedColor = hasError ? colors.error : field.focus;
+
+      return PinCodeTextField(
+        appContext: context,
+        length: 6,
+        controller: controller.pinTEC,
+        errorAnimationController: controller.errorCtrl,
+        keyboardType: TextInputType.number,
+        animationType: AnimationType.fade,
+        textStyle: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: hasError ? colors.error : colors.onSurface,
+        ),
+        pinTheme: PinTheme(
+          shape: PinCodeFieldShape.box,
+          borderRadius: BorderRadius.circular(14),
+          fieldHeight: 56,
+          fieldWidth: 44,
+          borderWidth: 1.2,
+          activeColor: borderColor,
+          inactiveColor: borderColor,
+          selectedColor: selectedColor,
+          activeFillColor: field.fill,
+          inactiveFillColor: field.fill,
+          selectedFillColor: field.fill,
+        ),
+        enableActiveFill: true,
+        animationDuration: const Duration(milliseconds: 200),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        onChanged: (value) async {
+          if (value.length == 6) {
+            final ok = await ApiController().loginWithOtp(otp: value);
+            if (!ok) {
+              // qizarish + silkinish + tozalash + 3s dan keyin tiklash
+              controller.triggerOtpError();
+            }
+          }
+        },
+      );
+    });
+  }
+
+  /// Kodni qayta yuborish yoki qolgan vaqt.
+  Widget _buildResend(ColorScheme colors) {
+    return Obx(() {
+      final available = controller.resendAvailable.value;
+
+      return Align(
+        child: TextButton(
+          onPressed:
+              available
+                  ? () {
+                    if (controller.resendAvailable.value) {
+                      controller.resendCode(phone);
+                    }
+                  }
+                  : () {},
+          style: TextButton.styleFrom(
+            foregroundColor:
+                available
+                    ? colors.onSurface
+                    : colors.onSurface.withValues(alpha: 0.5),
+          ),
+          child: Text(
+            available
+                ? 'Kodni qayta yuborish'.tr
+                : 'Qayta yuborish mumkin: ${controller.remainingSeconds.value}s',
+          ),
+        ),
+      );
+    });
+  }
+
+  /// Telegram kanalini ochadigan yordam qatori.
+  Widget _buildTelegramHint(ThemeData theme, ColorScheme colors) {
+    final radius = BorderRadius.circular(16);
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: radius,
+      child: InkWell(
+        onTap: _openTelegram,
+        borderRadius: radius,
+        splashColor: colors.onSurface.withValues(alpha: 0.06),
+        highlightColor: colors.onSurface.withValues(alpha: 0.03),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            border: Border.all(
+              color: colors.onSurface.withValues(alpha: 0.18),
+              width: 1.2,
+            ),
+          ),
+          child: Row(
+            children: [
+              FaIcon(
+                FontAwesomeIcons.telegram,
+                size: 18,
+                color: colors.onSurface.withValues(alpha: 0.75),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  'Telegramga kelgan kodni tekshirish uchun bu yerga bosing!'
+                      .tr,
+                  maxLines: 3,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 13.5,
+                    color: colors.onSurface.withValues(alpha: 0.75),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Icon(
+                Icons.arrow_outward,
+                size: 16,
+                color: colors.onSurface.withValues(alpha: 0.45),
+              ),
+            ],
           ),
         ),
       ),

@@ -39,7 +39,17 @@ class ResumesData {
   String? updatedAt;
   String? fileUrl;
 
-  ResumesData({this.id, this.title, this.content, this.education, this.experience, this.user, this.createdAt, this.updatedAt, this.fileUrl});
+  ResumesData({
+    this.id,
+    this.title,
+    this.content,
+    this.education,
+    this.experience,
+    this.user,
+    this.createdAt,
+    this.updatedAt,
+    this.fileUrl,
+  });
 
   ResumesData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -148,7 +158,20 @@ class User {
   String? updatedAt;
   String? deletedAt;
 
-  User({this.id, this.firstName, this.lastName, this.profilePicture, this.birthDate, this.gender, this.verified, this.isBlocked, this.role, this.createdAt, this.updatedAt, this.deletedAt});
+  User({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.profilePicture,
+    this.birthDate,
+    this.gender,
+    this.verified,
+    this.isBlocked,
+    this.role,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];

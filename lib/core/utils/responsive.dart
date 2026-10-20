@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class Responsive {
   // Ekran turini aniqlash uchun chegaralar
-  static const double _mobileWidthThreshold = 600; // Mobil ekran uchun maksimal kenglik
-  static const double _tabletWidthThreshold = 1024; // Planshet ekran uchun maksimal kenglik
+  static const double _mobileWidthThreshold =
+      600; // Mobil ekran uchun maksimal kenglik
+  static const double _tabletWidthThreshold =
+      1024; // Planshet ekran uchun maksimal kenglik
 
   // Standart o‘lchamlar
   static const double _mobileBaseWidth = 375; // iPhone X kengligi
@@ -12,25 +14,39 @@ class Responsive {
   static const double _tabletBaseHeight = 1024; // iPad balandligi
 
   // Ekran kengligini olish
-  static double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
+  static double screenWidth(BuildContext context) =>
+      MediaQuery.of(context).size.width;
 
   // Ekran balandligini olish
-  static double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
+  static double screenHeight(BuildContext context) =>
+      MediaQuery.of(context).size.height;
 
   // Qurilma turini aniqlash
-  static bool isMobile(BuildContext context) => screenWidth(context) < _mobileWidthThreshold;
+  static bool isMobile(BuildContext context) =>
+      screenWidth(context) < _mobileWidthThreshold;
   static bool isTablet(BuildContext context) =>
-      screenWidth(context) >= _mobileWidthThreshold && screenWidth(context) < _tabletWidthThreshold;
-  static bool isDesktop(BuildContext context) => screenWidth(context) >= _tabletWidthThreshold;
+      screenWidth(context) >= _mobileWidthThreshold &&
+      screenWidth(context) < _tabletWidthThreshold;
+  static bool isDesktop(BuildContext context) =>
+      screenWidth(context) >= _tabletWidthThreshold;
 
   // Kenglikni masshtablash
   static double scaleWidth(double size, BuildContext context) {
     final width = screenWidth(context);
-    final pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    double baseWidth = isTablet(context) || isDesktop(context) ? _tabletBaseWidth : _mobileBaseWidth;
+    double baseWidth =
+        isTablet(context) || isDesktop(context)
+            ? _tabletBaseWidth
+            : _mobileBaseWidth;
 
-    // Masshtablash koeffitsientini hisoblash
-    double scale = (width / baseWidth) / pixelRatio;
+    // Masshtablash koeffitsienti — mantiqiy piksellar nisbati.
+    //
+    // Ilgari bu yerda `devicePixelRatio` ga ham boʻlinardi. Bu xato edi:
+    // `screenWidth` allaqachon mantiqiy piksellarda qaytadi, fizik piksel
+    // zichligiga boʻlishning maʼnosi yoʻq. Natijada haqiqiy qurilmada
+    // (pixelRatio ~2.75) koeffitsient 0.4 atrofida chiqib, quyidagi
+    // `clamp` ning eng past chegarasiga tushardi — yaʼni barcha
+    // oʻlchamlar moʻljaldagidan 20% kichik boʻlardi.
+    double scale = width / baseWidth;
     double scaledSize = size * scale;
 
     // Minimal va maksimal chegaralar
@@ -43,11 +59,13 @@ class Responsive {
   // Balandlikni masshtablash
   static double scaleHeight(double size, BuildContext context) {
     final height = screenHeight(context);
-    final pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    double baseHeight = isTablet(context) || isDesktop(context) ? _tabletBaseHeight : _mobileBaseHeight;
+    double baseHeight =
+        isTablet(context) || isDesktop(context)
+            ? _tabletBaseHeight
+            : _mobileBaseHeight;
 
-    // Masshtablash koeffitsientini hisoblash
-    double scale = (height / baseHeight) / pixelRatio;
+    // `devicePixelRatio` ga boʻlish olib tashlandi — [scaleWidth] izohiga qarang.
+    double scale = height / baseHeight;
     double scaledSize = size * scale;
 
     // Minimal va maksimal chegaralar
@@ -60,16 +78,18 @@ class Responsive {
   // Shrift o‘lchamini masshtablash
   static double scaleFont(double size, BuildContext context) {
     final width = screenWidth(context);
-    final pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    double baseWidth = isTablet(context) || isDesktop(context) ? _tabletBaseWidth : _mobileBaseWidth;
+    double baseWidth =
+        isTablet(context) || isDesktop(context)
+            ? _tabletBaseWidth
+            : _mobileBaseWidth;
 
-    // Shriftni kenglik va balandlikka nisbatan masshtablash
-    double scale = (width / baseWidth) / pixelRatio;
+    // `devicePixelRatio` ga boʻlish olib tashlandi — [scaleWidth] izohiga qarang.
+    double scale = width / baseWidth;
     double scaledSize = size * scale;
 
     // Shrift uchun qo‘shimcha chegaralar
     final minFontSize = size * 0.85; // Minimal shrift o‘lchami
-    final maxFontSize = size * 1.3;  // Maksimal shrift o‘lchami
+    final maxFontSize = size * 1.3; // Maksimal shrift o‘lchami
 
     return scaledSize.clamp(minFontSize, maxFontSize);
   }
@@ -89,8 +109,16 @@ class Responsive {
     final width = screenWidth(context);
     final height = screenHeight(context);
     final pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    print('Responsive: Screen width: $width, height: $height, pixelRatio: $pixelRatio');
-    print('Responsive: Device type: ${isMobile(context) ? "Mobile" : isTablet(context) ? "Tablet" : "Desktop"}');
+    print(
+      'Responsive: Screen width: $width, height: $height, pixelRatio: $pixelRatio',
+    );
+    print(
+      'Responsive: Device type: ${isMobile(context)
+          ? "Mobile"
+          : isTablet(context)
+          ? "Tablet"
+          : "Desktop"}',
+    );
   }
 
   int getCrossAxisCount(BuildContext context) {

@@ -1,156 +1,183 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../../config/theme/app_colors.dart';
+import '../../../common/widgets/glass_tab_bar.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../../../controllers/theme_controller.dart';
-import '../../../core/utils/responsive.dart';
 import '../../ad_posting/views/ad_posting_screen.dart';
 import '../../messages/views/messages_screen.dart';
-import '../../profile/views/edit_profile_screen.dart';
 import '../../profile/views/profile_screen.dart';
 import 'main_content.dart';
 
-class MainScreen extends StatelessWidget {
+/// Ilovaning karkasi: yuqori panel, boʻlimlar va pastki navigatsiya.
+///
+/// Yuqori panel avval `PreferredSize` ichidagi `margin-top: 80` bilan
+/// qurilgan edi — status paneli balandligi qoʻlda taxmin qilingan.
+/// Endi oddiy [AppBar]: u chekkalarni oʻzi hisoblaydi va mavzudagi
+/// `appBarTheme` ga boʻysunadi.
+class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final FuncController funcController = Get.find<FuncController>();
-    final ApiController apiController = Get.find<ApiController>();
-    final themeController = Get.find<ThemeController>();
+  State<MainScreen> createState() => _MainScreenState();
+}
 
-    // Log FCM token for debugging/testing
+class _MainScreenState extends State<MainScreen> {
+  /// Pastki paneldagi boʻlimlar — avvalgidek toʻrtta, oʻsha tartibda.
+  static const List<GlassTab> _tabs = [
+    GlassTab(LucideIcons.house, LucideIcons.house500, 'Asosiy'),
+    GlassTab(
+      LucideIcons.circlePlus,
+      LucideIcons.circlePlus500,
+      'E’lon qo‘shish',
+    ),
+    GlassTab(
+      LucideIcons.messageCircle,
+      LucideIcons.messageCircle500,
+      'Xabarlar',
+    ),
+    GlassTab(LucideIcons.user, LucideIcons.user500, 'Profil'),
+  ];
+
+  final FuncController funcController = Get.find<FuncController>();
+  final ApiController apiController = Get.find<ApiController>();
+  final ThemeController themeController = Get.find<ThemeController>();
+
+  /// Boʻlimlar bir marta quriladi: ilgari ular har bir qayta qurishda
+  /// yangidan yaratilardi va `IndexedStack` ularni qaytadan qurishga
+  /// majbur boʻlardi.
+  late final List<Widget> _pages = [
+    const MainContent(),
+    const AdPostingScreen(),
+    MessagesScreen(),
+    ProfileScreen(),
+  ];
+
+  /// Bir marta ochilgan boʻlimlar.
+  ///
+  /// `IndexedStack` avval barcha toʻrttasini birdan qurardi: xarita,
+  /// suhbatlar va profil ilova ochilishida tayyorlanardi — sovuq start
+  /// shu sababdan sekin edi. Endi boʻlim faqat birinchi marta bosilganda
+  /// quriladi va keyin tirik qoladi (holat, scroll va forma saqlanadi).
+  final Set<int> _visited = <int>{0};
+
+  @override
+  void initState() {
+    super.initState();
+    // FCM tokenini yozib qoʻyamiz (bir marta).
     funcController.logFcmToken();
 
-    // Ilova ochilganda foydalanuvchi ma'lumotlarini yuklash
+    // Foydalanuvchi ma'lumotlarini yuklash. Ilgari bu `build` ichida
+    // edi — har bir qayta qurishda tarmoqqa soʻrov ketardi.
     if (funcController.globalToken.value.isNotEmpty) {
       apiController.getMe();
     }
+  }
 
-    // Sahifalar ro'yxati
-    final List<Widget> pages = [
-      const MainContent(),
-      const AdPostingScreen(),
-      MessagesScreen(),
-      ProfileScreen(),
-    ];
-
-    return Obx(() {
-      final gradientColors =
-          themeController.isDarkMode.value
-              ? [AppColors.darkNavy, AppColors.darkBlue]
-              : [AppColors.lightBackground, AppColors.lightSurface];
-
-      return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(Responsive.scaleHeight(100, context)),
-          child: Container(
-            margin: EdgeInsets.only(
-              top: Responsive.scaleHeight(80, context),
-              left: Responsive.scaleWidth(11, context),
-              right: Responsive.scaleWidth(11, context),
-            ),
-            child: Row(
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () => funcController.setBarIndex(0),
-                  icon: Icon(
-                    LucideIcons.briefcaseBusiness,
-                    color: AppColors.textColor,
-                    size: 24,
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(
-                      Colors.transparent,
-                    ),
-                    elevation: WidgetStateProperty.all(0),
-                    padding: WidgetStateProperty.all(EdgeInsets.all(5)),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                  label: Text(
-                    'Ishtopchi',
-                    style: TextStyle(
-                      color: AppColors.textColor,
-                      fontSize: 20.sp,
-                    ),
-                  ),
-                ),
-                Spacer(),
-                if (funcController.barIndex.value == 3)
-                  IconButton(
-                    icon: Icon(
-                      themeController.isDarkMode.value
-                          ? LucideIcons.sun
-                          : LucideIcons.moon,
-                      color: AppColors.textColor,
-                    ),
-                    onPressed: () => themeController.toggleTheme(),
-                    tooltip:
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // Kontent pastki panel ostidan ham oʻtadi — panel shisha kabi
+      // xiralashtirib koʻrsatadi. Roʻyxatlar oxiriga panel balandligicha
+      // boʻshliq qoʻshilgan (`MediaQuery.paddingOf(context).bottom`),
+      // shuning uchun oxirgi element panel ostida qolib ketmaydi.
+      extendBody: true,
+      appBar: AppBar(
+        titleSpacing: 12,
+        title: _Wordmark(onTap: () => funcController.setBarIndex(0)),
+        actions: [
+          // Mavzu almashtirish faqat profil boʻlimida koʻrinadi —
+          // avvalgidek.
+          Obx(
+            () =>
+                funcController.barIndex.value == 3
+                    ? IconButton(
+                      icon: Icon(
                         themeController.isDarkMode.value
-                            ? 'Yorqin mavzu'
-                            : 'Tungi mavzu',
-                  ),
-                IconButton(
-                  icon: Icon(LucideIcons.heart, color: AppColors.textColor),
-                  onPressed: () => Get.toNamed('/favorites'),
+                            ? LucideIcons.sun
+                            : LucideIcons.moon,
+                      ),
+                      onPressed: () => themeController.toggleTheme(),
+                      tooltip:
+                          themeController.isDarkMode.value
+                              ? 'Yorqin mavzu'
+                              : 'Tungi mavzu',
+                    )
+                    : const SizedBox.shrink(),
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.heart),
+            onPressed: () => Get.toNamed('/favorites'),
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
+      body: Obx(() {
+        final index = funcController.barIndex.value;
+        _visited.add(index);
+
+        return IndexedStack(
+          index: index,
+          children: [
+            for (var i = 0; i < _pages.length; i++)
+              if (_visited.contains(i))
+                // Koʻrinmayotgan boʻlimda animatsiyalar (masalan, xarita
+                // siljishi) toʻxtaydi — orqa fonda kadr talab qilmaydi.
+                TickerMode(enabled: i == index, child: _pages[i])
+              else
+                const SizedBox.shrink(),
+          ],
+        );
+      }),
+      bottomNavigationBar: Obx(
+        () => GlassTabBar(
+          tabs: _tabs,
+          currentIndex: funcController.barIndex.value,
+          onSelect: funcController.setBarIndex,
+        ),
+      ),
+    );
+  }
+}
+
+/// Yuqori paneldagi brend nomi. Bosilganda birinchi boʻlimga qaytaradi.
+class _Wordmark extends StatelessWidget {
+  const _Wordmark({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                LucideIcons.briefcaseBusiness,
+                size: 21,
+                color: theme.colorScheme.onSurface,
+              ),
+              const SizedBox(width: 9),
+              Text(
+                'Ishtopchi',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontSize: 19,
+                  letterSpacing: -0.4,
                 ),
-              ],
-            ),
-          ),
-        ),
-        body: Obx(
-          () => IndexedStack(
-            index: funcController.barIndex.value,
-            children: pages,
-          ),
-        ),
-        bottomNavigationBar: Obx(
-          () => BottomNavigationBar(
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(LucideIcons.house),
-                label: 'Asosiy'.tr,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(LucideIcons.circlePlus),
-                label: 'E’lon qo‘shish'.tr,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(LucideIcons.messageCircle),
-                label: 'Xabarlar'.tr,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(LucideIcons.user),
-                label: 'Profil'.tr,
               ),
             ],
-            selectedFontSize: Responsive.scaleFont(12, context),
-            unselectedFontSize: Responsive.scaleFont(12, context),
-            selectedIconTheme: IconThemeData(
-              size: Responsive.scaleWidth(28, context),
-            ),
-            unselectedIconTheme: IconThemeData(
-              size: Responsive.scaleWidth(28, context),
-            ),
-            currentIndex: funcController.barIndex.value,
-            selectedItemColor: AppColors.selectedItem,
-            unselectedItemColor: AppColors.textSecondaryColor,
-            backgroundColor: AppColors.cardColor,
-            type: BottomNavigationBarType.fixed,
-            elevation: 0,
-            onTap: (index) {
-              funcController.setBarIndex(index);
-            },
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }

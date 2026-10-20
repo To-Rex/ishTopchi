@@ -6,6 +6,6 @@ class SplashBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<SplashController>(() => SplashController());
-    FuncController().getLanguage();
+    Get.find<FuncController>().getLanguage();
   }
 }

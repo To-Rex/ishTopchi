@@ -1,6 +1,6 @@
 import 'package:ishtopchi/core/models/post_model.dart';
 
-class WishList implements PostInterface{
+class WishList implements PostInterface {
   @override
   final int? id;
   @override
@@ -40,7 +40,27 @@ class WishList implements PostInterface{
   @override
   final District? district;
 
-  WishList({this.id, this.title, this.content, this.phoneNumber, this.email, this.pictureUrl, this.salaryFrom, this.salaryTo, this.isOpen, this.status, this.views, this.jobType, this.employmentType, this.createdAt, this.updatedAt, this.user, this.location, this.category, this.district});
+  WishList({
+    this.id,
+    this.title,
+    this.content,
+    this.phoneNumber,
+    this.email,
+    this.pictureUrl,
+    this.salaryFrom,
+    this.salaryTo,
+    this.isOpen,
+    this.status,
+    this.views,
+    this.jobType,
+    this.employmentType,
+    this.createdAt,
+    this.updatedAt,
+    this.user,
+    this.location,
+    this.category,
+    this.district,
+  });
 
   factory WishList.fromJson(Map<String, dynamic> json) {
     return WishList(
@@ -60,9 +80,12 @@ class WishList implements PostInterface{
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       user: json['user'] != null ? User.fromJson(json['user']) : null,
-      location: json['location'] != null ? Location.fromJson(json['location']) : null,
-      category: json['category'] != null ? Category.fromJson(json['category']) : null,
-      district: json['district'] != null ? District.fromJson(json['district']) : null,
+      location:
+          json['location'] != null ? Location.fromJson(json['location']) : null,
+      category:
+          json['category'] != null ? Category.fromJson(json['category']) : null,
+      district:
+          json['district'] != null ? District.fromJson(json['district']) : null,
     );
   }
 

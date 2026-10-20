@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 import '../../../controllers/theme_controller.dart';
-import '../views/settings_screen.dart';
 
 class SettingsBinding extends Bindings {
   @override

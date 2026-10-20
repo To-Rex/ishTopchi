@@ -6,13 +6,15 @@ class MainController extends GetxController {
   final FuncController funcController = Get.find<FuncController>();
   final ApiController apiController = Get.find<ApiController>();
 
-
   Future<void> fetchInitialPosts() async {
     if (!funcController.isLoading.value) {
       funcController.currentPage.value = 1;
       funcController.hasMore.value = true;
       funcController.posts.clear();
-      await apiController.fetchPosts(search: funcController.searchQuery.value, page: 1);
+      await apiController.fetchPosts(
+        search: funcController.searchQuery.value,
+        page: 1,
+      );
     }
   }
 

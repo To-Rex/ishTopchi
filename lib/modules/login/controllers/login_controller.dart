@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
 import '../views/phone_screen.dart';
@@ -33,7 +32,15 @@ class LoginController extends GetxController {
           await googleUser.authentication;
       print('User email address: ${googleUser.email}');
       print('User name: ${googleUser.displayName}');
-      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'WEB', googleUser.displayName ?? '', funcController.fcmToken.value, funcController.deviceId.value, funcController.platform.value, funcController.deviceName.value);
+      await _apiController.sendGoogleIdToken(
+        googleAuth.idToken!,
+        'WEB',
+        googleUser.displayName ?? '',
+        funcController.fcmToken.value,
+        funcController.deviceId.value,
+        funcController.platform.value,
+        funcController.deviceName.value,
+      );
     } catch (e) {
       print('Google Sign-In error: $e');
     }
@@ -68,7 +75,15 @@ class LoginController extends GetxController {
           await googleUser.authentication;
       print('User email address: ${googleUser.email}');
       print('User name: ${googleUser.displayName}');
-      await _apiController.sendGoogleIdToken(googleAuth.idToken!, 'IOS', googleUser.displayName ?? '', funcController.fcmToken.value, funcController.deviceId.value, funcController.platform.value, funcController.deviceName.value);
+      await _apiController.sendGoogleIdToken(
+        googleAuth.idToken!,
+        'IOS',
+        googleUser.displayName ?? '',
+        funcController.fcmToken.value,
+        funcController.deviceId.value,
+        funcController.platform.value,
+        funcController.deviceName.value,
+      );
     } catch (e) {
       isLoading.value = false;
       print('Google Sign-In error: $e');
@@ -83,7 +98,6 @@ class LoginController extends GetxController {
   Future<void> signInWithApple() async {
     isLoading.value = true;
     try {
-
       // Fetch device info
       await funcController.fetchDeviceInfo();
 

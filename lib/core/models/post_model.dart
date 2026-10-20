@@ -66,7 +66,27 @@ class Data implements PostInterface {
   @override
   District? district;
 
-  Data({this.id, this.title, this.content, this.phoneNumber, this.email, this.pictureUrl, this.salaryFrom, this.salaryTo, this.isOpen, this.status, this.views, this.jobType, this.employmentType, this.createdAt, this.updatedAt, this.user, this.location, this.category, this.district});
+  Data({
+    this.id,
+    this.title,
+    this.content,
+    this.phoneNumber,
+    this.email,
+    this.pictureUrl,
+    this.salaryFrom,
+    this.salaryTo,
+    this.isOpen,
+    this.status,
+    this.views,
+    this.jobType,
+    this.employmentType,
+    this.createdAt,
+    this.updatedAt,
+    this.user,
+    this.location,
+    this.category,
+    this.district,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -85,9 +105,12 @@ class Data implements PostInterface {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     user = json['user'] != null ? User.fromJson(json['user']) : null;
-    location = json['location'] != null ? Location.fromJson(json['location']) : null;
-    category = json['category'] != null ? Category.fromJson(json['category']) : null;
-    district = json['district'] != null ? District.fromJson(json['district']) : null;
+    location =
+        json['location'] != null ? Location.fromJson(json['location']) : null;
+    category =
+        json['category'] != null ? Category.fromJson(json['category']) : null;
+    district =
+        json['district'] != null ? District.fromJson(json['district']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -137,7 +160,20 @@ class User {
   String? updatedAt;
   String? deletedAt;
 
-  User({this.id, this.firstName, this.lastName, this.profilePicture, this.birthDate, this.gender, this.verified, this.isBlocked, this.role, this.createdAt, this.updatedAt, this.deletedAt});
+  User({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.profilePicture,
+    this.birthDate,
+    this.gender,
+    this.verified,
+    this.isBlocked,
+    this.role,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -226,8 +262,7 @@ class District {
   District.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    region =
-    json['region'] != null ? Region.fromJson(json['region']) : null;
+    region = json['region'] != null ? Region.fromJson(json['region']) : null;
   }
 
   Map<String, dynamic> toJson() {

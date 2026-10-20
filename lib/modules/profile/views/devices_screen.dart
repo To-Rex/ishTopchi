@@ -1,506 +1,435 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import '../../../common/widgets/app_ui.dart';
 import '../../../config/theme/app_colors.dart';
+import '../../../config/theme/app_theme.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
-import '../../../controllers/theme_controller.dart';
-import '../../../core/utils/responsive.dart';
 import '../../../core/models/devices_model.dart';
 
+/// Hisobga kirgan qurilmalar.
 class DevicesScreen extends StatelessWidget {
   const DevicesScreen({super.key});
-
-  showDeleteDialog(
-    context,
-    DevicesData device,
-    ApiController apiController,
-    int id,
-  ) {
-    final ThemeController themeController = Get.find<ThemeController>();
-
-    Get.dialog(
-      Dialog(
-        backgroundColor: Colors.transparent,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 600),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.cardColor, AppColors.backgroundColor],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowColor.withAlpha(50),
-                blurRadius: 8,
-                spreadRadius: 1,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  device.deviceName ?? 'Noma’lum qurilma'.tr,
-                  style: TextStyle(
-                    color: AppColors.textColor,
-                    fontSize: Responsive.scaleFont(18, context),
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                SizedBox(height: Responsive.scaleHeight(12, context)),
-                _buildInfoRow(
-                  context,
-                  icon: LucideIcons.hash,
-                  label: 'ID',
-                  value: device.id?.toString() ?? 'Noma’lum'.tr,
-                ),
-                SizedBox(height: Responsive.scaleHeight(8, context)),
-                _buildInfoRow(
-                  context,
-                  icon: LucideIcons.smartphone,
-                  label: 'Model'.tr,
-                  value: device.deviceModel ?? 'Noma’lum'.tr,
-                ),
-                SizedBox(height: Responsive.scaleHeight(8, context)),
-                _buildInfoRow(
-                  context,
-                  icon:
-                      device.platform == 'Android'
-                          ? LucideIcons.tablet
-                          : LucideIcons.apple,
-                  label: 'Platforma'.tr,
-                  value: device.platform ?? 'Noma’lum'.tr,
-                ),
-                SizedBox(height: Responsive.scaleHeight(8, context)),
-                _buildInfoRow(
-                  context,
-                  icon: LucideIcons.clock,
-                  label: 'Oxirgi kirish'.tr,
-                  value: device.lastLogin?.split('T')[0] ?? 'Noma’lum'.tr,
-                ),
-                SizedBox(height: Responsive.scaleHeight(8, context)),
-                _buildInfoRow(
-                  context,
-                  icon: LucideIcons.circleCheck,
-                  label: 'Faol'.tr,
-                  value: device.isActive == true ? 'Ha'.tr : 'Yo‘q'.tr,
-                  valueColor:
-                      device.isActive == true ? Colors.green : Colors.redAccent,
-                ),
-                SizedBox(height: Responsive.scaleHeight(16, context)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(
-                        'Yopish'.tr,
-                        style: TextStyle(
-                          color: AppColors.textColor,
-                          fontSize: Responsive.scaleFont(14, context),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: Responsive.scaleWidth(16, context)),
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.redAccent, Colors.red],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.shadowColor.withAlpha(50),
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            apiController.deleteDevice(device.id!);
-                            Navigator.of(context).pop();
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: Responsive.scaleHeight(10, context),
-                              horizontal: Responsive.scaleWidth(16, context),
-                            ),
-                            child: Text(
-                              'Qurilmani o‘chirish'.tr,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: Responsive.scaleFont(14, context),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: Responsive.scaleWidth(8, context)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final ApiController apiController = Get.find<ApiController>();
     final FuncController funcController = Get.find<FuncController>();
-    final ThemeController themeController = Get.find<ThemeController>();
 
     // Qurilmalarni olish
     apiController.fetchDevices();
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: AppColors.textColor,
-            size: Responsive.scaleFont(25, context),
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Mening qurilmalarim'.tr,
-          style: TextStyle(
-            color: AppColors.textColor,
-            fontSize: Responsive.scaleFont(20, context),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.backgroundColor, AppColors.cardColor],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Obx(() {
-          if (funcController.isLoading.value) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: AppColors.iconColor,
-                strokeWidth: 2,
-              ),
-            );
-          }
-          if (funcController.devicesModel.value.data == null ||
-              funcController.devicesModel.value.data!.isEmpty) {
-            return Center(
-              child: Text(
-                'Qurilmalar topilmadi'.tr,
-                style: TextStyle(
-                  color: AppColors.textColor,
-                  fontSize: Responsive.scaleFont(14, context),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            );
-          }
+    return AppScreen(
+      title: 'Mening qurilmalarim'.tr,
+      child: Obx(() {
+        if (funcController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          // Joriy qurilma va boshqa qurilmalarni ajratish
-          final devices = funcController.devicesModel.value.data!;
-          final currentDevice = devices.firstWhereOrNull(
-            (device) => device.deviceId == funcController.deviceId.value,
+        if (funcController.devicesModel.value.data == null ||
+            funcController.devicesModel.value.data!.isEmpty) {
+          return AppEmptyState(
+            icon: LucideIcons.smartphone,
+            title: 'Qurilmalar topilmadi'.tr,
           );
-          final otherDevices =
-              devices.where((device) => device != currentDevice).toList();
+        }
 
-          return AnimationLimiter(
-            child: ListView(
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.scaleWidth(16, context),
-                vertical: Responsive.scaleHeight(16, context),
-              ),
-              children: [
-                // Joriy qurilma bo'limi
-                if (currentDevice != null) ...[
-                  Text(
-                    'Joriy qurilma'.tr,
-                    style: TextStyle(
-                      color: AppColors.textColor,
-                      fontSize: Responsive.scaleFont(18, context),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: Responsive.scaleHeight(8, context)),
-                  AnimationConfiguration.staggeredList(
-                    position: 0,
-                    duration: const Duration(milliseconds: 600),
-                    child: SlideAnimation(
-                      verticalOffset: 20.0,
-                      curve: Curves.easeOutBack,
-                      child: FadeInAnimation(
-                        child: _buildDeviceCard(
-                          context,
-                          currentDevice,
-                          apiController,
-                          true,
-                          otherDevices,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: Responsive.scaleHeight(24, context)),
-                ],
-                // Boshqa qurilmalar bo'limi
-                if (otherDevices.isNotEmpty) ...[
-                  Text(
-                    'Boshqa qurilmalar'.tr,
-                    style: TextStyle(
-                      color: AppColors.textColor,
-                      fontSize: Responsive.scaleFont(18, context),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: Responsive.scaleHeight(8, context)),
-                  ...otherDevices.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final device = entry.value;
-                    return AnimationConfiguration.staggeredList(
-                      position: index + (currentDevice != null ? 1 : 0),
-                      duration: const Duration(milliseconds: 600),
-                      child: SlideAnimation(
-                        verticalOffset: 20.0,
-                        curve: Curves.easeOutBack,
-                        child: FadeInAnimation(
-                          child: _buildDeviceCard(
-                            context,
-                            device,
-                            apiController,
-                            false,
-                            otherDevices,
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ],
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
+        // Joriy qurilma va boshqa qurilmalarni ajratish
+        final devices = funcController.devicesModel.value.data!;
+        final currentDevice = devices.firstWhereOrNull(
+          (device) => device.deviceId == funcController.deviceId.value,
+        );
+        final otherDevices =
+            devices.where((device) => device != currentDevice).toList();
 
-  Widget _buildDeviceCard(
-    BuildContext context,
-    DevicesData device,
-    ApiController apiController,
-    bool isCurrentDevice,
-    otherDevices,
-  ) {
-    return GestureDetector(
-      onTap: () => showDeleteDialog(context, device, apiController, device.id!),
-      child: Container(
-        margin: EdgeInsets.symmetric(
-          vertical: Responsive.scaleHeight(8, context),
-        ),
-        padding: EdgeInsets.all(Responsive.scaleWidth(14, context)),
-        decoration: BoxDecoration(
-          color: AppColors.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowColor.withAlpha(50),
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
+        var step = 0;
+
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
           children: [
-            Row(
-              children: [
-                AnimatedScale(
-                  scale: 1.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Icon(
-                    device.platform == 'Android'
-                        ? LucideIcons.tablet
-                        : LucideIcons.apple,
-                    color:
-                        isCurrentDevice
-                            ? AppColors.textColor
-                            : AppColors.iconColor,
-                    size: Responsive.scaleFont(25, context),
-                  ),
-                ),
-                SizedBox(width: Responsive.scaleWidth(15, context)),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        isCurrentDevice
-                            ? '${device.deviceName ?? 'Noma’lum qurilma'.tr} ${'Joriy'.tr}'
-                            : device.deviceName ?? 'Noma’lum qurilma'.tr,
-                        style: TextStyle(
-                          color: AppColors.textColor,
-                          fontSize: Responsive.scaleFont(16, context),
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+            // Joriy qurilma bo'limi
+            if (currentDevice != null) ...[
+              AppSectionLabel(text: 'Joriy qurilma'.tr),
+              AppReveal(
+                delay: AppReveal.step(step++),
+                child: _DeviceCard(
+                  device: currentDevice,
+                  isCurrentDevice: true,
+                  hasOtherDevices: otherDevices.isNotEmpty,
+                  onOpen:
+                      () => _showDeviceDialog(
+                        context,
+                        currentDevice,
+                        apiController,
                       ),
-                      SizedBox(height: Responsive.scaleHeight(4, context)),
-                      Text(
-                        device.deviceModel ?? 'Noma’lum model'.tr,
-                        style: TextStyle(
-                          color: AppColors.textSecondaryColor,
-                          fontSize: Responsive.scaleFont(14, context),
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: Responsive.scaleHeight(4, context)),
-                      Row(
-                        children: [
-                          Text(
-                            '${'Faol'.tr}: ${device.isActive == true ? 'Ha'.tr : 'Yo‘q'.tr}',
-                            style: TextStyle(
-                              color:
-                                  device.isActive == true
-                                      ? Colors.green
-                                      : Colors.redAccent,
-                              fontSize: Responsive.scaleFont(13, context),
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          SizedBox(width: Responsive.scaleWidth(8, context)),
-                          Text(
-                            device.lastLogin?.split('T')[0] ?? 'Noma’lum'.tr,
-                            style: TextStyle(
-                              color: AppColors.textSecondaryColor,
-                              fontSize: Responsive.scaleFont(13, context),
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                ),
+              ),
+              const SizedBox(height: 18),
+            ],
+            // Boshqa qurilmalar bo'limi
+            if (otherDevices.isNotEmpty) ...[
+              AppSectionLabel(text: 'Boshqa qurilmalar'.tr),
+              ...otherDevices.map(
+                (device) => AppReveal(
+                  delay: AppReveal.step(step++),
+                  child: _DeviceCard(
+                    device: device,
+                    isCurrentDevice: false,
+                    hasOtherDevices: false,
+                    onOpen:
+                        () => _showDeviceDialog(context, device, apiController),
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    showDeleteDialog(
-                      context,
-                      device,
-                      apiController,
-                      device.id!,
-                    );
-                  },
-                  icon: Icon(
-                    LucideIcons.trash2,
-                    color: AppColors.red,
-                    size: Responsive.scaleFont(22, context),
-                  ),
-                ),
-              ],
-            ),
-            if (isCurrentDevice && otherDevices.isNotEmpty) ...[
-              Divider(color: AppColors.dividerColor, thickness: 0.7),
-              TextButton.icon(
-                icon: Icon(
-                  LucideIcons.hand,
-                  color: AppColors.red,
-                  size: Responsive.scaleFont(18, context),
-                ),
-                style: TextButton.styleFrom(
-                  shadowColor: AppColors.red,
-                  overlayColor: AppColors.red,
-                  minimumSize: Size.square(Responsive.scaleHeight(40, context)),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                label: Text(
-                  'Boshqa barcha seanslarni tugatish'.tr,
-                  style: TextStyle(
-                    color: AppColors.red,
-                    fontSize: Responsive.scaleFont(16, context),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                onPressed:
-                    () => showDeleteDialog(
-                      context,
-                      device,
-                      apiController,
-                      device.id!,
-                    ),
               ),
             ],
           ],
+        );
+      }),
+    );
+  }
+
+  /// Qurilma tafsilotlari va oʻchirish oynasi.
+  void _showDeviceDialog(
+    BuildContext context,
+    DevicesData device,
+    ApiController apiController,
+  ) {
+    final theme = Theme.of(context);
+
+    Get.dialog(
+      Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 22, 20, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                device.deviceName ?? 'Noma’lum qurilma'.tr,
+                style: theme.textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              _InfoRow(
+                icon: LucideIcons.hash,
+                label: 'ID',
+                value: device.id?.toString() ?? 'Noma’lum'.tr,
+              ),
+              _InfoRow(
+                icon: LucideIcons.smartphone,
+                label: 'Model'.tr,
+                value: device.deviceModel ?? 'Noma’lum'.tr,
+              ),
+              _InfoRow(
+                icon:
+                    device.platform == 'Android'
+                        ? LucideIcons.tablet
+                        : LucideIcons.apple,
+                label: 'Platforma'.tr,
+                value: device.platform ?? 'Noma’lum'.tr,
+              ),
+              _InfoRow(
+                icon: LucideIcons.clock,
+                label: 'Oxirgi kirish'.tr,
+                value: device.lastLogin?.split('T')[0] ?? 'Noma’lum'.tr,
+              ),
+              _InfoRow(
+                icon: LucideIcons.circleCheck,
+                label: 'Faol'.tr,
+                value: device.isActive == true ? 'Ha'.tr : 'Yo‘q'.tr,
+                valueColor:
+                    device.isActive == true ? AppColors.green : AppColors.red,
+              ),
+              const SizedBox(height: 18),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Yopish'.tr),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: () {
+                      apiController.deleteDevice(device.id!);
+                      Navigator.of(context).pop();
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.red,
+                      foregroundColor: AppColors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppTheme.radiusControl,
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 14,
+                      ),
+                    ),
+                    child: Text('Qurilmani o‘chirish'.tr),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildInfoRow(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required String value,
-    Color? valueColor,
-  }) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          color: AppColors.iconColor,
-          size: Responsive.scaleFont(18, context),
-        ),
-        SizedBox(width: Responsive.scaleWidth(8, context)),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            color: AppColors.textSecondaryColor,
-            fontSize: Responsive.scaleFont(14, context),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              color: valueColor ?? AppColors.textColor,
-              fontSize: Responsive.scaleFont(14, context),
-              fontWeight: FontWeight.w600,
+/// Bitta qurilma kartasi.
+class _DeviceCard extends StatelessWidget {
+  const _DeviceCard({
+    required this.device,
+    required this.isCurrentDevice,
+    required this.hasOtherDevices,
+    required this.onOpen,
+  });
+
+  final DevicesData device;
+  final bool isCurrentDevice;
+
+  /// Joriy qurilmada "boshqa seanslarni tugatish" tugmasi koʻrsatiladi.
+  final bool hasOtherDevices;
+
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final muted = colors.onSurface.withValues(alpha: 0.6);
+    final radius = BorderRadius.circular(AppTheme.radiusCard);
+    final active = device.isActive == true;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: theme.cardTheme.color ?? colors.surfaceContainer,
+        borderRadius: radius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onOpen,
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: Border.all(
+                // Joriy qurilma urgʻu konturi bilan ajralib turadi.
+                color:
+                    isCurrentDevice
+                        ? colors.primary.withValues(alpha: 0.35)
+                        : colors.onSurface.withValues(alpha: 0.08),
+                width: isCurrentDevice ? 1.4 : 1,
+              ),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        device.platform == 'Android'
+                            ? LucideIcons.tablet
+                            : LucideIcons.apple,
+                        size: 19,
+                        color: colors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 13),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  device.deviceName ?? 'Noma’lum qurilma'.tr,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleSmall,
+                                ),
+                              ),
+                              if (isCurrentDevice) ...[
+                                const SizedBox(width: 8),
+                                _Badge(text: 'Joriy'.tr),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            device.deviceModel ?? 'Noma’lum model'.tr,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 12.5,
+                              color: muted,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Container(
+                                width: 6,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  color:
+                                      active ? AppColors.green : AppColors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${'Faol'.tr}: ${active ? 'Ha'.tr : 'Yo‘q'.tr}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize: 11.5,
+                                  color:
+                                      active ? AppColors.green : AppColors.red,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                device.lastLogin?.split('T')[0] ??
+                                    'Noma’lum'.tr,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize: 11.5,
+                                  color: muted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: onOpen,
+                      icon: Icon(
+                        LucideIcons.trash2,
+                        color: AppColors.red,
+                        size: 19,
+                      ),
+                    ),
+                  ],
+                ),
+                if (isCurrentDevice && hasOtherDevices) ...[
+                  Divider(
+                    color: colors.onSurface.withValues(alpha: 0.10),
+                    thickness: 1,
+                    height: 20,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton.icon(
+                      icon: Icon(
+                        LucideIcons.hand,
+                        color: AppColors.red,
+                        size: 17,
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.red,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      label: Text(
+                        'Boshqa barcha seanslarni tugatish'.tr,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      onPressed: onOpen,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
-      ],
+      ),
+    );
+  }
+}
+
+/// Kichik yorliq.
+class _Badge extends StatelessWidget {
+  const _Badge({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: colors.primary.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w600,
+          color: colors.primary,
+        ),
+      ),
+    );
+  }
+}
+
+/// Oynadagi bitta maʼlumot qatori.
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: colors.onSurface.withValues(alpha: 0.5)),
+          const SizedBox(width: 10),
+          Text(
+            '$label: ',
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: 13,
+              color: colors.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: valueColor ?? colors.onSurface,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

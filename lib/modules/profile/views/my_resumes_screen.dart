@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../common/widgets/app_ui.dart';
 import '../../../config/theme/app_colors.dart';
-import '../../../controllers/funcController.dart';
-import '../../../controllers/theme_controller.dart';
+import '../../../config/theme/app_theme.dart';
 import '../../../controllers/api_controller.dart';
+import '../../../controllers/funcController.dart';
 import '../../../core/models/resumes_model.dart';
-import '../../../core/utils/responsive.dart';
-import 'create_resume_screen.dart';
 import '../controllers/create_resume_controller.dart';
+import 'create_resume_screen.dart';
 
+/// Foydalanuvchining rezyumelari.
 class MyResumesScreen extends StatefulWidget {
   const MyResumesScreen({super.key});
 
@@ -20,7 +21,6 @@ class MyResumesScreen extends StatefulWidget {
 class MyResumesScreenState extends State<MyResumesScreen> {
   final FuncController funcController = Get.find<FuncController>();
   final ApiController apiController = Get.find<ApiController>();
-  final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   void initState() {
@@ -33,454 +33,296 @@ class MyResumesScreenState extends State<MyResumesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
-          backgroundColor: AppColors.backgroundColor,
-          centerTitle: true,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              LucideIcons.arrowLeft,
-              color: AppColors.textColor,
-              size: Responsive.scaleFont(22, context),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: Text(
-            'Mening Rezyumelarim'.tr,
-            style: TextStyle(
-              color: AppColors.textColor,
-              fontSize: Responsive.scaleFont(18, context),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: Obx(() {
-                if (funcController.isLoading.value) {
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(
-                          color: AppColors.secondaryColor,
-                          strokeWidth: 2.5,
-                        ),
-                        SizedBox(height: Responsive.scaleHeight(16, context)),
-                        Text(
-                          'Rezyumelar yuklanmoqda...'.tr,
-                          style: TextStyle(
-                            color: AppColors.textSecondaryColor,
-                            fontSize: Responsive.scaleFont(14, context),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+    final theme = Theme.of(context);
 
-                if (funcController.resumes.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Responsive.scaleWidth(32, context),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: Responsive.scaleWidth(100, context),
-                            height: Responsive.scaleWidth(100, context),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppColors.primaryColor.withValues(alpha: 0.1),
-                                  AppColors.secondaryColor.withValues(alpha: 0.1),
-                                ],
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              LucideIcons.fileText,
-                              size: Responsive.scaleFont(44, context),
-                              color: AppColors.iconColor.withValues(alpha: 0.6),
-                            ),
-                          ),
-                          SizedBox(height: Responsive.scaleHeight(20, context)),
-                          Text(
-                            'Rezyumelar mavjud emas'.tr,
-                            style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: Responsive.scaleFont(18, context),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(height: Responsive.scaleHeight(8, context)),
-                          Text(
-                            'Yangi rezyume yaratish uchun yuqoridagi tugmani bosing'
-                                .tr,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.textSecondaryColor,
-                              fontSize: Responsive.scaleFont(13, context),
-                            ),
-                          ),
-                        ],
-                      ),
+    return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
+      appBar: AppBar(title: Text('Mening Rezyumelarim'.tr)),
+      body: SafeArea(
+        child: Obx(() {
+          if (funcController.isLoading.value) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(strokeWidth: 2.5),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Rezyumelar yuklanmoqda...'.tr,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
-                  );
-                }
+                  ),
+                ],
+              ),
+            );
+          }
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    await apiController.fetchMeResumes(page: 1, limit: 10);
-                  },
-                  color: AppColors.secondaryColor,
-                  child: ListView.builder(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Responsive.scaleWidth(16, context),
-                    ),
-                    itemCount: funcController.resumes.length,
-                    itemBuilder: (context, index) {
-                      final resume = funcController.resumes[index];
-                      return _buildResumeCard(context, resume, index);
-                    },
+          if (funcController.resumes.isEmpty) {
+            return AppEmptyState(
+              icon: LucideIcons.fileText,
+              title: 'Rezyumelar mavjud emas'.tr,
+              message:
+                  'Yangi rezyume yaratish uchun yuqoridagi tugmani bosing'.tr,
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              await apiController.fetchMeResumes(page: 1, limit: 10);
+            },
+            color: theme.colorScheme.primary,
+            child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              itemCount: funcController.resumes.length,
+              itemBuilder: (context, index) {
+                final resume = funcController.resumes[index];
+                return AppReveal(
+                  delay: AppReveal.step(index),
+                  child: _ResumeCard(
+                    resume: resume,
+                    onOpen:
+                        () => Get.to(() => CreateResumeScreen(resume: resume)),
+                    onDelete: () => _confirmDelete(resume.id),
                   ),
                 );
-              }),
+              },
             ),
-          ],
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              Responsive.scaleWidth(16, context),
-              Responsive.scaleHeight(8, context),
-              Responsive.scaleWidth(16, context),
-              Responsive.scaleHeight(12, context),
-            ),
-            child: GestureDetector(
-              onTap: () => Get.to(() => CreateResumeScreen()),
-              child: Container(
-                width: double.infinity,
-                height: Responsive.scaleHeight(54, context),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppColors.primaryColor, AppColors.secondaryColor],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryColor.withValues(alpha: 0.35),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: AppColors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        LucideIcons.plus,
-                        color: AppColors.white,
-                        size: 18,
-                      ),
-                    ),
-                    SizedBox(width: Responsive.scaleWidth(10, context)),
-                    Text(
-                      'Yangi rezyume yaratish'.tr,
-                      style: TextStyle(
-                        fontSize: Responsive.scaleFont(15, context),
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          );
+        }),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: AppButton(
+            label: 'Yangi rezyume yaratish'.tr,
+            leading: const Icon(LucideIcons.plus),
+            filled: true,
+            onPressed: () => Get.to(() => CreateResumeScreen()),
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 
-  Widget _buildResumeCard(BuildContext context, ResumesData resume, int index) {
-    final hasEducation = resume.education != null && resume.education!.isNotEmpty;
-    final hasExperience = resume.experience != null && resume.experience!.isNotEmpty;
+  void _confirmDelete(int? resumeId) {
+    final theme = Theme.of(context);
+
+    Get.dialog(
+      AlertDialog(
+        title: Row(
+          children: [
+            Icon(LucideIcons.triangleAlert, color: AppColors.red, size: 21),
+            const SizedBox(width: 10),
+            Text('O‘chirish'.tr, style: theme.textTheme.titleLarge),
+          ],
+        ),
+        content: Text(
+          'Rostdan ham ushbu rezyumeni o\'chirmoqchimisiz?'.tr,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Bekor qilish'.tr),
+          ),
+          FilledButton(
+            onPressed: () async {
+              if (resumeId != null) {
+                await apiController.deleteResume(resumeId);
+                // `State.context` — shuning uchun State'ning `mounted` i.
+                if (!mounted) return;
+                Navigator.of(context).pop();
+              }
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.red,
+              foregroundColor: AppColors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppTheme.radiusControl),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            ),
+            child: Text('O‘chirish'.tr),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Bitta rezyume kartasi.
+class _ResumeCard extends StatelessWidget {
+  const _ResumeCard({
+    required this.resume,
+    required this.onOpen,
+    required this.onDelete,
+  });
+
+  final ResumesData resume;
+  final VoidCallback onOpen;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final muted = colors.onSurface.withValues(alpha: 0.6);
+    final radius = BorderRadius.circular(AppTheme.radiusCard);
+
+    final hasEducation =
+        resume.education != null && resume.education!.isNotEmpty;
+    final hasExperience =
+        resume.experience != null && resume.experience!.isNotEmpty;
+    final hasContent = resume.content != null && resume.content!.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: Responsive.scaleHeight(12, context),
-      ),
-      child: GestureDetector(
-        onTap: () => Get.to(() => CreateResumeScreen(resume: resume)),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.cardColor,
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowColor,
-                blurRadius: 6,
-                offset: const Offset(0, 3),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: theme.cardTheme.color ?? colors.surfaceContainer,
+        borderRadius: radius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onOpen,
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: Border.all(
+                color: colors.onSurface.withValues(alpha: 0.08),
+                width: 1,
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  Responsive.scaleWidth(16, context),
-                  Responsive.scaleHeight(14, context),
-                  Responsive.scaleWidth(16, context),
-                  0,
-                ),
-                child: Row(
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
                     Container(
-                      width: Responsive.scaleWidth(44, context),
-                      height: Responsive.scaleWidth(44, context),
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppColors.primaryColor,
-                            AppColors.secondaryColor,
-                          ],
-                        ),
+                        color: colors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         LucideIcons.fileText,
-                        color: AppColors.white,
-                        size: 22,
+                        size: 19,
+                        color: colors.primary,
                       ),
                     ),
-                    SizedBox(width: Responsive.scaleWidth(12, context)),
+                    const SizedBox(width: 13),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             resume.title ?? 'Noma’lum'.tr,
-                            style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: Responsive.scaleFont(15, context),
-                              fontWeight: FontWeight.w600,
-                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
                           ),
-                          SizedBox(height: Responsive.scaleHeight(3, context)),
+                          const SizedBox(height: 3),
                           Text(
                             '${'Yaratilgan'.tr}: ${resume.createdAt?.substring(0, 10) ?? '—'}',
-                            style: TextStyle(
-                              color: AppColors.textSecondaryColor,
-                              fontSize: Responsive.scaleFont(12, context),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 11.5,
+                              color: muted,
                             ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      onPressed: () => _confirmDelete(resume.id, index),
+                      onPressed: onDelete,
                       icon: Icon(
                         LucideIcons.trash2,
-                        color: AppColors.red.withValues(alpha: 0.75),
-                        size: Responsive.scaleFont(19, context),
+                        color: AppColors.red,
+                        size: 19,
                       ),
-                      splashRadius: 20,
-                      tooltip: 'O‘chirish'.tr,
                     ),
                   ],
                 ),
-              ),
-              if (resume.content != null && resume.content!.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    Responsive.scaleWidth(16, context),
-                    Responsive.scaleHeight(8, context),
-                    Responsive.scaleWidth(16, context),
-                    0,
-                  ),
-                  child: Text(
-                    resume.content!,
-                    style: TextStyle(
-                      color: AppColors.textSecondaryColor,
-                      fontSize: Responsive.scaleFont(13, context),
-                      height: 1.4,
+                if (hasContent) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(11),
+                    decoration: BoxDecoration(
+                      color: colors.onSurface.withValues(alpha: 0.04),
+                      borderRadius: BorderRadius.circular(11),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    child: Text(
+                      resume.content!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 12.5,
+                        height: 1.35,
+                        color: muted,
+                      ),
+                    ),
                   ),
-                ),
-              if (hasEducation || hasExperience)
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    Responsive.scaleWidth(16, context),
-                    Responsive.scaleHeight(10, context),
-                    Responsive.scaleWidth(16, context),
-                    Responsive.scaleHeight(12, context),
-                  ),
-                  child: Wrap(
-                    spacing: Responsive.scaleWidth(8, context),
-                    runSpacing: Responsive.scaleHeight(6, context),
+                ],
+                if (hasEducation || hasExperience) ...[
+                  const SizedBox(height: 12),
+                  Row(
                     children: [
                       if (hasEducation)
-                        _buildTag(
-                          context,
+                        _Tag(
                           icon: LucideIcons.graduationCap,
                           text: '${resume.education!.length} ${'ta‘lim'.tr}',
                         ),
+                      if (hasEducation && hasExperience)
+                        const SizedBox(width: 8),
                       if (hasExperience)
-                        _buildTag(
-                          context,
+                        _Tag(
                           icon: LucideIcons.briefcase,
                           text: '${resume.experience!.length} ${'tajriba'.tr}',
                         ),
                     ],
                   ),
-                ),
-              if ((resume.content == null || resume.content!.isEmpty) &&
-                  (!hasEducation && !hasExperience))
-                SizedBox(height: Responsive.scaleHeight(12, context)),
-            ],
+                ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildTag(BuildContext context, {
-    required IconData icon,
-    required String text,
-  }) {
+/// Rezyume kartasidagi kichik yorliq.
+class _Tag extends StatelessWidget {
+  const _Tag({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: Responsive.scaleWidth(10, context),
-        vertical: Responsive.scaleHeight(4, context),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.secondaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        color: colors.primary.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(9),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: Responsive.scaleFont(13, context),
-            color: AppColors.secondaryColor,
-          ),
-          SizedBox(width: Responsive.scaleWidth(5, context)),
+          Icon(icon, size: 13, color: colors.primary),
+          const SizedBox(width: 6),
           Text(
             text,
             style: TextStyle(
-              color: AppColors.secondaryColor,
-              fontSize: Responsive.scaleFont(12, context),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmDelete(int? resumeId, int index) {
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: AppColors.cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Icon(
-              LucideIcons.triangleAlert,
-              color: AppColors.red,
-              size: Responsive.scaleFont(22, context),
-            ),
-            SizedBox(width: Responsive.scaleWidth(10, context)),
-            Text(
-              'O‘chirish'.tr,
-              style: TextStyle(
-                color: AppColors.textColor,
-                fontSize: Responsive.scaleFont(17, context),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          'Rostdan ham ushbu rezyumeni o\'chirmoqchimisiz?'.tr,
-          style: TextStyle(
-            color: AppColors.textSecondaryColor,
-            fontSize: Responsive.scaleFont(14, context),
-            height: 1.4,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.textSecondaryColor,
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.scaleWidth(16, context),
-                vertical: Responsive.scaleHeight(10, context),
-              ),
-            ),
-            child: Text(
-              'Bekor qilish'.tr,
-              style: TextStyle(
-                fontSize: Responsive.scaleFont(14, context),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (resumeId != null) {
-                await apiController.deleteResume(resumeId);
-                Navigator.of(context).pop();
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.red,
-              foregroundColor: AppColors.white,
-              elevation: 0,
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.scaleWidth(20, context),
-                vertical: Responsive.scaleHeight(10, context),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(
-              'O‘chirish'.tr,
-              style: TextStyle(
-                fontSize: Responsive.scaleFont(14, context),
-                fontWeight: FontWeight.w600,
-              ),
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+              color: colors.primary,
             ),
           ),
         ],

@@ -19,7 +19,11 @@ class AdCard extends StatelessWidget {
           children: [
             Text(
               'E’lon (Placeholder)'.tr,
-              style: TextStyle(fontSize: Responsive.scaleFont(18, context), color: AppColors.lightGray, fontWeight: FontWeight.bold)
+              style: TextStyle(
+                fontSize: Responsive.scaleFont(18, context),
+                color: AppColors.lightGray,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(height: Responsive.scaleHeight(8, context)),
             Text(

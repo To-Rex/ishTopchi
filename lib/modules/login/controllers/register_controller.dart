@@ -65,13 +65,14 @@ class RegisterController extends GetxController {
   }
 
   Future<void> registerUser(
-      String firstName,
-      String lastName,
-      String gender,
-      String birthDate,
-      String regionId,
-      String districtId,
-      File? imageFile) async {
+    String firstName,
+    String lastName,
+    String gender,
+    String birthDate,
+    String regionId,
+    String districtId,
+    File? imageFile,
+  ) async {
     try {
       isRegistering.value = true;
       final apiController = Get.find<ApiController>();
@@ -84,12 +85,20 @@ class RegisterController extends GetxController {
         image: imageFile,
       );
       ShowToast.show(
-          'Muvaffaqiyat', 'Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi', 1, 1);
+        'Muvaffaqiyat',
+        'Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi',
+        1,
+        1,
+      );
     } catch (e) {
       print('❌ registerUser xatolik: $e');
       ShowToast.show(
-          'Xatolik', 'Ro‘yxatdan o‘tishda xatolik yuz berdi', 2, 1,
-          duration: 2);
+        'Xatolik',
+        'Ro‘yxatdan o‘tishda xatolik yuz berdi',
+        2,
+        1,
+        duration: 2,
+      );
     } finally {
       isRegistering.value = false;
     }

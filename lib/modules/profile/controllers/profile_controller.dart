@@ -206,7 +206,7 @@ class ProfileController extends GetxController {
           TextButton(
             onPressed: () => Navigator.of(Get.context!).pop(),
             style: TextButton.styleFrom(
-              overlayColor: AppColors.textColor.withOpacity(0.1),
+              overlayColor: AppColors.textColor.withValues(alpha: 0.1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

@@ -53,7 +53,10 @@ class FuncController extends GetxController {
   final RxnString jobType = RxnString(); // null boshlang‘ich qiymat
   final RxnString employmentType = RxnString(); // null boshlang‘ich qiymat
   final RxnString sortPrice = RxnString(); // null boshlang‘ich qiymat
-  final RxBool isGridView = true.obs;
+  // Standart koʻrinish — roʻyxat. Katak koʻrinishi yuqoridagi
+  // almashtirgich orqali yoqiladi; tanlov avvalgidek sessiya ichida
+  // saqlanadi.
+  final RxBool isGridView = false.obs;
   final RxBool isLoadingDistricts = false.obs;
 
   final RxnString minPrice = RxnString(); // Yangi: Narxdan
@@ -182,6 +185,8 @@ class FuncController extends GetxController {
   String? getToken() {
     final token = storage.read('token') ?? '';
     globalToken.value = token; // Har doim globalToken ni yangilash
+    hasToken.value =
+        token.isNotEmpty; // saveToken/deleteToken bilan bir xil holatda tursin
     return token;
   }
 

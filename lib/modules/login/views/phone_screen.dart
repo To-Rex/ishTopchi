@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:ishtopchi/common/widgets/text_small.dart';
-import 'package:ishtopchi/controllers/funcController.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../../config/theme/app_colors.dart';
+import '../../../common/widgets/app_ui.dart';
 import '../../../controllers/api_controller.dart';
-import '../../../controllers/theme_controller.dart';
-import 'otp_verification_screen.dart';
 
+/// Telegram orqali kirishning birinchi qadami — telefon raqam.
 class PhoneScreen extends StatefulWidget {
   const PhoneScreen({super.key});
 
@@ -52,123 +47,83 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
-    final ThemeController themeController = Get.find<ThemeController>();
-
-    return Obx(
-      () => Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
-          title: Text(
-            'Telefon raqam'.tr,
-            style: TextStyle(color: AppColors.textColor),
-          ),
-          backgroundColor: AppColors.backgroundColor,
-          foregroundColor: AppColors.textColor,
-          elevation: 0,
-        ),
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.phone_android,
-                      size: 60,
-                      color: AppColors.iconColor,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Telefon raqam kiriting'.tr,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textColor,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
+    return AppScreen(
+      title: 'Telefon raqam'.tr,
+      child: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(28, 12, 28, 32),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 12),
+              AppReveal(
+                child: AppHeading(
+                  title: 'Telefon raqam kiriting'.tr,
+                  subtitle:
                       'Telegramdan ro‘yxatdan o‘tgan raqam bo‘lishi kerak'.tr,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondaryColor,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 28),
-                    TextFormField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [phoneFormatter],
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.textColor,
-                      ),
-                      decoration: InputDecoration(
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.only(left: 12, right: 6),
-                          child: Text(
-                            '+998',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textColor,
-                            ),
-                          ),
-                        ),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
-                        ),
-                        hintText: '90 123 45 67',
-                        hintStyle: TextStyle(
-                          color: AppColors.textSecondaryColor,
-                        ),
-                        filled: true,
-                        fillColor: AppColors.cardColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 14,
-                        ),
-                      ),
-                      validator: _validatePhone,
-                      onChanged: (val) => setState(() {}),
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: size.width,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: _submit,
-                        child: Text(
-                          'Kodni yuborish'.tr,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 150),
-                  ],
                 ),
               ),
-            ),
+              const SizedBox(height: 36),
+              AppReveal(
+                delay: const Duration(milliseconds: 70),
+                child: _buildPhoneField(context),
+              ),
+              const SizedBox(height: 20),
+              AppReveal(
+                delay: const Duration(milliseconds: 120),
+                child: AppButton(
+                  label: 'Kodni yuborish'.tr,
+                  filled: true,
+                  onPressed: _submit,
+                ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPhoneField(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    // Prefiks, hint va yozilgan raqam — hammasi shu bitta uslubdan
+    // hosil qilinadi, shunda ular bir qatorda aniq tekislanadi va
+    // yozish boshlanganda matn sakramaydi.
+    final fieldStyle = TextStyle(
+      fontSize: 17,
+      fontWeight: FontWeight.w500,
+      // Raqamlar bir xil kenglikda turadi — yozganda belgilar sakramaydi.
+      fontFeatures: const [FontFeature.tabularFigures()],
+      color: colors.onSurface,
+    );
+
+    return TextFormField(
+      controller: _phoneController,
+      keyboardType: TextInputType.phone,
+      inputFormatters: [phoneFormatter],
+      style: fieldStyle,
+      decoration: InputDecoration(
+        hintText: '90 123 45 67',
+        hintStyle: fieldStyle.copyWith(
+          color: colors.onSurface.withValues(alpha: 0.42),
+        ),
+        prefixIcon: AppFieldPrefix(text: '+998', textStyle: fieldStyle),
+        prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+        // Prefiks boʻlgani uchun chap chekka oʻsha prefiks ichida
+        // beriladi — aks holda ikkala toʻldirish qoʻshilib, prefiks
+        // raqamdan uzilib qoladi.
+        contentPadding: const EdgeInsets.only(
+          left: 0,
+          right: 18,
+          top: 17,
+          bottom: 17,
+        ),
+      ),
+      validator: _validatePhone,
+      onChanged: (val) => setState(() {}),
     );
   }
 }

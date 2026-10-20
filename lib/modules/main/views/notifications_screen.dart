@@ -1,318 +1,300 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../../config/theme/app_colors.dart';
-import '../../../core/utils/responsive.dart';
+import '../../../common/widgets/app_ui.dart';
+import '../../../config/theme/app_theme.dart';
 import '../controllers/notification_controller.dart';
 
+/// Bildirishnomalar roʻyxati.
 class NotificationsScreen extends GetView<NotificationController> {
   const NotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
-          backgroundColor: AppColors.backgroundColor,
-          title: Text(
-            'Bildirishnomalar'.tr,
-            style: TextStyle(color: AppColors.textColor, fontSize: 18),
-          ),
-          leading: IconButton(
-            icon: Icon(LucideIcons.arrowLeft, color: AppColors.textColor),
-            onPressed: () =>Navigator.of(context).pop(),
-          ),
-          actions: [
-            Obx(
-              () =>
-                  controller.notifications.any((n) => !n.isRead)
-                      ? IconButton(
-                        icon: Icon(
-                          LucideIcons.checkCheck,
-                          color: AppColors.secondaryColor,
-                        ),
-                        onPressed: () async {
-                          await controller.markAllAsRead();
-                        },
-                        tooltip: 'Barchasini o\'qilgan deb belgilash'.tr,
-                      )
-                      : const SizedBox.shrink(),
-            ),
-          ],
-          elevation: 0,
-        ),
-        body: Obx(
+    return AppScreen(
+      title: 'Bildirishnomalar'.tr,
+      actions: [
+        // Faqat oʻqilmagan bildirishnoma boʻlsa koʻrinadi — avvalgidek.
+        Obx(
           () =>
-              controller.notifications.isEmpty
-                  ? Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Responsive.scaleWidth(32, context),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Icon container with gradient background
-                          Container(
-                            width: Responsive.scaleWidth(120, context),
-                            height: Responsive.scaleWidth(120, context),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppColors.primaryColor.withOpacity(0.1),
-                                  AppColors.secondaryColor.withOpacity(0.1),
-                                ],
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              LucideIcons.bell,
-                              size: Responsive.scaleWidth(56, context),
-                              color: AppColors.iconColor.withOpacity(0.6),
-                            ),
-                          ),
-                          SizedBox(height: Responsive.scaleHeight(24, context)),
-                          // Title
-                          Text(
-                            'Hech qanday bildirishnoma yo‘q'.tr,
-                            style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: Responsive.scaleFont(20, context),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(height: Responsive.scaleHeight(12, context)),
-                          // Subtitle
-                          Text(
-                            'Bildirishnomalar topilmadi tavsifi'.tr,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.textSecondaryColor,
-                              fontSize: Responsive.scaleFont(14, context),
-                              fontWeight: FontWeight.w400,
-                              height: 1.5,
-                            ),
-                          ),
-                          SizedBox(height: Responsive.scaleHeight(32, context)),
-                          // Refresh button
-                          InkWell(
-                            onTap: () => controller.refreshNotifications(),
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: Responsive.scaleWidth(24, context),
-                                vertical: Responsive.scaleHeight(14, context),
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    AppColors.primaryColor,
-                                    AppColors.secondaryColor,
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primaryColor.withOpacity(
-                                      0.3,
-                                    ),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    LucideIcons.refreshCw,
-                                    size: Responsive.scaleWidth(18, context),
-                                    color: AppColors.white,
-                                  ),
-                                  SizedBox(
-                                    width: Responsive.scaleWidth(8, context),
-                                  ),
-                                  Text(
-                                    'Qayta yuklash'.tr,
-                                    style: TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: Responsive.scaleFont(
-                                        14,
-                                        context,
-                                      ),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              controller.notifications.any((n) => !n.isRead)
+                  ? IconButton(
+                    icon: const Icon(LucideIcons.checkCheck),
+                    onPressed: () async {
+                      await controller.markAllAsRead();
+                    },
+                    tooltip: 'Barchasini o\'qilgan deb belgilash'.tr,
                   )
-                  : RefreshIndicator(
-                    onRefresh: () => controller.refreshNotifications(),
-                    color: AppColors.secondaryColor,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: controller.notifications.length,
-                      itemBuilder: (context, index) {
-                        final notification = controller.notifications[index];
-                        return Card(
-                          color: AppColors.cardColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(
-                              color:
-                                  notification.isRead
-                                      ? Colors.transparent
-                                      : AppColors.secondaryColor,
-                              width: 1,
-                            ),
-                          ),
-                          margin: const EdgeInsets.only(bottom: 10),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            leading: CircleAvatar(
-                              backgroundColor:
-                                  notification.isRead
-                                      ? AppColors.dividerColor
-                                      : AppColors.secondaryColor.withValues(
-                                        alpha: 0.3,
-                                      ),
-                              radius: 20,
-                              child: Icon(
-                                LucideIcons.bell,
-                                color: AppColors.textColor,
-                                size: 18,
-                              ),
-                            ),
-                            title: Text(
-                              notification.title,
-                              style: TextStyle(
-                                color: AppColors.textColor,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            subtitle: Text(
-                              notification.description,
-                              style: TextStyle(
-                                color: AppColors.textSecondaryColor,
-                                fontSize: 13,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: Text(
-                              notification.time,
-                              style: TextStyle(
-                                color: AppColors.textSecondaryColor.withValues(
-                                  alpha: 0.7,
-                                ),
-                                fontSize: 12,
-                              ),
-                            ),
-                            onTap: () async {
-                              if (!notification.isRead) {
-                                await controller.markAsRead(index);
-                              }
-                              _showNotificationBottomSheet(notification, context);
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  : const SizedBox.shrink(),
         ),
-      );
-    });
+        const SizedBox(width: 4),
+      ],
+      child: Obx(() {
+        if (controller.notifications.isEmpty) {
+          return AppEmptyState(
+            icon: LucideIcons.bell,
+            title: 'Hech qanday bildirishnoma yo‘q'.tr,
+            message: 'Bildirishnomalar topilmadi tavsifi'.tr,
+            actionLabel: 'Qayta yuklash'.tr,
+            actionIcon: const Icon(LucideIcons.refreshCw),
+            onAction: () => controller.refreshNotifications(),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => controller.refreshNotifications(),
+          color: Theme.of(context).colorScheme.primary,
+          child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            itemCount: controller.notifications.length,
+            itemBuilder: (context, index) {
+              final notification = controller.notifications[index];
+              return AppReveal(
+                delay: AppReveal.step(index),
+                child: _NotificationTile(
+                  notification: notification,
+                  onTap: () async {
+                    if (!notification.isRead) {
+                      await controller.markAsRead(index);
+                    }
+                    // `await` dan keyin ekran yopilgan boʻlishi mumkin.
+                    if (!context.mounted) return;
+                    _showNotificationBottomSheet(notification, context);
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      }),
+    );
   }
 
-  void _showNotificationBottomSheet(Notification notification, BuildContext context) {
+  void _showNotificationBottomSheet(
+    Notification notification,
+    BuildContext context,
+  ) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     Get.bottomSheet(
-      Container(
-        decoration: BoxDecoration(
-          color: AppColors.cardColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  notification.isRead ? 'O‘qilgan'.tr : 'O‘qilmagan'.tr,
-                  style: TextStyle(
-                    color:
-                        notification.isRead
-                            ? AppColors.textSecondaryColor
-                            : AppColors.secondaryColor,
-                    fontWeight: FontWeight.w600,
+      SafeArea(
+        top: false,
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: theme.cardTheme.color ?? colors.surfaceContainer,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppTheme.radiusSheet),
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colors.onSurface.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(LucideIcons.x, color: AppColors.textColor),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              notification.title,
-              style: TextStyle(
-                color: AppColors.textColor,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              notification.description,
-              style: TextStyle(
-                color: AppColors.textSecondaryColor,
-                fontSize: 16,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Icon(
-                  LucideIcons.clock,
-                  color: AppColors.textSecondaryColor,
-                  size: 16,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  notification.time,
-                  style: TextStyle(
-                    color: AppColors.textSecondaryColor,
-                    fontSize: 14,
+              const SizedBox(height: 18),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _StatusPill(isRead: notification.isRead),
+                  IconButton(
+                    icon: const Icon(LucideIcons.x, size: 20),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(notification.title, style: theme.textTheme.headlineSmall),
+              const SizedBox(height: 12),
+              Text(
+                notification.description,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: colors.onSurface.withValues(alpha: 0.7),
                 ),
-              ],
-            ),
-            const SizedBox(height: 24),
-          ],
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Icon(
+                    LucideIcons.clock,
+                    size: 15,
+                    color: colors.onSurface.withValues(alpha: 0.5),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    notification.time,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       backgroundColor: Colors.black54,
       isScrollControlled: true,
       enterBottomSheetDuration: const Duration(milliseconds: 300),
       exitBottomSheetDuration: const Duration(milliseconds: 250),
+    );
+  }
+}
+
+/// Oʻqilgan / oʻqilmagan holati.
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.isRead});
+
+  final bool isRead;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final color =
+        isRead ? colors.onSurface.withValues(alpha: 0.5) : colors.primary;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        isRead ? 'O‘qilgan'.tr : 'O‘qilmagan'.tr,
+        style: TextStyle(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+/// Roʻyxatdagi bitta bildirishnoma.
+///
+/// Oʻqilmaganlik ramka bilan emas, chapdagi kichik nuqta va qalinroq
+/// sarlavha bilan koʻrsatiladi — bu tinchroq va aniqroq.
+class _NotificationTile extends StatelessWidget {
+  const _NotificationTile({required this.notification, required this.onTap});
+
+  final Notification notification;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final unread = !notification.isRead;
+    final radius = BorderRadius.circular(AppTheme.radiusCard);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: theme.cardTheme.color ?? colors.surfaceContainer,
+        borderRadius: radius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: Border.all(
+                color: colors.onSurface.withValues(alpha: 0.08),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color:
+                        unread
+                            ? colors.primary.withValues(alpha: 0.12)
+                            : colors.onSurface.withValues(alpha: 0.06),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    LucideIcons.bell,
+                    size: 17,
+                    color:
+                        unread
+                            ? colors.primary
+                            : colors.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              notification.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight:
+                                    unread ? FontWeight.w700 : FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          if (unread) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 7,
+                              height: 7,
+                              decoration: BoxDecoration(
+                                color: colors.primary,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        notification.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: 12.5,
+                          color: colors.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        notification.time,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: 11,
+                          color: colors.onSurface.withValues(alpha: 0.45),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

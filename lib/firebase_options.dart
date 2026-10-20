@@ -64,7 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '331143083816',
     projectId: 'ishtopchi-216b8',
     storageBucket: 'ishtopchi-216b8.firebasestorage.app',
-    iosClientId: '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com',
+    iosClientId:
+        '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com',
     iosBundleId: 'torex.top.ishtopchi',
   );
 
@@ -74,7 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '331143083816',
     projectId: 'ishtopchi-216b8',
     storageBucket: 'ishtopchi-216b8.firebasestorage.app',
-    iosClientId: '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com',
+    iosClientId:
+        '331143083816-kir3q80qqfi63k3ons61ak2sat8n8pdj.apps.googleusercontent.com',
     iosBundleId: 'torex.top.ishtopchi',
   );
 

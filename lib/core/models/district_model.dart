@@ -5,11 +5,7 @@ class District {
   final String name;
   final Region? region;
 
-  District({
-    required this.id,
-    required this.name,
-    this.region,
-  });
+  District({required this.id, required this.name, this.region});
 
   factory District.fromJson(Map<String, dynamic> json) {
     return District(

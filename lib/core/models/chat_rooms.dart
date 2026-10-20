@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:ishtopchi/core/models/post_model.dart';
 import 'package:ishtopchi/core/models/resumes_model.dart';
 
 class ChatRooms {

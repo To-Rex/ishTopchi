@@ -1,16 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import '../../../common/widgets/app_ui.dart';
 import '../../../config/theme/app_colors.dart';
+import '../../../config/theme/app_theme.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
-import '../../../controllers/theme_controller.dart';
 import '../../../core/models/user_me.dart';
-import '../../../core/utils/responsive.dart';
 import 'edit_profile_screen.dart';
 
+/// Foydalanuvchining oʻz profili: statistika va maʼlumotlar.
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({super.key});
 
@@ -21,7 +22,6 @@ class MyProfileScreen extends StatefulWidget {
 class MyProfileScreenState extends State<MyProfileScreen> {
   final ApiController apiController = Get.find<ApiController>();
   final FuncController funcController = Get.find<FuncController>();
-  final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   void initState() {
@@ -58,7 +58,10 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     if (user?.data?.authProviders?.isNotEmpty ?? false) {
       final provider = user!.data!.authProviders!.first.providerType;
       if (provider == 'GOOGLE') {
-        return LucideIcons.chrome;
+        // Lucide brend belgilarini olib tashlagan (`LucideIcons.chrome`
+        // yoʻq). FontAwesome'dagi haqiqiy Google belgisi ishlatiladi;
+        // `.data` — uning ichidagi oddiy [IconData].
+        return FontAwesomeIcons.google.data;
       } else if (provider == 'PHONE_NUMBER') {
         return LucideIcons.phone;
       }
@@ -76,61 +79,49 @@ class MyProfileScreenState extends State<MyProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = funcController.userMe.value;
     return Obx(() {
-      return Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              foregroundColor: AppColors.textColor,
-              surfaceTintColor: Colors.transparent,
-              pinned: true,
-              expandedHeight: Responsive.scaleHeight(300, context),
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: AppColors.textColor,
-                  size: Responsive.scaleFont(25, context),
-                ),
-                onPressed: () => Navigator.of(context).pop(),
+      final user = funcController.userMe.value;
+
+      return AppScreen(
+        title: 'Mening Profilim'.tr,
+        actions: [
+          TextButton.icon(
+            onPressed: () => Get.to(() => const EditProfileScreen()),
+            icon: const Icon(LucideIcons.pencil, size: 16),
+            label: Text('Tahrirlash'.tr),
+          ),
+          const SizedBox(width: 6),
+        ],
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+          children: [
+            AppReveal(child: _buildHeader(user)),
+            const SizedBox(height: 22),
+            AppSectionLabel(text: 'Statistika'.tr),
+            AppReveal(delay: AppReveal.step(1), child: _buildStats(user)),
+            const SizedBox(height: 14),
+            AppSectionLabel(text: 'Kirish ma’lumotlari'.tr),
+            AppReveal(
+              delay: AppReveal.step(2),
+              child: AppTile(
+                icon: _getAuthIcon(user),
+                title: _getAuthMethod(user),
+                subtitle: _getAuthInfo(user),
+                onTap: () => _showAuthDialog(user),
               ),
-              flexibleSpace: FlexibleSpaceBar(
-                background: _buildHeader(context, user),
-              ),
-              actions: [
-                TextButton.icon(
-                  onPressed: () => Get.to(() => EditProfileScreen()),
-                  icon: Icon(
-                    LucideIcons.userRoundPen,
-                    color: AppColors.textColor,
-                    size: Responsive.scaleFont(20, context),
-                  ),
-                  label: Text(
-                    'Tahrirlash'.tr,
-                    style: TextStyle(
-                      color: AppColors.textColor,
-                      fontSize: Responsive.scaleFont(16, context),
-                    ),
-                  ),
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Responsive.scaleWidth(12, context),
-                      vertical: Responsive.scaleHeight(8, context),
-                    ),
-                  ),
-                ),
-              ],
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Responsive.scaleWidth(16, context),
-                  vertical: Responsive.scaleHeight(24, context),
-                ),
-                child: AnimationLimiter(child: _buildBody(context, user)),
+            const SizedBox(height: 10),
+            AppSectionLabel(text: 'Shaxsiy ma’lumotlar'.tr),
+            ..._buildPersonalInfo(user),
+            const SizedBox(height: 10),
+            AppSectionLabel(text: 'Hisobni boshqarish'.tr),
+            AppReveal(
+              delay: AppReveal.step(10),
+              child: AppTile(
+                icon: LucideIcons.trash2,
+                title: 'Hisobni o‘chirish'.tr,
+                danger: true,
+                onTap: _deleteAccount,
               ),
             ),
           ],
@@ -139,694 +130,345 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     });
   }
 
-  Widget _buildHeader(BuildContext context, UserMe? user) {
-    return Obx(() {
-      final gradientColors =
-          themeController.isDarkMode.value
-              ? [AppColors.darkBlue, AppColors.darkNavy]
-              : [AppColors.lightBackground, AppColors.lightSurface];
+  /// Surat, ism va kirish usuli.
+  Widget _buildHeader(UserMe? user) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final imageUrl = _getProfileUrl(user?.data?.profilePicture);
 
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: gradientColors,
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: theme.cardTheme.color ?? colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+        border: Border.all(
+          color: colors.onSurface.withValues(alpha: 0.08),
+          width: 1,
         ),
-        child: AnimationLimiter(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: AnimationConfiguration.toStaggeredList(
-              duration: const Duration(milliseconds: 500),
-              childAnimationBuilder:
-                  (widget) => SlideAnimation(
-                    verticalOffset: 20.0,
-                    child: FadeInAnimation(child: widget),
-                  ),
-              children: [
-                SizedBox(height: Responsive.scaleHeight(70, context)),
-                Text(
-                  '${'ID'.tr}: ${user?.data?.id.toString() ?? 'Kiritilmagan'.tr}',
-                  style: TextStyle(
-                    color: AppColors.textSecondaryColor,
-                    fontSize: Responsive.scaleFont(15, context),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: Responsive.scaleHeight(25, context)),
-                GestureDetector(
-                  onTap: () {
-                    if (user?.data?.profilePicture != null) {
-                      Get.to(
-                        FullScreenImage(
-                          url: _getProfileUrl(user!.data!.profilePicture),
-                        ),
-                      );
-                    }
-                  },
-                  child: Hero(
-                    tag: 'profile-image',
-                    child: Container(
-                      decoration: BoxDecoration(shape: BoxShape.circle),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(150),
-                        child: Container(
-                          decoration: BoxDecoration(shape: BoxShape.circle),
-                          child: CachedNetworkImage(
-                            imageUrl: _getProfileUrl(
-                              user?.data?.profilePicture,
-                            ),
-                            height: Responsive.scaleHeight(130, context),
-                            width: Responsive.scaleWidth(130, context),
-                            fit: BoxFit.cover,
-                            placeholder:
-                                (context, url) => Center(
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.secondaryColor,
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                            errorWidget:
-                                (context, url, error) => Container(
-                                  color: AppColors.cardColor,
-                                  child: Icon(
-                                    LucideIcons.imageOff,
-                                    size: Responsive.scaleFont(35, context),
-                                    color: AppColors.textSecondaryColor,
-                                  ),
-                                ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: Responsive.scaleHeight(12, context)),
-                Text(
-                  user?.data?.firstName != null
-                      ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}'
-                      : user?.data?.lastName ?? 'Ism yo‘q'.tr,
-                  style: TextStyle(
-                    color: AppColors.textColor,
-                    fontSize: Responsive.scaleFont(22, context),
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                SizedBox(height: Responsive.scaleHeight(6, context)),
-                Text(
-                  _getAuthInfo(user),
-                  style: TextStyle(
-                    color: AppColors.textSecondaryColor,
-                    fontSize: Responsive.scaleFont(14, context),
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
-
-  Widget _buildBody(BuildContext context, UserMe? user) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: AnimationConfiguration.toStaggeredList(
-        duration: const Duration(milliseconds: 600),
-        childAnimationBuilder:
-            (widget) => SlideAnimation(
-              verticalOffset: 20.0,
-              curve: Curves.easeOutBack,
-              child: FadeInAnimation(child: widget),
-            ),
+      ),
+      child: Column(
         children: [
-          _buildSectionTitle(context, 'Statistika'.tr),
-          SizedBox(height: Responsive.scaleHeight(12, context)),
-          Obx(() {
-            if (funcController.isLoading.value) {
-              return Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.secondaryColor,
-                ),
-              );
-            }
-            if (funcController.meStats.value.data == null) {
-              return Center(
-                child: Text(
-                  'Ma’lumotlar mavjud emas'.tr,
-                  style: TextStyle(
-                    color: AppColors.textColor,
-                    fontSize: Responsive.scaleFont(13, context),
+          GestureDetector(
+            onTap: () => Get.to(FullScreenImage(url: imageUrl)),
+            child: Hero(
+              tag: 'profile-image',
+              child: Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.25),
+                    width: 2,
                   ),
                 ),
-              );
-            }
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildStatCard(
-                  context,
-                  icon: LucideIcons.squareLibrary,
-                  title: 'Postlar'.tr,
-                  value: funcController.meStats.value.data?.postcount ?? '0',
-                ),
-                _buildStatCard(
-                  context,
-                  icon: LucideIcons.eye,
-                  title: 'Ko‘rishlar'.tr,
-                  value: funcController.meStats.value.data?.totalViews ?? '0',
-                ),
-                _buildStatCard(
-                  context,
-                  icon: LucideIcons.fileText,
-                  title: 'Rezyumelar'.tr,
-                  value: (user?.data?.resumes?.length ?? 0).toString(),
-                ),
-              ],
-            );
-          }),
-          SizedBox(height: Responsive.scaleHeight(20, context)),
-          _buildSectionTitle(context, 'Kirish ma’lumotlari'.tr),
-          SizedBox(height: Responsive.scaleHeight(10, context)),
-          Center(
-            child: GestureDetector(
-              onTap: () {
-                Get.dialog(
-                  Dialog(
-                    backgroundColor: AppColors.cardColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(
-                        Responsive.scaleWidth(16, context),
+                clipBehavior: Clip.antiAlias,
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  errorWidget:
+                      (context, _, _) => Icon(
+                        LucideIcons.user,
+                        size: 36,
+                        color: colors.onSurface.withValues(alpha: 0.45),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Kirish ma’lumotlari'.tr,
-                            style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: Responsive.scaleFont(18, context),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: Responsive.scaleHeight(8, context)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _getAuthIcon(user),
-                                color: AppColors.textColor,
-                                size: Responsive.scaleFont(20, context),
-                              ),
-                              SizedBox(
-                                width: Responsive.scaleWidth(8, context),
-                              ),
-                              Text(
-                                _getAuthMethod(user),
-                                style: TextStyle(
-                                  color: AppColors.textColor,
-                                  fontSize: Responsive.scaleFont(16, context),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: Responsive.scaleHeight(8, context)),
-                          Text(
-                            _getAuthInfo(user),
-                            style: TextStyle(
-                              color: AppColors.textSecondaryColor,
-                              fontSize: Responsive.scaleFont(14, context),
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          SizedBox(height: Responsive.scaleHeight(16, context)),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text(
-                              'Yopish',
-                              style: TextStyle(
-                                color: AppColors.secondaryColor,
-                                fontSize: Responsive.scaleFont(14, context),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                transform: Matrix4.identity()..scale(1.0),
-                child: AnimatedScale(
-                  scale: 1.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(
-                      vertical: Responsive.scaleHeight(10, context),
-                      horizontal: Responsive.scaleWidth(14, context),
-                    ),
-                    margin: EdgeInsets.symmetric(
-                      vertical: Responsive.scaleHeight(4, context),
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.secondaryColor,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.shadowColor,
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedScale(
-                          scale: 1.0,
-                          duration: const Duration(milliseconds: 300),
-                          child: Icon(
-                            _getAuthIcon(user),
-                            color: AppColors.white,
-                            size: Responsive.scaleFont(25, context),
-                          ),
-                        ),
-                        SizedBox(width: Responsive.scaleWidth(12, context)),
-                        Text(
-                          _getAuthMethod(user),
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: Responsive.scaleFont(16, context),
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
           ),
-          SizedBox(height: Responsive.scaleHeight(20, context)),
-          _buildSectionTitle(context, 'Shaxsiy ma’lumotlar'.tr),
-          SizedBox(height: Responsive.scaleHeight(10, context)),
-          Column(
-            children: [
-              _buildInfoCard(
-                context,
-                icon: LucideIcons.mapPin,
-                title: 'Manzil'.tr,
-                value:
-                    user?.data?.district != null
-                        ? '${user!.data!.district!.name}, ${user.data!.district!.region!.name}'
-                        : 'Manzil kiritilmagan',
-              ),
-              SizedBox(height: Responsive.scaleHeight(6, context)),
-              _buildInfoCard(
-                context,
-                icon: LucideIcons.user,
-                title: 'Jins'.tr,
-                value:
-                    user?.data?.gender == 'MALE'
-                        ? 'Erkak'.tr
-                        : user?.data?.gender == 'FEMALE'
-                        ? 'Ayol'.tr
-                        : 'Kiritilmagan'.tr,
-              ),
-              SizedBox(height: Responsive.scaleHeight(6, context)),
-              _buildInfoCard(
-                context,
-                icon: LucideIcons.calendar,
-                title: 'Tug‘ilgan sana'.tr,
-                value: user?.data?.birthDate ?? 'Kiritilmagan'.tr,
-              ),
-              SizedBox(height: Responsive.scaleHeight(6, context)),
-              _buildInfoCard(
-                context,
-                icon: LucideIcons.check,
-                title: 'Tasdiqlangan'.tr,
-                value: user?.data?.verified == true ? 'Ha'.tr : 'Yo‘q'.tr,
-              ),
-              SizedBox(height: Responsive.scaleHeight(6, context)),
-              _buildInfoCard(
-                context,
-                icon: LucideIcons.userCheck,
-                title: 'Rol'.tr,
-                value: user?.data?.role ?? 'Kiritilmagan'.tr,
-              ),
-              SizedBox(height: Responsive.scaleHeight(6, context)),
-              _buildInfoCard(
-                context,
-                icon: LucideIcons.clock,
-                title: 'Ro‘yxatdan o‘tgan sana'.tr,
-                value:
-                    user?.data?.createdAt != null
-                        ? user!.data!.createdAt!.split('T')[0]
-                        : 'Kiritilmagan'.tr,
-              ),
-            ],
+          const SizedBox(height: 14),
+          Text(
+            user?.data?.firstName != null
+                ? '${user!.data!.firstName} ${user.data!.lastName ?? ''}'
+                : user?.data?.lastName ?? 'Ism yo‘q'.tr,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineSmall,
           ),
-          SizedBox(height: Responsive.scaleHeight(20, context)),
-          _buildSectionTitle(context, 'Hisobni boshqarish'.tr),
-          SizedBox(height: Responsive.scaleHeight(10, context)),
-          SizedBox(
-            width: double.infinity,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.redAccent, Colors.red],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: _deleteAccount,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: Responsive.scaleHeight(12, context),
-                      horizontal: Responsive.scaleWidth(20, context),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          LucideIcons.trash2,
-                          color: Colors.white,
-                          size: Responsive.scaleFont(16, context),
-                        ),
-                        SizedBox(width: Responsive.scaleWidth(8, context)),
-                        Text(
-                          'Hisobni o‘chirish'.tr,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: Responsive.scaleFont(15, context),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+          const SizedBox(height: 5),
+          Text(
+            _getAuthInfo(user),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: 13,
+              color: colors.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
+            decoration: BoxDecoration(
+              color: colors.onSurface.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              '${'ID'.tr}: ${user?.data?.id.toString() ?? 'Kiritilmagan'.tr}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 11.5,
+                color: colors.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ),
-          SizedBox(height: Responsive.scaleHeight(60, context)),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return Padding(
-      padding: EdgeInsets.only(left: Responsive.scaleWidth(6, context)),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: AppColors.textSecondaryColor,
-          fontWeight: FontWeight.w600,
-          fontSize: Responsive.scaleFont(17, context),
-          letterSpacing: 0.5,
+  /// Uchta koʻrsatkich.
+  Widget _buildStats(UserMe? user) {
+    return Obx(() {
+      if (funcController.meStats.value.data == null) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Text(
+              'Ma’lumotlar mavjud emas'.tr,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return Row(
+        children: [
+          Expanded(
+            child: _StatCard(
+              icon: LucideIcons.squareLibrary,
+              title: 'Postlar'.tr,
+              value: funcController.meStats.value.data?.postcount ?? '0',
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _StatCard(
+              icon: LucideIcons.eye,
+              title: 'Ko‘rishlar'.tr,
+              value: funcController.meStats.value.data?.totalViews ?? '0',
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _StatCard(
+              icon: LucideIcons.fileText,
+              title: 'Rezyumelar'.tr,
+              value: (user?.data?.resumes?.length ?? 0).toString(),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  List<Widget> _buildPersonalInfo(UserMe? user) {
+    final items = <({IconData icon, String title, String value})>[
+      (
+        icon: LucideIcons.mapPin,
+        title: 'Manzil'.tr,
+        value:
+            user?.data?.district != null
+                ? '${user!.data!.district!.name}, ${user.data!.district!.region!.name}'
+                : 'Manzil kiritilmagan',
+      ),
+      (
+        icon: LucideIcons.user,
+        title: 'Jins'.tr,
+        value:
+            user?.data?.gender == 'MALE'
+                ? 'Erkak'.tr
+                : user?.data?.gender == 'FEMALE'
+                ? 'Ayol'.tr
+                : 'Kiritilmagan'.tr,
+      ),
+      (
+        icon: LucideIcons.calendar,
+        title: 'Tug‘ilgan sana'.tr,
+        value: user?.data?.birthDate ?? 'Kiritilmagan'.tr,
+      ),
+      (
+        icon: LucideIcons.check,
+        title: 'Tasdiqlangan'.tr,
+        value: user?.data?.verified == true ? 'Ha'.tr : 'Yo‘q'.tr,
+      ),
+      (
+        icon: LucideIcons.userCheck,
+        title: 'Rol'.tr,
+        value: user?.data?.role ?? 'Kiritilmagan'.tr,
+      ),
+      (
+        icon: LucideIcons.clock,
+        title: 'Ro‘yxatdan o‘tgan sana'.tr,
+        value:
+            user?.data?.createdAt != null
+                ? user!.data!.createdAt!.split('T')[0]
+                : 'Kiritilmagan'.tr,
+      ),
+    ];
+
+    return [
+      for (var i = 0; i < items.length; i++)
+        AppReveal(
+          delay: AppReveal.step(i + 3),
+          child: AppTile(
+            icon: items[i].icon,
+            title: items[i].title,
+            subtitle: items[i].value,
+          ),
+        ),
+    ];
+  }
+
+  void _showAuthDialog(UserMe? user) {
+    final theme = Theme.of(context);
+
+    Get.dialog(
+      Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 22, 20, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Kirish ma’lumotlari'.tr, style: theme.textTheme.titleLarge),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Icon(
+                    _getAuthIcon(user),
+                    size: 19,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getAuthMethod(user),
+                          style: theme.textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          _getAuthInfo(user),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Get.back(),
+                  child: Text('Yopish'.tr),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Future<void> _deleteAccount() async {
+    final theme = Theme.of(context);
+
     final confirm = await Get.dialog<bool>(
-      Dialog(
-        backgroundColor: Colors.transparent,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 600),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.cardColor, AppColors.backgroundColor],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowColor,
-                blurRadius: 8,
-                spreadRadius: 1,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 0.8, end: 1.0).animate(
-              CurvedAnimation(
-                parent: ModalRoute.of(context)!.animation!,
-                curve: Curves.easeOutBack,
-              ),
-            ),
-            child: FadeTransition(
-              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                CurvedAnimation(
-                  parent: ModalRoute.of(context)!.animation!,
-                  curve: Curves.easeOut,
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(Responsive.scaleWidth(16, context)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Hisobni o‘chirish'.tr,
-                      style: TextStyle(
-                        color: AppColors.textColor,
-                        fontSize: Responsive.scaleFont(18, context),
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: Responsive.scaleHeight(12, context)),
-                    Text(
-                      'Hisobingizni o‘chirishni xohlaysizmi? Bu amal qaytarib bo‘lmaydi.'
-                          .tr,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.textSecondaryColor,
-                        fontSize: Responsive.scaleFont(14, context),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    SizedBox(height: Responsive.scaleHeight(20, context)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: Text(
-                            'Bekor qilish'.tr,
-                            style: TextStyle(
-                              color: AppColors.secondaryColor,
-                              fontSize: Responsive.scaleFont(14, context),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: Responsive.scaleWidth(8, context)),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.redAccent, Colors.red],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.shadowColor,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () => Navigator.of(context).pop(true),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: Responsive.scaleHeight(10, context),
-                                  horizontal: Responsive.scaleWidth(
-                                    16,
-                                    context,
-                                  ),
-                                ),
-                                child: Text(
-                                  'O‘chirish',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: Responsive.scaleFont(14, context),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: Responsive.scaleWidth(8, context)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+      AlertDialog(
+        title: Row(
+          children: [
+            Icon(LucideIcons.triangleAlert, color: AppColors.red, size: 21),
+            const SizedBox(width: 10),
+            Text('Hisobni o‘chirish'.tr, style: theme.textTheme.titleLarge),
+          ],
+        ),
+        content: Text(
+          'Rostdan ham hisobingizni o‘chirmoqchimisiz?'.tr,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: Text('Bekor qilish'.tr),
+          ),
+          FilledButton(
+            onPressed: () => Get.back(result: true),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.red,
+              foregroundColor: AppColors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppTheme.radiusControl),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            ),
+            child: const Text('O‘chirish'),
+          ),
+        ],
       ),
     );
+
     if (confirm == true) {
       // await apiController.deleteAccount(); // Hisobni o'chirish funksiyasi
     }
   }
+}
 
-  Widget _buildStatCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String value,
-  }) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: Responsive.scaleWidth(100, context),
-      padding: EdgeInsets.all(Responsive.scaleWidth(10, context)),
+/// Bitta koʻrsatkich katakchasi.
+class _StatCard extends StatelessWidget {
+  const _StatCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowColor,
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
+        color: theme.cardTheme.color ?? colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+        border: Border.all(
+          color: colors.onSurface.withValues(alpha: 0.08),
+          width: 1,
+        ),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AnimatedScale(
-            scale: 1.0,
-            duration: const Duration(milliseconds: 300),
-            child: Icon(
-              icon,
-              color: AppColors.secondaryColor,
-              size: Responsive.scaleFont(24, context),
-            ),
-          ),
-          SizedBox(height: Responsive.scaleHeight(6, context)),
+          Icon(icon, size: 19, color: colors.primary),
+          const SizedBox(height: 9),
           Text(
             value,
-            style: TextStyle(
-              color: AppColors.textColor,
-              fontSize: Responsive.scaleFont(16, context),
-              fontWeight: FontWeight.bold,
-            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.headlineSmall?.copyWith(fontSize: 19),
           ),
-          SizedBox(height: Responsive.scaleHeight(4, context)),
+          const SizedBox(height: 2),
           Text(
             title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.textSecondaryColor,
-              fontSize: Responsive.scaleFont(12, context),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String value,
-  }) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: EdgeInsets.symmetric(
-        vertical: Responsive.scaleHeight(10, context),
-        horizontal: Responsive.scaleWidth(14, context),
-      ),
-      margin: EdgeInsets.symmetric(
-        vertical: Responsive.scaleHeight(4, context),
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowColor,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          AnimatedScale(
-            scale: 1.0,
-            duration: const Duration(milliseconds: 300),
-            child: Icon(
-              icon,
-              color: AppColors.secondaryColor,
-              size: Responsive.scaleFont(25, context),
-            ),
-          ),
-          SizedBox(width: Responsive.scaleWidth(20, context)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: AppColors.textSecondaryColor,
-                    fontSize: Responsive.scaleFont(13, context),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: Responsive.scaleHeight(3, context)),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: AppColors.textColor,
-                    fontSize: Responsive.scaleFont(15, context),
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: 11.5,
+              color: colors.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -835,8 +477,10 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   }
 }
 
+/// Profil suratini butun ekranda koʻrsatish.
 class FullScreenImage extends StatelessWidget {
   final String url;
+
   const FullScreenImage({super.key, required this.url});
 
   @override
@@ -852,12 +496,14 @@ class FullScreenImage extends StatelessWidget {
               imageUrl: url,
               fit: BoxFit.contain,
               placeholder:
-                  (context, url) => CircularProgressIndicator(
-                    color: AppColors.secondaryColor,
-                  ),
+                  (context, url) =>
+                      const CircularProgressIndicator(color: Colors.white54),
               errorWidget:
-                  (context, url, error) =>
-                      Icon(LucideIcons.imageOff, color: Colors.white, size: 48),
+                  (context, url, error) => const Icon(
+                    LucideIcons.imageOff,
+                    color: Colors.white,
+                    size: 48,
+                  ),
             ),
           ),
         ),

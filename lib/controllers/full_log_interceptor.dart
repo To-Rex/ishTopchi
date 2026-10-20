@@ -7,10 +7,12 @@ class FullLogInterceptor extends Interceptor {
 
   void _printLong(String text) {
     for (int i = 0; i < text.length; i += _chunkSize) {
-      debugPrint(text.substring(
-        i,
-        i + _chunkSize > text.length ? text.length : i + _chunkSize,
-      ));
+      debugPrint(
+        text.substring(
+          i,
+          i + _chunkSize > text.length ? text.length : i + _chunkSize,
+        ),
+      );
     }
   }
 
@@ -38,7 +40,8 @@ class FullLogInterceptor extends Interceptor {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     debugPrint('┌────── RESPONSE ──────');
     debugPrint(
-      '${response.requestOptions.method} ${response.requestOptions.uri}');
+      '${response.requestOptions.method} ${response.requestOptions.uri}',
+    );
     debugPrint('Status: ${response.statusCode}');
     _printLong('Data:\n${_prettyJson(response.data)}');
     debugPrint('└─────────────────────');
@@ -48,8 +51,7 @@ class FullLogInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     debugPrint('┌────── ERROR ──────');
-    debugPrint(
-      '${err.requestOptions.method} ${err.requestOptions.uri}');
+    debugPrint('${err.requestOptions.method} ${err.requestOptions.uri}');
     debugPrint('Message: ${err.message}');
     if (err.response?.data != null) {
       _printLong('Error Data:\n${_prettyJson(err.response?.data)}');

@@ -9,7 +9,8 @@ class DevicesModel {
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    if (this.data != null) data['data'] = this.data!.map((v) => v.toJson()).toList();
+    if (this.data != null)
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
     return data;
   }
 }
@@ -27,7 +28,19 @@ class DevicesData {
   String? createdAt;
   String? updatedAt;
 
-  DevicesData({this.id, this.deviceId, this.fcmToken, this.deviceName, this.deviceModel, this.platform, this.lastLogin, this.isActive, this.owner, this.createdAt, this.updatedAt});
+  DevicesData({
+    this.id,
+    this.deviceId,
+    this.fcmToken,
+    this.deviceName,
+    this.deviceModel,
+    this.platform,
+    this.lastLogin,
+    this.isActive,
+    this.owner,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   DevicesData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -74,7 +87,20 @@ class Owner {
   String? updatedAt;
   String? deletedAt;
 
-  Owner({this.id, this.firstName, this.lastName, this.profilePicture, this.birthDate, this.gender, this.verified, this.isBlocked, this.role, this.createdAt, this.updatedAt, this.deletedAt});
+  Owner({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.profilePicture,
+    this.birthDate,
+    this.gender,
+    this.verified,
+    this.isBlocked,
+    this.role,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
 
   Owner.fromJson(Map<String, dynamic> json) {
     id = json['id'];

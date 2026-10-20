@@ -27,7 +27,8 @@ class CreateResumeController extends GetxController {
       contentController.value = resume.content ?? '';
       educationList.assignAll(resume.education ?? []);
       experienceList.assignAll(resume.experience ?? []);
-      selectedFile.value = null; // Faylni qayta yuklash kerak bo'lsa, bu o'zgartiriladi
+      selectedFile.value =
+          null; // Faylni qayta yuklash kerak bo'lsa, bu o'zgartiriladi
     } else {
       isEditing.value = false;
       resumeId.value = null;
@@ -87,19 +88,29 @@ class CreateResumeController extends GetxController {
 
     isLoading.value = true;
     try {
-      final educationData = educationList.map((edu) => {
-        'degree': edu.degree,
-        'field': edu.field,
-        'institution': edu.institution,
-        'period': edu.period,
-      }).toList();
+      final educationData =
+          educationList
+              .map(
+                (edu) => {
+                  'degree': edu.degree,
+                  'field': edu.field,
+                  'institution': edu.institution,
+                  'period': edu.period,
+                },
+              )
+              .toList();
 
-      final experienceData = experienceList.map((exp) => {
-        'position': exp.position,
-        'company': exp.company,
-        'period': exp.period,
-        'description': exp.description,
-      }).toList();
+      final experienceData =
+          experienceList
+              .map(
+                (exp) => {
+                  'position': exp.position,
+                  'company': exp.company,
+                  'period': exp.period,
+                  'description': exp.description,
+                },
+              )
+              .toList();
 
       if (isEditing.value && resumeId.value != null) {
         // Resume yangilash

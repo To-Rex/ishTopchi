@@ -1,242 +1,106 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../common/widgets/app_ui.dart';
 import '../../../config/theme/app_colors.dart';
-import '../../../core/utils/responsive.dart';
 import '../controllers/profile_controller.dart';
-import '../../../controllers/theme_controller.dart';
 
+/// Ilova haqida.
 class AboutAppScreen extends StatelessWidget {
   final ProfileController profileController = Get.find<ProfileController>();
-  final ThemeController themeController = Get.find<ThemeController>();
 
   AboutAppScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Ilova haqida'.tr,
-          style: TextStyle(
-            color: AppColors.textColor,
-            fontSize: Responsive.scaleFont(18, context),
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return AppScreen(
+      title: 'Ilova haqida'.tr,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
+        children: [
+          // Ilova belgisi
+          AppReveal(
+            child: Center(
+              child: Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  color: colors.onSurface.withValues(alpha: 0.05),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: colors.onSurface.withValues(alpha: 0.10),
+                    width: 1,
+                  ),
+                ),
+                child: Icon(
+                  LucideIcons.briefcaseBusiness,
+                  size: 40,
+                  color: colors.onSurface.withValues(alpha: 0.7),
+                ),
+              ),
+            ),
           ),
-        ),
-        backgroundColor: AppColors.backgroundColor,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: AppColors.textColor,
-            size: Responsive.scaleFont(20, context),
+          const SizedBox(height: 20),
+          AppReveal(
+            delay: const Duration(milliseconds: 70),
+            child: Column(
+              children: [
+                Text('Ishtopchi', style: theme.textTheme.headlineMedium),
+                const SizedBox(height: 4),
+                Text(
+                  '${'Versiya'.tr} ${profileController.appVersion}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurface.withValues(alpha: 0.55),
+                  ),
+                ),
+              ],
+            ),
           ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        elevation: 0,
-      ),
-      backgroundColor: AppColors.backgroundColor,
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: Responsive.scaleWidth(16, context),
-          vertical: Responsive.scaleHeight(20, context),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Logo yoki ilova ikoni
-            CircleAvatar(
-              radius: Responsive.scaleWidth(60, context),
-              backgroundColor: AppColors.surfaceColor.withOpacity(0.3),
-              child: Icon(
-                Icons.app_registration,
-                color: AppColors.iconColor,
-                size: Responsive.scaleFont(40, context),
-              ),
+          const SizedBox(height: 28),
+          AppReveal(
+            delay: const Duration(milliseconds: 130),
+            child: AppTile(
+              icon: LucideIcons.user,
+              title: 'Ishlab chiquvchi'.tr,
+              subtitle: 'Torex Dev',
+              onTap: () => _launchURL('https://torexdev.uz'),
             ),
-            SizedBox(height: Responsive.scaleHeight(20, context)),
-            // Ilova nomi va versiya
-            Text(
-              'Ishtopchi',
-              style: TextStyle(
-                color: AppColors.textColor,
-                fontSize: Responsive.scaleFont(24, context),
-                fontWeight: FontWeight.bold,
-              ),
+          ),
+          AppReveal(
+            delay: const Duration(milliseconds: 170),
+            child: AppTile(
+              icon: LucideIcons.lock,
+              title: 'Ruxsatlar'.tr,
+              subtitle: 'Maxfiylik siyosati va shartlar'.tr,
+              onTap: () => _launchURL('https://ishtopchi.uz/uz/privacy'),
             ),
-            Text(
-              '${'Versiya'.tr} ${profileController.appVersion}',
-              style: TextStyle(
-                color: AppColors.textSecondaryColor,
-                fontSize: Responsive.scaleFont(14, context),
-              ),
+          ),
+          AppReveal(
+            delay: const Duration(milliseconds: 210),
+            child: AppTile(
+              icon: LucideIcons.link,
+              title: 'Veb-sayt'.tr,
+              subtitle: 'https://ishtopchi.uz',
+              onTap: () => _launchURL('https://ishtopchi.uz'),
             ),
-            SizedBox(height: Responsive.scaleHeight(24, context)),
-            // Ishlab chiquvchi
-            _buildInfoItem(
-              context,
-              Icons.person_outline,
-              'Ishlab chiquvchi'.tr,
-              'Torex Dev',
-              () => _launchURL('https://torexdev.uz'),
-            ),
-            SizedBox(height: Responsive.scaleHeight(12, context)),
-            // Ruxsatlar
-            _buildInfoItem(
-              context,
-              Icons.lock_outline,
-              'Ruxsatlar'.tr,
-              'Maxfiylik siyosati va shartlar'.tr,
-              () => _launchURL('https://ishtopchi.uz/uz/privacy'),
-            ),
-            SizedBox(height: Responsive.scaleHeight(12, context)),
-            // Havolalar
-            _buildLinkItem(
-              context,
-              Icons.link,
-              'Veb-sayt'.tr,
-              'https://ishtopchi.uz',
-              () => _launchURL('https://ishtopchi.uz'),
-            ),
-            SizedBox(height: Responsive.scaleHeight(24, context)),
-            // Qo'shimcha ma'lumot
-            Text(
+          ),
+          const SizedBox(height: 22),
+          AppReveal(
+            delay: const Duration(milliseconds: 260),
+            child: Text(
               '© 2025 Ishtopchi. Barcha huquqlar himoyalangan.'.tr,
-              style: TextStyle(
-                color: AppColors.textSecondaryColor,
-                fontSize: Responsive.scaleFont(12, context),
-                fontStyle: FontStyle.italic,
-              ),
               textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoItem(
-    BuildContext context,
-    IconData icon,
-    String title,
-    String detail,
-    VoidCallback? onTap,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(Responsive.scaleWidth(12, context)),
-      decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-        boxShadow:
-            themeController.isDarkMode.value
-                ? null
-                : [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: AppColors.iconColor,
-              size: Responsive.scaleFont(20, context),
-            ),
-            SizedBox(width: Responsive.scaleWidth(16, context)),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: AppColors.textColor,
-                      fontSize: Responsive.scaleFont(14, context),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    detail,
-                    style: TextStyle(
-                      color: AppColors.textSecondaryColor,
-                      fontSize: Responsive.scaleFont(12, context),
-                    ),
-                  ),
-                ],
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 12,
+                color: colors.onSurface.withValues(alpha: 0.45),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLinkItem(
-    BuildContext context,
-    IconData icon,
-    String title,
-    String detail,
-    VoidCallback onTap,
-  ) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(Responsive.scaleWidth(10, context)),
-      child: Container(
-        padding: EdgeInsets.all(Responsive.scaleWidth(12, context)),
-        decoration: BoxDecoration(
-          color: AppColors.cardColor,
-          borderRadius: BorderRadius.circular(
-            Responsive.scaleWidth(10, context),
           ),
-          boxShadow:
-              themeController.isDarkMode.value
-                  ? null
-                  : [
-                    BoxShadow(
-                      color: AppColors.shadowColor,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: AppColors.iconColor,
-              size: Responsive.scaleFont(20, context),
-            ),
-            SizedBox(width: Responsive.scaleWidth(16, context)),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: AppColors.textColor,
-                      fontSize: Responsive.scaleFont(14, context),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    detail,
-                    style: TextStyle(
-                      color: AppColors.textSecondaryColor,
-                      fontSize: Responsive.scaleFont(12, context),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -249,7 +113,7 @@ class AboutAppScreen extends StatelessWidget {
       Get.snackbar(
         'Xatolik'.tr,
         'Havola ochilmadi'.tr,
-        colorText: AppColors.textColor,
+        colorText: AppColors.white,
         backgroundColor: AppColors.red,
       );
     }

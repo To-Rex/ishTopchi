@@ -12,7 +12,17 @@ class RefreshComponent extends StatelessWidget {
   final ScrollPhysics? physics;
   final bool? enablePullUp;
 
-  const RefreshComponent({super.key, this.enablePullUp, required this.child, required this.refreshController, required this.scrollController, this.onLoading, this.onRefresh, this.color, this.physics = const AlwaysScrollableScrollPhysics()});
+  const RefreshComponent({
+    super.key,
+    this.enablePullUp,
+    required this.child,
+    required this.refreshController,
+    required this.scrollController,
+    this.onLoading,
+    this.onRefresh,
+    this.color,
+    this.physics = const AlwaysScrollableScrollPhysics(),
+  });
 
   void _getData() {
     refreshController.refreshCompleted();
@@ -25,6 +35,14 @@ class RefreshComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Asosiy ekranda kontent pastki suzuvchi panel ostidan oʻtadi va
+    // `MediaQuery` pastki boʻshligʻi panel balandligiga teng boʻladi.
+    // Roʻyxat oxiri (yuklash belgisi yoki oxirgi karta) panel ustida
+    // koʻrinishi uchun shu boʻshliq qoʻshiladi. Boshqa ekranlarda bu
+    // tizim panelining balandligi xolos.
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final pullUp = enablePullUp ?? true;
+
     return RefreshConfiguration(
       enableScrollWhenRefreshCompleted: true,
       enableLoadingWhenFailed: true,
@@ -32,16 +50,25 @@ class RefreshComponent extends StatelessWidget {
       enableBallisticLoad: true,
       child: SmartRefresher(
         enablePullDown: true,
-        enablePullUp: enablePullUp ?? true,
+        enablePullUp: pullUp,
         physics: physics,
         header: CustomRefreshHeader(color: color),
-        footer: CustomRefreshFooter(color: color),
+        footer: CustomRefreshFooter(color: color, bottomInset: bottomInset),
         onLoading: onLoading ?? _onLoading,
         onRefresh: onRefresh ?? _getData,
         controller: refreshController,
         scrollController: scrollController,
-        child: child
-      )
+        // Pastki qism oʻchirilgan boʻlsa, boʻshliq kontentning oʻziga
+        // qoʻshiladi. `ScrollView` ga tegilmaydi — uni `SmartRefresher`
+        // oʻzi ochib, boʻlaklariga ajratadi.
+        child:
+            pullUp || child is ScrollView
+                ? child
+                : Padding(
+                  padding: EdgeInsets.only(bottom: bottomInset),
+                  child: child,
+                ),
+      ),
     );
   }
 }

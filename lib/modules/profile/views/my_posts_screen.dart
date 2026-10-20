@@ -1,19 +1,16 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ishtopchi/core/services/show_toast.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import '../../../common/widgets/app_ui.dart';
+import '../../../common/widgets/post_card.dart';
 import '../../../common/widgets/refresh_component.dart';
-import '../../../config/theme/app_colors.dart';
-import '../../../config/theme/app_dimensions.dart';
 import '../../../controllers/api_controller.dart';
 import '../../../controllers/funcController.dart';
-import '../../../core/utils/responsive.dart';
 import '../../main/views/skeleton_post_card.dart';
-import '../../../common/widgets/post_card.dart';
 
+/// Foydalanuvchining oʻz eʼlonlari.
 class MyPostsScreen extends StatefulWidget {
   const MyPostsScreen({super.key});
 
@@ -37,6 +34,14 @@ class MyPostsScreenState extends State<MyPostsScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    // Avval bu kontrollerlar hech qachon boʻshatilmasdi.
+    refreshController.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
+
   // E‘lonlarni yuklash
   Future<void> _loadMyPosts() async {
     try {
@@ -46,7 +51,7 @@ class MyPostsScreenState extends State<MyPostsScreen> {
         search: funcController.searchQuery.value,
       );
     } catch (e) {
-      print('Xatolik: $e');
+      debugPrint('Xatolik: $e');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ShowToast.show('Xatolik'.tr, e.toString(), 3, 1);
       });
@@ -77,324 +82,244 @@ class MyPostsScreenState extends State<MyPostsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppColors.backgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            LucideIcons.arrowLeft,
-            color: AppColors.textColor,
-            size: 24,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Mening e’lonlarim'.tr,
-          style: TextStyle(
-            color: AppColors.textColor,
-            fontSize: Responsive.scaleFont(20, context),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: Column(
+    return AppScreen(
+      title: 'Mening e’lonlarim'.tr,
+      child: Column(
         children: [
           // Qidiruv maydoni
-          Container(
-            height: Responsive.scaleHeight(55, context),
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(
-              top: Responsive.scaleHeight(10, context),
-              left: Responsive.scaleWidth(16, context),
-              right: Responsive.scaleWidth(16, context),
-              bottom: Responsive.scaleHeight(10, context),
-            ),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Qidirish...'.tr,
-                hintStyle: TextStyle(
-                  color: AppColors.iconColor.withOpacity(0.6),
-                ),
-                prefixIcon: Icon(
-                  LucideIcons.search,
-                  color: AppColors.iconColor,
-                  size: Responsive.scaleFont(20, context),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    Responsive.scaleWidth(8, context),
-                  ),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: AppColors.cardColor,
-              ),
-              style: TextStyle(
-                fontSize: Responsive.scaleFont(16, context),
-                color: AppColors.textColor,
-              ),
-              onChanged: (value) async {
-                funcController.searchQuery.value = value;
-                funcController.currentPage.value = 1;
-                funcController.hasMore.value = true;
-                funcController.mePosts.clear();
-                await _loadMyPosts();
-                refreshController.refreshCompleted();
-              },
-            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+            child: _buildSearchField(),
           ),
-          // Filtr va ko‘rinish tugmalari
-          Container(
-            height: Responsive.scaleHeight(55, context),
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(
-              left: Responsive.scaleWidth(16, context),
-              right: Responsive.scaleWidth(16, context),
-              bottom: Responsive.scaleHeight(10, context),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.scaleWidth(12, context),
-                    vertical: Responsive.scaleHeight(10, context),
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardColor,
-                    borderRadius: BorderRadius.circular(8.sp),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        LucideIcons.mapPin,
-                        color: AppColors.iconColor,
-                        size: Responsive.scaleFont(20, context),
-                      ),
-                      SizedBox(width: 6.sp),
-                      Obx(
-                        () => Text(
-                          funcController.userMe.value.data?.district?.name ??
-                              'Viloyat'.tr,
-                          style: TextStyle(
-                            color: AppColors.textColor,
-                            fontSize: Responsive.scaleFont(14, context),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Obx(
-                  () => Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          LucideIcons.megaphone,
-                          color: AppColors.iconColor,
-                          size: Responsive.scaleFont(20, context),
-                        ),
-                        SizedBox(width: 6.sp),
-                        Text(
-                          '${funcController.totalMePosts} ${'ta e’lon'.tr}',
-                          style: TextStyle(
-                            color: AppColors.textColor,
-                            fontSize: Responsive.scaleFont(12, context),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    funcController.isGridView.value =
-                        !funcController.isGridView.value;
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Responsive.scaleWidth(16, context),
-                      vertical: Responsive.scaleHeight(10, context),
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.cardColor,
-                      borderRadius: BorderRadius.circular(8.sp),
-                    ),
-                    child: Obx(
-                      () => Icon(
-                        !funcController.isGridView.value
-                            ? LucideIcons.grid2x2
-                            : LucideIcons.list,
-                        color: AppColors.iconColor,
-                        size: Responsive.scaleFont(20, context),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          // Joylashuv, soni va ko‘rinish tugmalari
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+            child: _buildToolbar(),
           ),
           // E‘lonlar ro‘yxati
           Expanded(
             child: RefreshComponent(
               refreshController: refreshController,
               scrollController: scrollController,
-              color: AppColors.iconColor,
               onRefresh: _onRefresh,
               onLoading: _onLoading,
               enablePullUp: funcController.hasMore.value,
-              child: Obx(() {
-                final posts = funcController.mePosts;
-                final isLoading = funcController.isLoading.value;
-                if (isLoading && posts.isEmpty) {
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(
-                      left: Responsive.scaleWidth(16, context),
-                      right: Responsive.scaleWidth(16, context),
-                      bottom: Responsive.scaleHeight(16, context),
-                    ),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: Responsive().getCrossAxisCount(context),
-                      crossAxisSpacing: Responsive.scaleWidth(16, context),
-                      mainAxisSpacing: Responsive.scaleHeight(16, context),
-                      childAspectRatio:
-                          Responsive.screenWidth(context) < 300 ? 0.9 : 0.6,
-                    ),
-                    itemCount: 6,
-                    itemBuilder: (context, index) => const SkeletonPostCard(),
-                  );
-                } else if (posts.isEmpty) {
-                  return SizedBox.expand(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            LucideIcons.fileX,
-                            size: 64.sp,
-                            color: AppColors.iconColor.withAlpha(150),
-                          ),
-                          SizedBox(height: 16.sp),
-                          Text(
-                            'Hozircha e’lonlaringiz yo‘q'.tr,
-                            style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: Responsive.scaleFont(18, context),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: 8.sp),
-                          Text(
-                            'Yangi e’lon qo‘shish uchun quyidagi tugmani bosing'
-                                .tr,
-                            style: TextStyle(
-                              color: AppColors.textSecondaryColor,
-                              fontSize: Responsive.scaleFont(14, context),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 16.sp),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              funcController.setBarIndex(1);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.sp),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: Responsive.scaleWidth(24, context),
-                                vertical: Responsive.scaleHeight(12, context),
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    AppColors.primaryColor,
-                                    AppColors.secondaryColor,
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(12.sp),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.shadowColor,
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                'E’lon qo‘shish'.tr,
-                                style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: Responsive.scaleFont(16, context),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                // E‘lonlar ro‘yxati
-                return funcController.isGridView.value
-                    ? GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.only(
-                        left: Responsive.scaleWidth(16, context),
-                        right: Responsive.scaleWidth(16, context),
-                        bottom: Responsive.scaleHeight(16, context),
-                      ),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: Responsive().getCrossAxisCount(context),
-                        crossAxisSpacing: Responsive.scaleWidth(16, context),
-                        mainAxisSpacing: Responsive.scaleHeight(16, context),
-                        childAspectRatio:
-                            Responsive.screenWidth(context) < 300 ? 0.9 : 0.53,
-                      ),
+              // Slayverlar toʻgʻridan-toʻgʻri `SmartRefresher` ga beriladi
+              // (asosiy lentadagi bilan bir xil sabab): aks holda roʻyxat
+              // bir slayver ichida cheksiz balandlik olib, `shrinkWrap`
+              // bilan barcha kartalarni birdan qurardi.
+              child: CustomScrollView(
+                slivers: [
+                  Obx(() {
+                    final posts = funcController.mePosts;
+                    final isLoading = funcController.isLoading.value;
+
+                    if (isLoading && posts.isEmpty) {
+                      return _buildList(
+                        context,
+                        itemCount: 6,
+                        builder: (context, index) => const SkeletonPostCard(),
+                      );
+                    }
+
+                    if (posts.isEmpty) {
+                      return SliverToBoxAdapter(
+                        child: AppEmptyState(
+                          icon: LucideIcons.fileX,
+                          title: 'Hozircha e’lonlaringiz yo‘q'.tr,
+                          message:
+                              'Yangi e’lon qo‘shish uchun quyidagi tugmani bosing'
+                                  .tr,
+                          actionLabel: 'E’lon qo‘shish'.tr,
+                          actionIcon: const Icon(LucideIcons.circlePlus),
+                          onAction: () {
+                            Navigator.of(context).pop();
+                            funcController.setBarIndex(1);
+                          },
+                        ),
+                      );
+                    }
+
+                    return _buildList(
+                      context,
                       itemCount: posts.length,
-                      itemBuilder: (context, index) {
+                      builder: (context, index) {
                         final post = posts[index];
-                        return PostCard(post: post, mePost: true);
-                      },
-                    )
-                    : ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.only(
-                        left: Responsive.scaleWidth(16, context),
-                        right: Responsive.scaleWidth(16, context),
-                        bottom: Responsive.scaleHeight(16, context),
-                      ),
-                      itemCount: posts.length,
-                      itemBuilder: (context, index) {
-                        final post = posts[index];
-                        return PostCard(post: post, mePost: true);
+                        return AppReveal(
+                          delay: AppReveal.step(index),
+                          child: PostCard(post: post, mePost: true),
+                        );
                       },
                     );
-              }),
+                  }),
+                ],
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSearchField() {
+    final colors = Theme.of(context).colorScheme;
+
+    return TextField(
+      style: Theme.of(context).textTheme.bodyLarge,
+      decoration: InputDecoration(
+        hintText: 'Qidirish...'.tr,
+        prefixIcon: Icon(
+          LucideIcons.search,
+          size: 19,
+          color: colors.onSurface.withValues(alpha: 0.5),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 15),
+      ),
+      onChanged: (value) async {
+        funcController.searchQuery.value = value;
+        funcController.currentPage.value = 1;
+        funcController.hasMore.value = true;
+        funcController.mePosts.clear();
+        await _loadMyPosts();
+        refreshController.refreshCompleted();
+      },
+    );
+  }
+
+  Widget _buildToolbar() {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+
+    return Row(
+      children: [
+        Obx(
+          () => _Chip(
+            icon: LucideIcons.mapPin,
+            label:
+                funcController.userMe.value.data?.district?.name ??
+                'Viloyat'.tr,
+          ),
+        ),
+        Expanded(
+          child: Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(LucideIcons.megaphone, size: 16, color: muted),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    '${funcController.totalMePosts} ${'ta e’lon'.tr}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Obx(
+          () => _Chip(
+            icon:
+                !funcController.isGridView.value
+                    ? LucideIcons.grid2x2
+                    : LucideIcons.list,
+            onTap:
+                () =>
+                    funcController.isGridView.value =
+                        !funcController.isGridView.value,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Roʻyxat yoki katak — slayver koʻrinishida.
+  Widget _buildList(
+    BuildContext context, {
+    required int itemCount,
+    required Widget Function(BuildContext, int) builder,
+  }) {
+    // Yuklash paneli oʻchirilgan boʻlsa, oxirgi karta suzuvchi pastki
+    // panel ostida qolmasligi uchun uning balandligicha boʻshliq.
+    final bottomInset =
+        funcController.hasMore.value
+            ? 0.0
+            : MediaQuery.paddingOf(context).bottom;
+    final padding = EdgeInsets.fromLTRB(8, 0, 8, 16 + bottomInset);
+
+    final sliver =
+        funcController.isGridView.value
+            ? SliverGrid(
+              gridDelegate: PostCard.gridDelegate(context, mePost: true),
+              delegate: SliverChildBuilderDelegate(
+                builder,
+                childCount: itemCount,
+              ),
+            )
+            : SliverList(
+              delegate: SliverChildBuilderDelegate(
+                builder,
+                childCount: itemCount,
+              ),
+            );
+
+    return SliverPadding(padding: padding, sliver: sliver);
+  }
+}
+
+/// Panel ustidagi kichik tugma.
+class _Chip extends StatelessWidget {
+  const _Chip({required this.icon, this.label, this.onTap});
+
+  final IconData icon;
+  final String? label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final muted = colors.onSurface.withValues(alpha: 0.65);
+    final radius = BorderRadius.circular(12);
+
+    return Material(
+      color: theme.cardTheme.color ?? colors.surfaceContainer,
+      borderRadius: radius,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            border: Border.all(
+              color: colors.onSurface.withValues(alpha: 0.08),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 17, color: muted),
+              if (label != null) ...[
+                const SizedBox(width: 6),
+                Text(
+                  label!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w500,
+                    color: muted,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }

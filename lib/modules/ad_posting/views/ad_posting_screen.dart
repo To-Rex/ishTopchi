@@ -9,11 +9,13 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../core/utils/breakpoints.dart';
+import '../../../common/widgets/app_ui.dart';
 import '../../../common/widgets/not_logged.dart';
 import '../../../common/widgets/success_notification.dart';
-import '../../../config/routes/app_routes.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../config/theme/app_dimensions.dart';
+import '../../../config/theme/app_theme.dart';
 import '../../../controllers/theme_controller.dart';
 import '../../../core/utils/responsive.dart';
 import '../controllers/ad_posting_controller.dart';
@@ -158,10 +160,12 @@ class _AdPostingScreenState extends State<AdPostingScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body:
-        funcController.getToken() == null || funcController.getToken() == ''
-            ? NotLogged()
-            : _buildBody(context),
+    body: AppContentWidth(
+      child:
+          funcController.getToken() == null || funcController.getToken() == ''
+              ? NotLogged()
+              : _buildBody(context),
+    ),
   );
 
   Widget _buildBody(BuildContext context) => Obx(() {
@@ -180,7 +184,13 @@ class _AdPostingScreenState extends State<AdPostingScreen>
 
     return SingleChildScrollView(
       controller: _scrollController,
-      padding: EdgeInsets.all(AppDimensions.paddingMedium),
+      // "Joylashtirish" tugmasi pastki suzuvchi panel ostida qolmasin.
+      padding: EdgeInsets.fromLTRB(
+        AppDimensions.paddingMedium,
+        AppDimensions.paddingMedium,
+        AppDimensions.paddingMedium,
+        AppDimensions.paddingMedium + MediaQuery.paddingOf(context).bottom,
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -390,62 +400,27 @@ class _AdPostingScreenState extends State<AdPostingScreen>
     isExpanded: true,
     validator: validator,
     decoration: InputDecoration(
-      prefixIcon: Icon(
-        icon,
-        color: AppColors.textColor,
-        size: Responsive.scaleFont(18, context),
-      ),
+      prefixIcon: Icon(icon, size: 18),
       labelText: label,
-      labelStyle: TextStyle(
-        color: AppColors.iconColor,
-        fontSize: Responsive.scaleFont(14, context),
-      ),
-      filled: true,
-      fillColor: AppColors.cardColor,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        borderSide: BorderSide(color: AppColors.iconColor, width: 1.5),
-      ),
-      contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
-      errorStyle: TextStyle(
-        color: AppColors.red,
-        fontSize: Responsive.scaleFont(12, context),
-      ),
     ),
     dropdownStyleData: DropdownStyleData(
-      maxHeight: Responsive.scaleHeight(200, context),
-      width: Responsive.scaleWidth(250, context),
+      maxHeight: 240,
       decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        boxShadow:
-            themeController.isDarkMode.value
-                ? null
-                : [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+        color:
+            Theme.of(context).cardTheme.color ??
+            Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(14),
       ),
-      elevation: 4,
+      offset: const Offset(0, -6),
     ),
     iconStyleData: IconStyleData(
       icon: Icon(
         LucideIcons.chevronDown,
-        color: AppColors.textColor,
-        size: Responsive.scaleFont(18, context),
+        size: 18,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
       ),
     ),
-    style: TextStyle(
-      color: AppColors.textColor,
-      fontSize: Responsive.scaleFont(14, context),
-    ),
+    style: Theme.of(context).textTheme.bodyMedium,
     items:
         items
             .map(
@@ -453,7 +428,6 @@ class _AdPostingScreenState extends State<AdPostingScreen>
                 value: isInt ? item['id'] as T : item['value'] as T,
                 child: Text(
                   item['title'] ?? item['name'] ?? 'Noma’lum'.tr,
-                  style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -462,97 +436,86 @@ class _AdPostingScreenState extends State<AdPostingScreen>
     onChanged: onChanged,
     hint: Text(
       'Tanlang'.tr,
-      style: TextStyle(
-        color: AppColors.iconColor,
-        fontSize: Responsive.scaleFont(14, context),
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.42),
       ),
     ),
   );
 
-  Widget _buildImagePicker(BuildContext context) => Obx(
-    () => GestureDetector(
-      onTap: controller.pickImage,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        height: Responsive.scaleHeight(250, context),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.cardColor,
-          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-          boxShadow:
-              themeController.isDarkMode.value
-                  ? null
-                  : [
-                    BoxShadow(
-                      color: AppColors.shadowColor,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+  /// Surat tanlash. Surat qoʻyilmaganda — konturli boʻsh maydon.
+  Widget _buildImagePicker(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final radius = BorderRadius.circular(AppTheme.radiusCard);
+
+    return Obx(() {
+      final image = controller.selectedImage.value;
+
+      return Material(
+        color: theme.cardTheme.color ?? colors.surfaceContainer,
+        borderRadius: radius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: controller.pickImage,
+          child: Container(
+            height: 210,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: Border.all(
+                color:
+                    image != null
+                        ? colors.primary.withValues(alpha: 0.35)
+                        : colors.onSurface.withValues(alpha: 0.12),
+                width: image != null ? 1.4 : 1.2,
+              ),
+            ),
+            child:
+                image == null
+                    ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: colors.primary.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            LucideIcons.imagePlus,
+                            size: 23,
+                            color: colors.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Surat yuklash'.tr,
+                          style: theme.textTheme.titleSmall,
+                        ),
+                      ],
+                    )
+                    : Image.file(image, fit: BoxFit.cover),
+          ),
         ),
-        child:
-            controller.selectedImage.value == null
-                ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      LucideIcons.imagePlus,
-                      color: AppColors.iconColor,
-                      size: Responsive.scaleFont(40, context),
-                    ),
-                    SizedBox(height: AppDimensions.paddingSmall),
-                    Text(
-                      'Surat yuklash'.tr,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: Responsive.scaleFont(16, context),
-                        color: AppColors.iconColor,
-                      ),
-                    ),
-                  ],
-                )
-                : ClipRRect(
-                  borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-                  child: Image.file(
-                    controller.selectedImage.value!,
-                    fit: BoxFit.cover,
-                    height: Responsive.scaleHeight(250, context),
-                    width: double.infinity,
-                  ),
-                ),
-      ),
-    ),
-  );
+      );
+    });
+  }
 
   Widget _buildMapPicker(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
-        '${'Xaritada joyni tanlang'.tr} *',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontSize: Responsive.scaleFont(16, context),
-          color: AppColors.iconColor,
-        ),
-      ),
+      AppSectionLabel(text: '${'Xaritada joyni tanlang'.tr} *'),
       SizedBox(height: AppDimensions.paddingSmall),
       Stack(
         children: [
           Container(
             height: Responsive.scaleHeight(300, context),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-              boxShadow:
-                  themeController.isDarkMode.value
-                      ? null
-                      : [
-                        BoxShadow(
-                          color: AppColors.shadowColor,
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+              borderRadius: BorderRadius.circular(AppTheme.radiusCard),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+              borderRadius: BorderRadius.circular(AppTheme.radiusCard),
               child: FormField<String>(
                 key: _locationFieldKey,
                 validator:
@@ -596,21 +559,13 @@ class _AdPostingScreenState extends State<AdPostingScreen>
                                         height: 40.0,
                                         point:
                                             controller.currentLocation.value!,
-                                        child: const Icon(
-                                          LucideIcons.locateFixed,
-                                          color: Colors.blue,
-                                          size: 20.0,
-                                        ),
+                                        child: const AppMapPin(accent: false),
                                       ),
                                     Marker(
                                       width: 40.0,
                                       height: 40.0,
                                       point: controller.selectedLocation.value,
-                                      child: const Icon(
-                                        Icons.location_pin,
-                                        color: Colors.red,
-                                        size: 30.0,
-                                      ),
+                                      child: const AppMapPin(),
                                     ),
                                   ],
                                 ),
@@ -623,9 +578,11 @@ class _AdPostingScreenState extends State<AdPostingScreen>
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               formFieldState.errorText!,
-                              style: TextStyle(
-                                color: AppColors.red,
-                                fontSize: Responsive.scaleFont(12, context),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.error,
+                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -639,43 +596,13 @@ class _AdPostingScreenState extends State<AdPostingScreen>
             top: AppDimensions.paddingSmall,
             child: Column(
               children: [
-                IconButton(
-                  splashColor: AppColors.cardColor,
-                  color: AppColors.cardColor,
-                  splashRadius: 20,
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.cardColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimensions.cardRadius,
-                      ),
-                    ),
-                  ),
-                  icon: Icon(
-                    LucideIcons.plus,
-                    color: AppColors.textColor,
-                    size: Responsive.scaleFont(18, context),
-                  ),
+                _MapControl(
+                  icon: LucideIcons.plus,
                   onPressed: () => controller.zoomIn(_moveMap),
                 ),
                 SizedBox(height: AppDimensions.paddingSmall),
-                IconButton(
-                  splashColor: AppColors.cardColor,
-                  color: AppColors.cardColor,
-                  splashRadius: 20,
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.cardColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimensions.cardRadius,
-                      ),
-                    ),
-                  ),
-                  icon: Icon(
-                    LucideIcons.minus,
-                    color: AppColors.textColor,
-                    size: Responsive.scaleFont(18, context),
-                  ),
+                _MapControl(
+                  icon: LucideIcons.minus,
                   onPressed: () => controller.zoomOut(_moveMap),
                 ),
               ],
@@ -684,21 +611,9 @@ class _AdPostingScreenState extends State<AdPostingScreen>
           Positioned(
             right: AppDimensions.paddingSmall,
             bottom: AppDimensions.paddingSmall,
-            child: IconButton(
-              splashColor: AppColors.cardColor,
-              color: AppColors.cardColor,
-              splashRadius: 20,
-              style: IconButton.styleFrom(
-                backgroundColor: AppColors.cardColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-                ),
-              ),
-              icon: Icon(
-                LucideIcons.locate,
-                color: AppColors.iconColor,
-                size: Responsive.scaleFont(20, context),
-              ),
+            child: _MapControl(
+              icon: LucideIcons.locate,
+              accent: true,
               tooltip: 'Joriy joylashuvni aniqlash'.tr,
               //onPressed: () => controller.getCurrentLocation(_moveMap)
               onPressed: () {
@@ -728,36 +643,17 @@ class _AdPostingScreenState extends State<AdPostingScreen>
     List<TextInputFormatter>? inputFormatters,
     GlobalKey<FormFieldState>? fieldKey,
     TextInputAction? textInputAction,
+    // Bezak mavzudagi `inputDecorationTheme` dan keladi.
   }) => TextFormField(
     key: fieldKey,
     controller: controller,
     maxLines: maxLines,
     keyboardType: keyboardType,
     inputFormatters: inputFormatters,
-    style: TextStyle(color: AppColors.textColor),
+    style: Theme.of(context).textTheme.bodyMedium,
     validator: validator,
     textInputAction: textInputAction,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: AppColors.iconColor),
-      hintText: hint,
-      hintStyle: TextStyle(color: AppColors.iconColor),
-      filled: true,
-      fillColor: AppColors.cardColor,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        borderSide: BorderSide(color: AppColors.iconColor, width: 1.5),
-      ),
-      contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
-      errorStyle: TextStyle(
-        color: AppColors.red,
-        fontSize: Responsive.scaleFont(12, context),
-      ),
-    ),
+    decoration: InputDecoration(labelText: label, hintText: hint),
   );
 
   Widget _buildDropdownField<T>(
@@ -776,59 +672,27 @@ class _AdPostingScreenState extends State<AdPostingScreen>
     isExpanded: true,
     validator: validator,
     decoration: InputDecoration(
-      prefixIcon: Icon(
-        icon,
-        color: AppColors.textColor,
-        size: Responsive.scaleFont(18, context),
-      ),
+      prefixIcon: Icon(icon, size: 18),
       labelText: label,
-      labelStyle: TextStyle(color: AppColors.iconColor),
-      filled: true,
-      fillColor: AppColors.cardColor,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        borderSide: BorderSide(color: AppColors.iconColor, width: 1.5),
-      ),
-      contentPadding: EdgeInsets.all(AppDimensions.paddingMedium),
-      errorStyle: TextStyle(
-        color: AppColors.red,
-        fontSize: Responsive.scaleFont(12, context),
-      ),
     ),
     dropdownStyleData: DropdownStyleData(
-      maxHeight: Responsive.scaleHeight(200, context),
-      width: Responsive.scaleWidth(250, context),
+      maxHeight: 240,
       decoration: BoxDecoration(
-        color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-        boxShadow:
-            themeController.isDarkMode.value
-                ? null
-                : [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+        color:
+            Theme.of(context).cardTheme.color ??
+            Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(14),
       ),
-      elevation: 4,
+      offset: const Offset(0, -6),
     ),
     iconStyleData: IconStyleData(
       icon: Icon(
         LucideIcons.chevronDown,
-        color: AppColors.textColor,
-        size: Responsive.scaleFont(18, context),
+        size: 18,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
       ),
     ),
-    style: TextStyle(
-      color: AppColors.textColor,
-      fontSize: Responsive.scaleFont(14, context),
-    ),
+    style: Theme.of(context).textTheme.bodyMedium,
     items:
         items.map((item) {
           return DropdownMenuItem<T>(
@@ -839,7 +703,6 @@ class _AdPostingScreenState extends State<AdPostingScreen>
                         as T, // Bu qator o'zgardi: id mavjud bo'lsa, to'g'ri tipga o'tkazamiz
             child: Text(
               item['title'] ?? item['name'] ?? 'Noma’lum'.tr,
-              style: TextStyle(fontSize: Responsive.scaleFont(14, context)),
               overflow: TextOverflow.ellipsis,
             ),
           );
@@ -847,56 +710,93 @@ class _AdPostingScreenState extends State<AdPostingScreen>
     onChanged: onChanged,
     hint: Text(
       'Tanlang'.tr,
-      style: TextStyle(
-        color: AppColors.iconColor,
-        fontSize: Responsive.scaleFont(14, context),
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.42),
       ),
     ),
   );
 
+  /// Yuborish tugmasi.
+  ///
+  /// Ilgari qizil edi — qizil ilovada xato va oʻchirish uchun ishlatiladi.
+  /// Asosiy harakat uchun brend rangi toʻgʻriroq.
   Widget _buildSubmitButton(BuildContext context) => Obx(
-    () => SizedBox(
-      width: double.infinity,
-      height: AppDimensions.buttonHeight,
-      child: ElevatedButton(
-        onPressed:
-            controller.isSubmitting.value
-                ? null
-                : () {
-                  if (_formKey.currentState!.validate()) {
-                    controller.submitAd();
-                  } else {
-                    _scrollToErrorField();
-                  }
-                },
-        style: ElevatedButton.styleFrom(
-          backgroundColor:
-              controller.isSubmitting.value
-                  ? AppColors.red.withOpacity(0.6)
-                  : AppColors.red,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-          ),
-          elevation: 2,
-        ),
-        child:
-            controller.isSubmitting.value
-                ? SizedBox(
-                  width: Responsive.scaleWidth(20, context),
-                  height: Responsive.scaleWidth(20, context),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                  ),
-                )
-                : Text(
-                  'E’lonni yuborish'.tr,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontSize: Responsive.scaleFont(16, context),
-                    color: AppColors.white,
-                  ),
-                ),
-      ),
+    () => AppButton(
+      label: 'E’lonni yuborish'.tr,
+      leading: const Icon(LucideIcons.send),
+      filled: true,
+      loading: controller.isSubmitting.value,
+      onPressed:
+          controller.isSubmitting.value
+              ? null
+              : () {
+                if (_formKey.currentState!.validate()) {
+                  controller.submitAd();
+                } else {
+                  _scrollToErrorField();
+                }
+              },
     ),
   );
+}
+
+/// Xarita ustidagi dumaloq boshqaruv tugmasi.
+class _MapControl extends StatefulWidget {
+  const _MapControl({
+    required this.icon,
+    required this.onPressed,
+    this.accent = false,
+    this.tooltip,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+  final bool accent;
+  final String? tooltip;
+
+  @override
+  State<_MapControl> createState() => _MapControlState();
+}
+
+class _MapControlState extends State<_MapControl> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed != value) setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final foreground = widget.accent ? colors.primary : colors.onSurface;
+
+    Widget button = AnimatedScale(
+      scale: _pressed ? 0.9 : 1.0,
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeOut,
+      child: Material(
+        color: colors.surfaceContainer,
+        shape: CircleBorder(
+          side: BorderSide(color: colors.onSurface.withValues(alpha: 0.08)),
+        ),
+        child: InkWell(
+          onTap: widget.onPressed,
+          onTapDown: (_) => _setPressed(true),
+          onTapUp: (_) => _setPressed(false),
+          onTapCancel: () => _setPressed(false),
+          customBorder: const CircleBorder(),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: Icon(widget.icon, size: 17, color: foreground),
+          ),
+        ),
+      ),
+    );
+
+    if (widget.tooltip != null) {
+      button = Tooltip(message: widget.tooltip!, child: button);
+    }
+    return button;
+  }
 }

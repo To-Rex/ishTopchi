@@ -55,7 +55,12 @@ class OtpController extends GetxController {
 
   void resendCode(String phone) {
     if (resendAvailable.value) {
-      ShowToast.show('Kod yuborildi', 'Yangi kod telefoningizga yuborildi', 1, 1);
+      ShowToast.show(
+        'Kod yuborildi',
+        'Yangi kod telefoningizga yuborildi',
+        1,
+        1,
+      );
       ApiController().generateOtp(phone);
       startTimer();
     }

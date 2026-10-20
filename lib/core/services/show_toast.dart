@@ -34,9 +34,10 @@ class ShowToast {
           ),
           snackPosition:
               position == 1 ? SnackPosition.BOTTOM : SnackPosition.TOP,
-          backgroundColor: status == 1
-              ? AppColors.darkBlue
-              : status == 2
+          backgroundColor:
+              status == 1
+                  ? AppColors.darkBlue
+                  : status == 2
                   ? AppColors.darkNavy
                   : AppColors.red,
           colorText: AppColors.white,
@@ -75,9 +76,10 @@ class ShowToast {
                   ),
                 ],
               ),
-              backgroundColor: status == 1
-                  ? AppColors.darkBlue
-                  : status == 2
+              backgroundColor:
+                  status == 1
+                      ? AppColors.darkBlue
+                      : status == 2
                       ? AppColors.darkNavy
                       : AppColors.red,
               duration: Duration(seconds: duration),

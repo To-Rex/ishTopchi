@@ -35,22 +35,23 @@ class Data {
   String? updatedAt;
   String? deletedAt;
 
-  Data(
-      {this.id,
-        this.firstName,
-        this.lastName,
-        this.profilePicture,
-        this.birthDate,
-        this.gender,
-        this.verified,
-        this.isBlocked,
-        this.role,
-        this.district,
-        this.resumes,
-        this.authProviders,
-        this.createdAt,
-        this.updatedAt,
-        this.deletedAt});
+  Data({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.profilePicture,
+    this.birthDate,
+    this.gender,
+    this.verified,
+    this.isBlocked,
+    this.role,
+    this.district,
+    this.resumes,
+    this.authProviders,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -62,9 +63,8 @@ class Data {
     verified = json['verified'];
     isBlocked = json['is_blocked'];
     role = json['role'];
-    district = json['district'] != null
-        ? District.fromJson(json['district'])
-        : null;
+    district =
+        json['district'] != null ? District.fromJson(json['district']) : null;
     if (json['resumes'] != null) {
       resumes = <Resumes>[];
       json['resumes'].forEach((v) {
@@ -100,8 +100,7 @@ class Data {
       data['resumes'] = resumes!.map((v) => v.toJson()).toList();
     }
     if (authProviders != null) {
-      data['auth_providers'] =
-          authProviders!.map((v) => v.toJson()).toList();
+      data['auth_providers'] = authProviders!.map((v) => v.toJson()).toList();
     }
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
@@ -120,8 +119,7 @@ class District {
   District.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    region =
-    json['region'] != null ? Region.fromJson(json['region']) : null;
+    region = json['region'] != null ? Region.fromJson(json['region']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -220,18 +218,19 @@ class AuthProviders {
   String? refreshToken;
   String? passwordHash;
 
-  AuthProviders(
-      {this.id,
-        this.useType,
-        this.providerType,
-        this.providersUserId,
-        this.email,
-        this.fullName,
-        this.profilePicture,
-        this.inUse,
-        this.accessToken,
-        this.refreshToken,
-        this.passwordHash});
+  AuthProviders({
+    this.id,
+    this.useType,
+    this.providerType,
+    this.providersUserId,
+    this.email,
+    this.fullName,
+    this.profilePicture,
+    this.inUse,
+    this.accessToken,
+    this.refreshToken,
+    this.passwordHash,
+  });
 
   AuthProviders.fromJson(Map<String, dynamic> json) {
     id = json['id'];

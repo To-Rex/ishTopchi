@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
-import '../../config/theme/app_colors.dart';
-import '../../core/utils/responsive.dart';
+import '../../config/theme/app_theme.dart';
 
+/// Umumiy karta.
+///
+/// Soya (`elevation: 5`) olib tashlandi — chuqurlik yuza rangi va nozik
+/// kontur bilan beriladi. Qorongʻi fonda soya baribir koʻrinmaydi, lekin
+/// kartani "kir" koʻrsatadi.
 class CustomCard extends StatelessWidget {
   final Widget child;
 
-  const CustomCard({Key? key, required this.child}) : super(key: key);
+  const CustomCard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: AppColors.darkBlue,
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.scaleWidth(12, context))),
-      child: Padding(padding: EdgeInsets.all(Responsive.scaleWidth(16, context)), child: child)
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.cardTheme.color ?? colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+        border: Border.all(
+          color: colors.onSurface.withValues(alpha: 0.08),
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: child,
     );
   }
 }

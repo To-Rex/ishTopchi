@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../common/widgets/custom_text_field.dart';
-import '../../../config/theme/app_colors.dart';
-import '../../../core/utils/responsive.dart';
 
+/// Profil maʼlumotlarining oddiy shakli.
+///
+/// Maydonlarning bezagi mavzudagi `inputDecorationTheme` dan keladi.
 class ProfileForm extends StatelessWidget {
   const ProfileForm({super.key});
 
@@ -12,11 +13,15 @@ class ProfileForm extends StatelessWidget {
     return Column(
       children: [
         CustomTextField(label: 'Ism'.tr, hint: 'Ismingizni kiriting'.tr),
-        SizedBox(height: Responsive.scaleHeight(16, context)),
+        const SizedBox(height: 14),
         CustomTextField(label: 'Familya'.tr, hint: 'Familyangizni kiriting'.tr),
-        SizedBox(height: Responsive.scaleHeight(16, context)),
-        CustomTextField(label: 'Yosh (ixtiyoriy)'.tr, hint: 'Yoshingizni kiriting'.tr, keyboardType: TextInputType.number)
-      ]
+        const SizedBox(height: 14),
+        CustomTextField(
+          label: 'Yosh (ixtiyoriy)'.tr,
+          hint: 'Yoshingizni kiriting'.tr,
+          keyboardType: TextInputType.number,
+        ),
+      ],
     );
   }
 }
